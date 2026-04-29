@@ -4,6 +4,8 @@ import {
   type Level, drawLevel
 } from "./level.ts";
 import { startLoop } from "./update.ts";
+import { createVehicle, drawVehicle } from "./vehicle.ts";
+import { isDown } from "./input.ts";
 
 const canvas = document.createElement("canvas");
 document.body.appendChild(canvas);
@@ -23,11 +25,42 @@ const level: Level = {
     return isBorder ? TILE.WALL : TILE.EMPTY;
   }),
 };
+const vehicle = createVehicle(
+  (level.width * TILE_SIZE) / 2,
+  (level.height * TILE_SIZE) / 2,
+);
 
-canvas.width = level.width * TILE_SIZE;
-canvas.height = level.height * TILE_SIZE;
+function resize() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+window.addEventListener("resize", resize);
+resize();
 
 startLoop(
-  (_dt) => {},
-  () => drawLevel(ctx, level),
+  (dt) => {
+    let dx = 0;
+    let dy = 0;
+    if (isDown("KeyW")) dy -= 1;
+    if (isDown("KeyS")) dy += 1;
+    if (isDown("KeyA")) dx -= 1;
+    if (isDown("KeyD")) dx += 1;
+
+    if (dx !== 0 && dy !== 0) {
+      const inv = 1 / Math.sqrt(2);
+      dx *= inv;
+      dy *= inv;
+    }
+
+    vehicle.x += dx * vehicle.speed * dt;
+    vehicle.y += dy * vehicle.speed * dt;
+  },
+  () => {
+    const camX = vehicle.x - canvas.width / 2;
+    const camY = vehicle.y - canvas.height / 2;
+    ctx.fillStyle = "#000";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    drawLevel(ctx, level, camX, camY);
+    drawVehicle(ctx, vehicle, camX, camY);
+  },
 );
