@@ -1,4 +1,4 @@
 import './style.css';
 
 const app = document.querySelector<HTMLDivElement>('#app')!;
-app.textContent = 'park-it';
+app.textContent = 'pixel-parker';
