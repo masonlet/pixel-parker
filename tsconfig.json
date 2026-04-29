@@ -1,23 +1,52 @@
 {
   "compilerOptions": {
+    // Module/Target
     "target": "es2023",
     "module": "esnext",
-    "lib": ["ES2023", "DOM"],
-    "types": ["vite/client"],
-    "skipLibCheck": true,
-
-    /* Bundler mode */
     "moduleResolution": "bundler",
-    "allowImportingTsExtensions": true,
-    "verbatimModuleSyntax": true,
     "moduleDetection": "force",
-    "noEmit": true,
+    "lib": ["ES2023", "DOM"],
+    "allowImportingTsExtensions": true,
 
-    /* Linting */
+    // Core Strictness
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": true,
+    "noImplicitThis": true,
+    "useUnknownInCatchVariables": true,
+
+    // Unused Code Elimination
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "erasableSyntaxOnly": true,
-    "noFallthroughCasesInSwitch": true
+    "noImplicitReturns": true,
+
+    // Safety/Validation
+    "noErrorTruncation": true,
+    "exactOptionalPropertyTypes": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noUncheckedIndexedAccess": true,
+    "noUncheckedSideEffectImports": true,
+
+    // Code Quality
+    "allowUnusedLabels": false,
+    "allowUnreachableCode": false,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitOverride": true,
+    "useDefineForClassFields": true,
+
+    // Build/Output
+    "isolatedModules": true,
+    "verbatimModuleSyntax": true,
+    "forceConsistentCasingInFileNames": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "checkJs": false,
+    "noEmit": true,
+    "types": ["vite/client"]
   },
-  "include": ["src"]
+  "include": ["./src/**/*.ts"],
+  "exclude": ["dist/", "node_modules/"]
 }
