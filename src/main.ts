@@ -3,13 +3,13 @@ import {
   TILE, TILE_SIZE,
   type Level, drawLevel
 } from "./level.ts";
+import { startLoop } from "./update.ts";
 
 const canvas = document.createElement("canvas");
 document.body.appendChild(canvas);
 const ctxOrNull = canvas.getContext("2d");
 if (!ctxOrNull) throw new Error("2D canvas context not found");
 const ctx = ctxOrNull;
-
 
 const levelW = 40;
 const levelH = 30;
@@ -24,15 +24,10 @@ const level: Level = {
   }),
 };
 
-function resize() {
-  canvas.width = level.width * TILE_SIZE;
-  canvas.height = level.height * TILE_SIZE;
-}
-window.addEventListener("resize", resize);
-resize();
+canvas.width = level.width * TILE_SIZE;
+canvas.height = level.height * TILE_SIZE;
 
-function frame(_t: number) {
-  drawLevel(ctx, level);
-  requestAnimationFrame(frame);
-}
-requestAnimationFrame(frame);
+startLoop(
+  (_dt) => {},
+  () => drawLevel(ctx, level),
+);
