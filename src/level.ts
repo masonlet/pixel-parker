@@ -11,6 +11,7 @@ export interface Level {
   width: number;
   height: number;
   tiles: TileId[];
+  spawns: Array<{ x: number; y: number }>;
 }
 
 export function getTile(level: Level, x: number, y: number): TileId {

@@ -1,16 +1,23 @@
 import "./style.css";
-import {
-  TILE, TILE_SIZE,
-  type Level, drawLevel
-} from "./level.ts";
+
 import { startLoop } from "./update.ts";
-import { createVehicle, drawVehicle, applyInput, moveVehicle } from "./vehicle.ts";
 import { isDown, wasPressed } from "./input.ts";
 import { loadImage } from "./assets.ts";
+
+import {
+  createVehicle,
+  drawVehicle,
+  applyInput,
+  moveVehicle
+} from "./vehicle.ts";
 import {
   makeCarType, 
   makeTruckType
 } from "./vehicleTypes.ts";
+
+import { type Level, drawLevel } from "./level.ts";
+import { test1 } from "./levels/test1.ts";
+import { test2 } from "./levels/test2.ts";
 
 const canvas = document.createElement("canvas");
 document.body.appendChild(canvas);
@@ -19,18 +26,10 @@ if (!ctxOrNull) throw new Error("2D canvas context not found");
 const ctx = ctxOrNull;
 ctx.imageSmoothingEnabled = false;
 
-const levelW = 40;
-const levelH = 30;
-const level: Level = {
-  width: levelW,
-  height: levelH,
-  tiles: Array.from({ length: levelW * levelH }, (_, i) => {
-    const x = i % levelW;
-    const y = Math.floor(i / levelW);
-    const isBorder = x === 0 || y === 0 || x === levelW - 1 || y === levelH - 1;
-    return isBorder ? TILE.WALL : TILE.EMPTY;
-  }),
-};
+const levels = [test1, test2];
+let levelIndex = 0;
+let level = levels[levelIndex];
+if (!level) throw new Error("Failed to get level(s)");
 
 const carSprite = await loadImage("/img/vehicles/car.png");
 const carBodySprite = await loadImage("/img/vehicles/car-body.png");
@@ -40,14 +39,16 @@ const truckSprite = await loadImage("/img/vehicles/truck.png");
 const truckBodySprite = await loadImage("/img/vehicles/truck-body.png");
 const truckType = makeTruckType(truckSprite, truckBodySprite);
 
-const centerX = (level.width * TILE_SIZE) / 2;
-const centerY = (level.height * TILE_SIZE) / 2
-
-const vehicles = [
-  createVehicle(carType, centerX - 80, centerY, 180),
-  createVehicle(truckType, centerX + 80, centerY, 30),
-];
-let activeIndex = 0;
+function spawnVehicles(lvl: Level) {
+  const [carSpawn, truckSpawn] = lvl.spawns;
+  if (!carSpawn || !truckSpawn) throw new Error("Levels needs at least 2 spawns");
+   return [
+    createVehicle(carType, carSpawn.x, carSpawn.y, 180),
+    createVehicle(truckType, truckSpawn.x, truckSpawn.y, 30),
+  ];
+}
+let vehicles = spawnVehicles(level);
+let vehicleIndex = 0;
 
 function resize() {
   canvas.width = window.innerWidth;
@@ -58,9 +59,15 @@ resize();
 
 startLoop(
   (dt) => {
-    if (wasPressed("KeyE")) activeIndex = (activeIndex + 1) % vehicles.length;
+    if (wasPressed("KeyQ")) {
+      levelIndex = (levelIndex + 1) % levels.length;
+      level = levels[levelIndex]!;
+      vehicles = spawnVehicles(level);
+      vehicleIndex = 0;
+    }
+    if (wasPressed("KeyE")) vehicleIndex = (vehicleIndex + 1) % vehicles.length;
 
-    const active = vehicles[activeIndex];
+    const active = vehicles[vehicleIndex];
     if (!active) return;
 
     let throttle = 0;
@@ -76,11 +83,11 @@ startLoop(
       else applyInput(v, 0, 0, dt);
       moveVehicle(v, dt);
     }
-    
+
     active.hue = (active.hue + 60 * dt) % 360;
   },
   () => {
-    const active = vehicles[activeIndex];
+    const active = vehicles[vehicleIndex];
     if (!active) return;
     const camX = active.x - canvas.width / 2;
     const camY = active.y - canvas.height / 2;
