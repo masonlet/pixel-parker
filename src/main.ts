@@ -6,12 +6,14 @@ import {
 import { startLoop } from "./update.ts";
 import { createVehicle, drawVehicle } from "./vehicle.ts";
 import { isDown } from "./input.ts";
+import { loadImage } from "./assets.ts";
 
 const canvas = document.createElement("canvas");
 document.body.appendChild(canvas);
 const ctxOrNull = canvas.getContext("2d");
 if (!ctxOrNull) throw new Error("2D canvas context not found");
 const ctx = ctxOrNull;
+ctx.imageSmoothingEnabled = false;
 
 const levelW = 40;
 const levelH = 30;
@@ -25,9 +27,13 @@ const level: Level = {
     return isBorder ? TILE.WALL : TILE.EMPTY;
   }),
 };
+
+const carSprite = await loadImage("/img/vehicles/car.png");
+
 const vehicle = createVehicle(
   (level.width * TILE_SIZE) / 2,
   (level.height * TILE_SIZE) / 2,
+  carSprite,
 );
 
 function resize() {

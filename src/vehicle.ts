@@ -5,10 +5,15 @@ export interface Vehicle {
   h: number;
   /** Pixels per second. */
   speed: number;
+  sprite: HTMLImageElement;
 }
 
-export function createVehicle(x: number, y: number): Vehicle {
-  return { x, y, w: 24, h: 24, speed: 200 };
+export function createVehicle(
+  x: number,
+  y: number,
+  sprite: HTMLImageElement,
+): Vehicle {
+  return { x, y, w: 24, h: 24, speed: 200, sprite };
 }
 
 export function drawVehicle(
@@ -17,11 +22,9 @@ export function drawVehicle(
   camX: number,
   camY: number,
 ): void {
-  ctx.fillStyle = "#c44";
-  ctx.fillRect(
-    Math.floor(v.x - v.w / 2 - camX),
-    Math.floor(v.y - v.h / 2 - camY),
-    v.w,
-    v.h,
+  ctx.drawImage(
+    v.sprite,
+    Math.floor(v.x - v.sprite.width / 2 - camX),
+    Math.floor(v.y - v.sprite.height / 2 - camY),
   );
 }
