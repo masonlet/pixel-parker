@@ -1,65 +1,63 @@
 import { tintImage } from "./assets.ts";
 
-export interface Vehicle {
-  x: number, y: number;
-  w: number, h: number;
-  /** Vehicles sprite. */
+export interface VehicleType {
+  /** Identifier for this vehicle type */
+  name: string;
+  /** Base vehicle sprite */
   sprite: HTMLImageElement;
-  /** Vehicles body sprite. */
+  /** Tintable overlay sprite */
   bodySprite: HTMLImageElement;
-  /** Vehicles colour hue. */
-  hue: number;
-  /** Radians. 0 = facing right */
-  angle: number;
-  /** Radians per second. */
+  /** Hitbox width in pixels. */
+  w: number;
+  /** Hitbox height in pixels. */
+  h: number;
+  /** Maximum turn rate in radians per second. */
   turnSpeed: number;
-  /** Current forward velocity, pixels per second. */
-  velocity: number;
-  /** Maximum forward speed, pixels per second. */
+  /** Maximum forward speed in pixels per second. */
   maxSpeed: number;
-  /** Maximum reverse speed, pixels per second. */
+  /** Maximum reverse speed in pixels per second. */
   maxReverseSpeed: number;
-  /** Pixels per second. */
+  /** Acceleration in pixels per second^2. */
   accel: number;
-  /** Pixels per second — decay applied when no throttle. */
+  /** Passive deceleration when no throttle in pixels per second^2. */
   friction: number;
-  /** Pixels per second — applied when actively braking. */
+  /** Braking force in pixels per second^2. */
   brakeForce: number;
-  /** Seconds to wait when shifting between forward and reverse. */
+  /** Delay in seconds before gear engages after braking to a stop. */
   gearShiftDelay: number;
-  /** Seconds remaining on the current gear-shift wait. */
+}
+
+export interface Vehicle {
+  /** Vehicle config. */
+  type: VehicleType;
+  /** World-space X position in pixels. */
+  x: number;
+  /** World-space Y position in pixels. */
+  y: number;
+  /** Facing angle in radians. 0 = facing right */
+  angle: number;
+  /** Current forward velocity in pixels per second. */
+  velocity: number;
+  /** Seconds remaining on the gear-shift wait. */
   shiftTimer: number;
+  /** Body colour hue in degrees, 0-360. */
+  hue: number;
 }
 
 export function createVehicle(
-  x: number, y: number,
-  w: number, h: number,
-  sprite: HTMLImageElement,
-  bodySprite: HTMLImageElement,
-  hue: number,
-  turnSpeed: number,
-  maxSpeed: number,
-  maxReverseSpeed: number,
-  accel: number,
-  friction: number,
-  brakeForce: number,
-  gearShiftDelay: number,
+  type: VehicleType,
+  x: number,
+  y: number,
+  hue: number
 ): Vehicle {
   return {
-    x, y,
-    w, h,
-    sprite, bodySprite,
-    hue,
+    type,
+    x,
+    y,
     angle: -Math.PI / 2,
-    turnSpeed,
     velocity: 0,
-    maxSpeed,
-    maxReverseSpeed,
-    accel,
-    friction,
-    brakeForce,
-    gearShiftDelay,
-    shiftTimer: 0
+    shiftTimer: 0,
+    hue
   };
 }
 
@@ -67,17 +65,17 @@ export function drawVehicle(
   ctx: CanvasRenderingContext2D,
   v: Vehicle,
   camX: number,
-  camY: number,
+  camY: number
 ): void {
   const drawX = Math.floor(v.x - camX);
   const drawY = Math.floor(v.y - camY);
 
-  const tinted = tintImage(v.bodySprite, `hsl(${v.hue}, 100%, 50%)`);
+  const tinted = tintImage(v.type.bodySprite, `hsl(${v.hue}, 100%, 50%)`);
 
   ctx.save();
   ctx.translate(drawX, drawY);
   ctx.rotate(v.angle + Math.PI / 2);
-  ctx.drawImage(v.sprite, -v.sprite.width / 2, -v.sprite.height / 2);
+  ctx.drawImage(v.type.sprite, -v.type.sprite.width / 2, -v.type.sprite.height / 2);
   ctx.drawImage(tinted, -tinted.width / 2, -tinted.height / 2);
   ctx.restore();
 }

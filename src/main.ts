@@ -7,6 +7,7 @@ import { startLoop } from "./update.ts";
 import { createVehicle, drawVehicle } from "./vehicle.ts";
 import { isDown } from "./input.ts";
 import { loadImage } from "./assets.ts";
+import { makeCarType } from "./vehicleTypes.ts";
 
 const canvas = document.createElement("canvas");
 document.body.appendChild(canvas);
@@ -30,21 +31,12 @@ const level: Level = {
 
 const carSprite = await loadImage("/img/vehicles/car.png");
 const carBodySprite = await loadImage("/img/vehicles/car-body.png");
-
-const vehicle = createVehicle(
+const carType = makeCarType(carSprite, carBodySprite);
+const car = createVehicle(
+  carType,
   (level.width * TILE_SIZE) / 2,
   (level.height * TILE_SIZE) / 2,
-  24, 24,
-  carSprite,
-  carBodySprite,
   180,
-  3,
-  200,
-  100,
-  300,
-  150,
-  400,
-  0.2
 );
 
 function resize() {
@@ -64,61 +56,61 @@ startLoop(
     if (isDown("KeyA")) steer -= 1;
     if (isDown("KeyD")) steer += 1;
 
-    const speedRatio = Math.min(Math.abs(vehicle.velocity) / vehicle.maxSpeed, 1);
-    vehicle.angle += steer * vehicle.turnSpeed * speedRatio * Math.sign(vehicle.velocity) * dt;
+    const speedRatio = Math.min(Math.abs(car.velocity) / car.type.maxSpeed, 1);
+    car.angle += steer * car.type.turnSpeed * speedRatio * Math.sign(car.velocity) * dt;
     
-    if (vehicle.shiftTimer > 0) {
-      vehicle.shiftTimer -= dt;
-      if (vehicle.shiftTimer < 0) vehicle.shiftTimer = 0;
+    if (car.shiftTimer > 0) {
+      car.shiftTimer -= dt;
+      if (car.shiftTimer < 0) car.shiftTimer = 0;
     }
 
     if (throttle > 0) { // Forward
-      if (vehicle.velocity < 0) { // Braking
-        vehicle.velocity += vehicle.brakeForce * dt;
-        if (vehicle.velocity >= 0) {
-          vehicle.velocity = 0;
-          vehicle.shiftTimer = vehicle.gearShiftDelay;
+      if (car.velocity < 0) { // Braking
+        car.velocity += car.type.brakeForce * dt;
+        if (car.velocity >= 0) {
+          car.velocity = 0;
+          car.shiftTimer = car.type.gearShiftDelay;
         }
-      } else if (vehicle.shiftTimer > 0) {
+      } else if (car.shiftTimer > 0) {
         // Gear shifting delay
       } else { // Accelerating
-        vehicle.velocity += vehicle.accel * dt;
-        if (vehicle.velocity > vehicle.maxSpeed) vehicle.velocity = vehicle.maxSpeed;
+        car.velocity += car.type.accel * dt;
+        if (car.velocity > car.type.maxSpeed) car.velocity = car.type.maxSpeed;
       }
     } else if (throttle < 0) { // Reverse
-      if (vehicle.velocity > 0) { // Braking
-        vehicle.velocity -= vehicle.brakeForce * dt;
-        if (vehicle.velocity <= 0) {
-          vehicle.velocity = 0;
-          vehicle.shiftTimer = vehicle.gearShiftDelay;
+      if (car.velocity > 0) { // Braking
+        car.velocity -= car.type.brakeForce * dt;
+        if (car.velocity <= 0) {
+          car.velocity = 0;
+          car.shiftTimer = car.type.gearShiftDelay;
         }
-      } else if (vehicle.shiftTimer > 0) {
+      } else if (car.shiftTimer > 0) {
         // Gear shifting delay
       } else { // Reversing
-        vehicle.velocity -= vehicle.accel * dt;
-        if (vehicle.velocity < -vehicle.maxReverseSpeed) vehicle.velocity = -vehicle.maxReverseSpeed;
+        car.velocity -= car.type.accel * dt;
+        if (car.velocity < -car.type.maxReverseSpeed) car.velocity = -car.type.maxReverseSpeed;
       }
     } else { // Idle
-      if (vehicle.velocity > 0) { // De-accelerate
-        vehicle.velocity -= vehicle.friction * dt;
-        if (vehicle.velocity < 0) vehicle.velocity = 0;
-      } else if (vehicle.velocity < 0) { // Braking
-        vehicle.velocity += vehicle.friction * dt;
-        if (vehicle.velocity > 0) vehicle.velocity = 0;
+      if (car.velocity > 0) { // De-accelerate
+        car.velocity -= car.type.friction * dt;
+        if (car.velocity < 0) car.velocity = 0;
+      } else if (car.velocity < 0) { // Braking
+        car.velocity += car.type.friction * dt;
+        if (car.velocity > 0) car.velocity = 0;
       }
     }
 
-    vehicle.x += Math.cos(vehicle.angle) * vehicle.velocity * dt;
-    vehicle.y += Math.sin(vehicle.angle) * vehicle.velocity * dt;
+    car.x += Math.cos(car.angle) * car.velocity * dt;
+    car.y += Math.sin(car.angle) * car.velocity * dt;
 
-    vehicle.hue = (vehicle.hue + 60 * dt) % 360;
+    car.hue = (car.hue + 60 * dt) % 360;
   },
   () => {
-    const camX = vehicle.x - canvas.width / 2;
-    const camY = vehicle.y - canvas.height / 2;
+    const camX = car.x - canvas.width / 2;
+    const camY = car.y - canvas.height / 2;
     ctx.fillStyle = "#000";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     drawLevel(ctx, level, camX, camY);
-    drawVehicle(ctx, vehicle, camX, camY);
+    drawVehicle(ctx, car, camX, camY);
   },
 );
