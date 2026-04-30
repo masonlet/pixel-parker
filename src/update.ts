@@ -1,3 +1,5 @@
+import { clearFramePresses } from "./input.ts";
+
 const TICK_RATE = 1 / 60;
 
 export function startLoop(
@@ -15,6 +17,7 @@ export function startLoop(
 
     while (accumulator >= TICK_RATE) {
       update(TICK_RATE);
+      clearFramePresses();
       accumulator -= TICK_RATE;
     }
 

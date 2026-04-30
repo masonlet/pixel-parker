@@ -19,3 +19,23 @@ export function makeCarType(
     gearShiftDelay: 0.2,
   };
 }
+
+export function makeTruckType (
+  sprite: HTMLImageElement,
+  bodySprite: HTMLImageElement
+): VehicleType {
+  return {
+    name: "truck",
+    sprite,
+    bodySprite,
+    w: 32,
+    h: 48,
+    turnSpeed: 1.8,
+    maxSpeed: 140,
+    maxReverseSpeed: 60,
+    accel: 150,
+    friction: 100,
+    brakeForce: 280,
+    gearShiftDelay: 0.4
+  }
+}

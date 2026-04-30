@@ -4,10 +4,13 @@ import {
   type Level, drawLevel
 } from "./level.ts";
 import { startLoop } from "./update.ts";
-import { createVehicle, drawVehicle } from "./vehicle.ts";
-import { isDown } from "./input.ts";
+import { createVehicle, drawVehicle, applyInput, moveVehicle } from "./vehicle.ts";
+import { isDown, wasPressed } from "./input.ts";
 import { loadImage } from "./assets.ts";
-import { makeCarType } from "./vehicleTypes.ts";
+import {
+  makeCarType, 
+  makeTruckType
+} from "./vehicleTypes.ts";
 
 const canvas = document.createElement("canvas");
 document.body.appendChild(canvas);
@@ -32,12 +35,19 @@ const level: Level = {
 const carSprite = await loadImage("/img/vehicles/car.png");
 const carBodySprite = await loadImage("/img/vehicles/car-body.png");
 const carType = makeCarType(carSprite, carBodySprite);
-const car = createVehicle(
-  carType,
-  (level.width * TILE_SIZE) / 2,
-  (level.height * TILE_SIZE) / 2,
-  180,
-);
+
+const truckSprite = await loadImage("/img/vehicles/truck.png");
+const truckBodySprite = await loadImage("/img/vehicles/truck-body.png");
+const truckType = makeTruckType(truckSprite, truckBodySprite);
+
+const centerX = (level.width * TILE_SIZE) / 2;
+const centerY = (level.height * TILE_SIZE) / 2
+
+const vehicles = [
+  createVehicle(carType, centerX - 80, centerY, 180),
+  createVehicle(truckType, centerX + 80, centerY, 30),
+];
+let activeIndex = 0;
 
 function resize() {
   canvas.width = window.innerWidth;
@@ -48,6 +58,11 @@ resize();
 
 startLoop(
   (dt) => {
+    if (wasPressed("KeyE")) activeIndex = (activeIndex + 1) % vehicles.length;
+
+    const active = vehicles[activeIndex];
+    if (!active) return;
+
     let throttle = 0;
     if (isDown("KeyW")) throttle += 1;
     if (isDown("KeyS")) throttle -= 1;
@@ -56,61 +71,22 @@ startLoop(
     if (isDown("KeyA")) steer -= 1;
     if (isDown("KeyD")) steer += 1;
 
-    const speedRatio = Math.min(Math.abs(car.velocity) / car.type.maxSpeed, 1);
-    car.angle += steer * car.type.turnSpeed * speedRatio * Math.sign(car.velocity) * dt;
+    for (const v of vehicles) {
+      if (v === active) applyInput(v, throttle, steer, dt);
+      else applyInput(v, 0, 0, dt);
+      moveVehicle(v, dt);
+    }
     
-    if (car.shiftTimer > 0) {
-      car.shiftTimer -= dt;
-      if (car.shiftTimer < 0) car.shiftTimer = 0;
-    }
-
-    if (throttle > 0) { // Forward
-      if (car.velocity < 0) { // Braking
-        car.velocity += car.type.brakeForce * dt;
-        if (car.velocity >= 0) {
-          car.velocity = 0;
-          car.shiftTimer = car.type.gearShiftDelay;
-        }
-      } else if (car.shiftTimer > 0) {
-        // Gear shifting delay
-      } else { // Accelerating
-        car.velocity += car.type.accel * dt;
-        if (car.velocity > car.type.maxSpeed) car.velocity = car.type.maxSpeed;
-      }
-    } else if (throttle < 0) { // Reverse
-      if (car.velocity > 0) { // Braking
-        car.velocity -= car.type.brakeForce * dt;
-        if (car.velocity <= 0) {
-          car.velocity = 0;
-          car.shiftTimer = car.type.gearShiftDelay;
-        }
-      } else if (car.shiftTimer > 0) {
-        // Gear shifting delay
-      } else { // Reversing
-        car.velocity -= car.type.accel * dt;
-        if (car.velocity < -car.type.maxReverseSpeed) car.velocity = -car.type.maxReverseSpeed;
-      }
-    } else { // Idle
-      if (car.velocity > 0) { // De-accelerate
-        car.velocity -= car.type.friction * dt;
-        if (car.velocity < 0) car.velocity = 0;
-      } else if (car.velocity < 0) { // Braking
-        car.velocity += car.type.friction * dt;
-        if (car.velocity > 0) car.velocity = 0;
-      }
-    }
-
-    car.x += Math.cos(car.angle) * car.velocity * dt;
-    car.y += Math.sin(car.angle) * car.velocity * dt;
-
-    car.hue = (car.hue + 60 * dt) % 360;
+    active.hue = (active.hue + 60 * dt) % 360;
   },
   () => {
-    const camX = car.x - canvas.width / 2;
-    const camY = car.y - canvas.height / 2;
+    const active = vehicles[activeIndex];
+    if (!active) return;
+    const camX = active.x - canvas.width / 2;
+    const camY = active.y - canvas.height / 2;
     ctx.fillStyle = "#000";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     drawLevel(ctx, level, camX, camY);
-    drawVehicle(ctx, car, camX, camY);
+    for (const v of vehicles) drawVehicle(ctx, v, camX, camY);
   },
 );
