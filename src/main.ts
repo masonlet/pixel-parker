@@ -1,5 +1,6 @@
 import "./style.css";
 
+import { createGameCanvas } from "./canvas.ts";
 import { startLoop } from "./update.ts";
 import { isDown, wasPressed } from "./input.ts";
 import { loadImage } from "./assets.ts";
@@ -19,12 +20,7 @@ import { type Level, drawLevel } from "./level.ts";
 import { test1 } from "./levels/test1.ts";
 import { test2 } from "./levels/test2.ts";
 
-const canvas = document.createElement("canvas");
-document.body.appendChild(canvas);
-const ctxOrNull = canvas.getContext("2d");
-if (!ctxOrNull) throw new Error("2D canvas context not found");
-const ctx = ctxOrNull;
-ctx.imageSmoothingEnabled = false;
+const { canvas, ctx } = createGameCanvas();
 
 const levels = [test1, test2];
 let levelIndex = 0;
@@ -49,13 +45,6 @@ function spawnVehicles(lvl: Level) {
 }
 let vehicles = spawnVehicles(level);
 let vehicleIndex = 0;
-
-function resize() {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-}
-window.addEventListener("resize", resize);
-resize();
 
 startLoop(
   (dt) => {
