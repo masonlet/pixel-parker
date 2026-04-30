@@ -1,19 +1,30 @@
 export interface Vehicle {
-  x: number;
-  y: number;
-  w: number;
-  h: number;
+  x: number, y: number;
+  w: number, h: number;
+  sprite: HTMLImageElement;
   /** Pixels per second. */
   speed: number;
-  sprite: HTMLImageElement;
+  /** Radians. 0 = facing right */
+  angle: number;
+  /** Radians per second. */
+  turnSpeed: number;
 }
 
 export function createVehicle(
-  x: number,
-  y: number,
+  x: number, y: number,
+  w: number, h: number,
   sprite: HTMLImageElement,
+  speed: number,
+  turnSpeed: number
 ): Vehicle {
-  return { x, y, w: 24, h: 24, speed: 200, sprite };
+  return {
+    x, y,
+    w, h,
+    sprite,
+    speed,
+    angle: -Math.PI / 2,
+    turnSpeed
+  };
 }
 
 export function drawVehicle(
@@ -22,9 +33,16 @@ export function drawVehicle(
   camX: number,
   camY: number,
 ): void {
+  const drawX = Math.floor(v.x - camX);
+  const drawY = Math.floor(v.y - camY);
+
+  ctx.save();
+  ctx.translate(drawX, drawY);
+  ctx.rotate(v.angle + Math.PI / 2);
   ctx.drawImage(
     v.sprite,
-    Math.floor(v.x - v.sprite.width / 2 - camX),
-    Math.floor(v.y - v.sprite.height / 2 - camY),
+    -v.sprite.width / 2,
+    -v.sprite.height / 2,
   );
+  ctx.restore();
 }

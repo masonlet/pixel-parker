@@ -33,7 +33,10 @@ const carSprite = await loadImage("/img/vehicles/car.png");
 const vehicle = createVehicle(
   (level.width * TILE_SIZE) / 2,
   (level.height * TILE_SIZE) / 2,
+  24, 24,
   carSprite,
+  200,
+  3
 );
 
 function resize() {
@@ -45,21 +48,17 @@ resize();
 
 startLoop(
   (dt) => {
-    let dx = 0;
-    let dy = 0;
-    if (isDown("KeyW")) dy -= 1;
-    if (isDown("KeyS")) dy += 1;
-    if (isDown("KeyA")) dx -= 1;
-    if (isDown("KeyD")) dx += 1;
+    let throttle = 0;
+    if (isDown("KeyW")) throttle += 1;
+    if (isDown("KeyS")) throttle -= 1;
 
-    if (dx !== 0 && dy !== 0) {
-      const inv = 1 / Math.sqrt(2);
-      dx *= inv;
-      dy *= inv;
-    }
+    let steer = 0;
+    if (isDown("KeyA")) steer -= 1;
+    if (isDown("KeyD")) steer += 1;
 
-    vehicle.x += dx * vehicle.speed * dt;
-    vehicle.y += dy * vehicle.speed * dt;
+    vehicle.angle += steer * vehicle.turnSpeed * dt;
+    vehicle.x += Math.cos(vehicle.angle) * throttle * vehicle.speed * dt;
+    vehicle.y += Math.sin(vehicle.angle) * throttle * vehicle.speed * dt;
   },
   () => {
     const camX = vehicle.x - canvas.width / 2;
