@@ -1,4 +1,4 @@
-import type { VehicleType } from "./vehicle.ts";
+import type { VehicleType } from "./types.ts";
 
 export function makeCarType(
   sprite: HTMLImageElement,

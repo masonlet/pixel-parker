@@ -5,16 +5,12 @@ import { startLoop } from "./update.ts";
 import { isDown, wasPressed } from "./input.ts";
 import { loadImage } from "./assets.ts";
 
+import { createVehicle, drawVehicle } from "./vehicle/render.ts";
+import { applyInput, moveVehicle } from "./vehicle/physics.ts";
 import {
-  createVehicle,
-  drawVehicle,
-  applyInput,
-  moveVehicle
-} from "./vehicle.ts";
-import {
-  makeCarType, 
+  makeCarType,
   makeTruckType
-} from "./vehicleTypes.ts";
+} from "./vehicle/presets.ts";
 
 import { type Level, drawLevel } from "./level.ts";
 import { test1 } from "./levels/test1.ts";
