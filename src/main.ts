@@ -3,13 +3,13 @@ import "./style.css";
 import { createGameCanvas } from "./canvas.ts";
 import { startLoop } from "./update.ts";
 import { isDown, wasPressed } from "./input.ts";
-import { loadImage } from "./assets.ts";
 
 import { createVehicle, drawVehicle } from "./vehicle/render.ts";
 import { applyInput, moveVehicle } from "./vehicle/physics.ts";
 import {
-  makeCarType,
-  makeTruckType
+  carStats,
+  truckStats,
+  loadVehicleType
 } from "./vehicle/presets.ts";
 
 import { type Level, drawLevel } from "./level.ts";
@@ -23,13 +23,8 @@ let levelIndex = 0;
 let level = levels[levelIndex];
 if (!level) throw new Error("Failed to get level(s)");
 
-const carSprite = await loadImage("/img/vehicles/car.png");
-const carBodySprite = await loadImage("/img/vehicles/car-body.png");
-const carType = makeCarType(carSprite, carBodySprite);
-
-const truckSprite = await loadImage("/img/vehicles/truck.png");
-const truckBodySprite = await loadImage("/img/vehicles/truck-body.png");
-const truckType = makeTruckType(truckSprite, truckBodySprite);
+const carType = await loadVehicleType(carStats);
+const truckType = await loadVehicleType(truckStats);
 
 function spawnVehicles(lvl: Level) {
   const [carSpawn, truckSpawn] = lvl.spawns;
