@@ -60,7 +60,9 @@ startLoop(
     let steer = 0;
     if (isDown("KeyA")) steer -= 1;
     if (isDown("KeyD")) steer += 1;
-    vehicle.angle += steer * vehicle.turnSpeed * dt;
+
+    const speedRatio = Math.min(Math.abs(vehicle.velocity) / vehicle.maxSpeed, 1);
+    vehicle.angle += steer * vehicle.turnSpeed * speedRatio * dt;
 
     if (vehicle.shiftTimer > 0) {
       vehicle.shiftTimer -= dt;
