@@ -35,8 +35,13 @@ const vehicle = createVehicle(
   (level.height * TILE_SIZE) / 2,
   24, 24,
   carSprite,
+  3,
   200,
-  3
+  100,
+  300,
+  150,
+  400,
+  0.2
 );
 
 function resize() {
@@ -55,10 +60,51 @@ startLoop(
     let steer = 0;
     if (isDown("KeyA")) steer -= 1;
     if (isDown("KeyD")) steer += 1;
-
     vehicle.angle += steer * vehicle.turnSpeed * dt;
-    vehicle.x += Math.cos(vehicle.angle) * throttle * vehicle.speed * dt;
-    vehicle.y += Math.sin(vehicle.angle) * throttle * vehicle.speed * dt;
+
+    if (vehicle.shiftTimer > 0) {
+      vehicle.shiftTimer -= dt;
+      if (vehicle.shiftTimer < 0) vehicle.shiftTimer = 0;
+    }
+
+    if (throttle > 0) { // Forward
+      if (vehicle.velocity < 0) { // Braking
+        vehicle.velocity += vehicle.brakeForce * dt;
+        if (vehicle.velocity >= 0) {
+          vehicle.velocity = 0;
+          vehicle.shiftTimer = vehicle.gearShiftDelay;
+        }
+      } else if (vehicle.shiftTimer > 0) {
+        // Gear shifting delay
+      } else { // Accelerating
+        vehicle.velocity += vehicle.accel * dt;
+        if (vehicle.velocity > vehicle.maxSpeed) vehicle.velocity = vehicle.maxSpeed;
+      }
+    } else if (throttle < 0) { // Reverse
+      if (vehicle.velocity > 0) { // Braking
+        vehicle.velocity -= vehicle.brakeForce * dt;
+        if (vehicle.velocity <= 0) {
+          vehicle.velocity = 0;
+          vehicle.shiftTimer = vehicle.gearShiftDelay;
+        }
+      } else if (vehicle.shiftTimer > 0) {
+        // Gear shifting delay
+      } else { // Reversing
+        vehicle.velocity -= vehicle.accel * dt;
+        if (vehicle.velocity < -vehicle.maxReverseSpeed) vehicle.velocity = -vehicle.maxReverseSpeed;
+      }
+    } else { // Idle
+      if (vehicle.velocity > 0) { // De-accelerate
+        vehicle.velocity -= vehicle.friction * dt;
+        if (vehicle.velocity < 0) vehicle.velocity = 0;
+      } else if (vehicle.velocity < 0) { // Braking
+        vehicle.velocity += vehicle.friction * dt;
+        if (vehicle.velocity > 0) vehicle.velocity = 0;
+      }
+    }
+
+    vehicle.x += Math.cos(vehicle.angle) * vehicle.velocity * dt;
+    vehicle.y += Math.sin(vehicle.angle) * vehicle.velocity * dt;
   },
   () => {
     const camX = vehicle.x - canvas.width / 2;
