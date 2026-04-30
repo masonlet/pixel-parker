@@ -1,7 +1,14 @@
+import { tintImage } from "./assets.ts";
+
 export interface Vehicle {
   x: number, y: number;
   w: number, h: number;
+  /** Vehicles sprite. */
   sprite: HTMLImageElement;
+  /** Vehicles body sprite. */
+  bodySprite: HTMLImageElement;
+  /** Vehicles colour hue. */
+  hue: number;
   /** Radians. 0 = facing right */
   angle: number;
   /** Radians per second. */
@@ -28,6 +35,8 @@ export function createVehicle(
   x: number, y: number,
   w: number, h: number,
   sprite: HTMLImageElement,
+  bodySprite: HTMLImageElement,
+  hue: number,
   turnSpeed: number,
   maxSpeed: number,
   maxReverseSpeed: number,
@@ -39,7 +48,8 @@ export function createVehicle(
   return {
     x, y,
     w, h,
-    sprite,
+    sprite, bodySprite,
+    hue,
     angle: -Math.PI / 2,
     turnSpeed,
     velocity: 0,
@@ -62,13 +72,12 @@ export function drawVehicle(
   const drawX = Math.floor(v.x - camX);
   const drawY = Math.floor(v.y - camY);
 
+  const tinted = tintImage(v.bodySprite, `hsl(${v.hue}, 100%, 50%)`);
+
   ctx.save();
   ctx.translate(drawX, drawY);
   ctx.rotate(v.angle + Math.PI / 2);
-  ctx.drawImage(
-    v.sprite,
-    -v.sprite.width / 2,
-    -v.sprite.height / 2,
-  );
+  ctx.drawImage(v.sprite, -v.sprite.width / 2, -v.sprite.height / 2);
+  ctx.drawImage(tinted, -tinted.width / 2, -tinted.height / 2);
   ctx.restore();
 }

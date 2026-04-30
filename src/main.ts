@@ -29,12 +29,15 @@ const level: Level = {
 };
 
 const carSprite = await loadImage("/img/vehicles/car.png");
+const carBodySprite = await loadImage("/img/vehicles/car-body.png");
 
 const vehicle = createVehicle(
   (level.width * TILE_SIZE) / 2,
   (level.height * TILE_SIZE) / 2,
   24, 24,
   carSprite,
+  carBodySprite,
+  180,
   3,
   200,
   100,
@@ -107,6 +110,8 @@ startLoop(
 
     vehicle.x += Math.cos(vehicle.angle) * vehicle.velocity * dt;
     vehicle.y += Math.sin(vehicle.angle) * vehicle.velocity * dt;
+
+    vehicle.hue = (vehicle.hue + 60 * dt) % 360;
   },
   () => {
     const camX = vehicle.x - canvas.width / 2;
