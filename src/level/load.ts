@@ -21,7 +21,9 @@ interface RawLevel {
   spawns: RawSpawn[];
 }
 
-export function loadLevel(raw: RawLevel): Level {
+export function loadLevel(rawLevel: unknown): Level {
+  const raw = rawLevel as RawLevel;
+
   const tiles: TileId[] = new Array(raw.width * raw.height).fill(TILE[raw.fill]);
 
   for (const rect of raw.rects) {
