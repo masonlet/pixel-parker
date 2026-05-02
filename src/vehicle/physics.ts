@@ -1,7 +1,7 @@
 import type { Vehicle } from "./types.ts";
 import { TILE, TILE_SIZE, getTile, type Level } from "../level.ts";
-import { obbVsAabb } from "../physics/collision.ts";
-import type { AABB, MTV } from "../physics/types.ts";
+import { obbVsAabb, obbVsObb } from "../physics/collision.ts";
+import type { AABB, MTV, OBB } from "../physics/types.ts";
 
 function signedForwardSpeed(v: Vehicle): number {
   return v.body.velocity.x * Math.cos(v.body.angle)
@@ -90,22 +90,24 @@ function allWallHits(v: Vehicle, level: Level): MTV[] {
   return hits;
 }
 
-export function moveVehicle(v: Vehicle, level: Level, dt: number): void {
-  v.body.position.x += v.body.velocity.x * dt;
-  v.body.position.y += v.body.velocity.y * dt;
+function toObb(v: Vehicle): OBB {
+  return {
+    cx: v.body.position.x,
+    cy: v.body.position.y,
+    hw: v.body.w / 2,
+    hh: v.body.h / 2,
+    angle: v.body.angle,
+  };
+}
 
+function resolveWalls(v: Vehicle, level: Level): void {
   for (let pass = 0; pass < 4; pass++) {
     const hits = allWallHits(v, level);
     if (hits.length === 0) break;
-
     let pushX = 0, pushY = 0;
-    for (const h of hits) {
-      pushX += h.axis.x * h.depth;
-      pushY += h.axis.y * h.depth;
-    }
+    for (const h of hits) { pushX += h.axis.x * h.depth; pushY += h.axis.y * h.depth; }
     v.body.position.x += pushX;
     v.body.position.y += pushY;
-
     for (const h of hits) {
       const vn = v.body.velocity.x * h.axis.x + v.body.velocity.y * h.axis.y;
       if (vn < 0) {
@@ -113,5 +115,50 @@ export function moveVehicle(v: Vehicle, level: Level, dt: number): void {
         v.body.velocity.y -= h.axis.y * vn;
       }
     }
+  }
+}
+
+function resolvePair(a: Vehicle, b: Vehicle, mtv: MTV): void {
+  const totalInv = 1 / a.body.mass + 1 / b.body.mass;
+  const aShare = (1 / a.body.mass) / totalInv;
+  const bShare = (1 / b.body.mass) / totalInv;
+
+  a.body.position.x += mtv.axis.x * mtv.depth * aShare;
+  a.body.position.y += mtv.axis.y * mtv.depth * aShare;
+  b.body.position.x -= mtv.axis.x * mtv.depth * bShare;
+  b.body.position.y -= mtv.axis.y * mtv.depth * bShare;
+
+  const an = a.body.velocity.x * mtv.axis.x + a.body.velocity.y * mtv.axis.y;
+  const bn = b.body.velocity.x * mtv.axis.x + b.body.velocity.y * mtv.axis.y;
+  const rel = an - bn;
+  if (rel < 0) {
+    const j = -rel / totalInv;
+    a.body.velocity.x += mtv.axis.x * j / a.body.mass;
+    a.body.velocity.y += mtv.axis.y * j / a.body.mass;
+    b.body.velocity.x -= mtv.axis.x * j / b.body.mass;
+    b.body.velocity.y -= mtv.axis.y * j / b.body.mass;
+  }
+}
+
+export function moveVehicle(v: Vehicle, level: Level, dt: number): void {
+  v.body.position.x += v.body.velocity.x * dt;
+  v.body.position.y += v.body.velocity.y * dt;
+  resolveWalls(v, level);
+}
+
+export function resolveVehiclePairs(vehicles: Vehicle[]): void {
+  for (let pass = 0; pass < 4; pass++) {
+    let anyHit = false;
+    for (let i = 0; i < vehicles.length; i++) {
+      for (let j = i + 1; j < vehicles.length; j++) {
+        const a = vehicles[i]!;
+        const b = vehicles[j]!;
+        const mtv = obbVsObb(toObb(a), toObb(b));
+        if (!mtv) continue;
+        anyHit = true;
+        resolvePair(a, b, mtv);
+      }
+    }
+    if (!anyHit) break;
   }
 }

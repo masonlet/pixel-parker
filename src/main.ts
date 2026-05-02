@@ -6,7 +6,7 @@ import { isDown, wasPressed } from "./input.ts";
 import { drawWallAabbs, drawOBB } from "./physics/debug.ts";
 
 import { createVehicle, drawVehicle } from "./vehicle/render.ts";
-import { applyInput, moveVehicle, stepVehiclePhysics } from "./vehicle/physics.ts";
+import { applyInput, moveVehicle, stepVehiclePhysics, resolveVehiclePairs } from "./vehicle/physics.ts";
 import {
   carStats,
   truckStats,
@@ -69,6 +69,7 @@ startLoop(
       stepVehiclePhysics(v, dt);
       moveVehicle(v, level, dt);
     }
+    resolveVehiclePairs(vehicles);
 
     active.hue = (active.hue + 60 * dt) % 360;
   },
@@ -83,13 +84,15 @@ startLoop(
     for (const v of vehicles) drawVehicle(ctx, v, camX, camY);
     if (debugMode) {
       drawWallAabbs(ctx, level, camX, camY, canvas.width, canvas.height);
-      drawOBB(ctx, {
-        cx: active.body.position.x,
-        cy: active.body.position.y,
-        hw: active.body.w / 2,
-        hh: active.body.h / 2,
-        angle: active.body.angle,
-      }, camX, camY, `hsl(${active.hue}, 100%, 50%)`);
+      for (const v of vehicles) {
+        drawOBB(ctx, {
+          cx: v.body.position.x,
+          cy: v.body.position.y,
+          hw: v.body.w / 2,
+          hh: v.body.h / 2,
+          angle: v.body.angle,
+        }, camX, camY, `hsl(${v.hue}, 100%, 50%)`);
+      }
     }
   },
 );

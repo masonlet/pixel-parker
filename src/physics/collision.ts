@@ -1,42 +1,47 @@
 import type { Vec2, OBB, AABB, MTV } from "./types.ts";
 
+function obbCorners(o: OBB, ux: Vec2, uy: Vec2): Vec2[] {
+  return [
+    { x: o.cx + ux.x * o.hw + uy.x * o.hh, y: o.cy + ux.y * o.hw + uy.y * o.hh },
+    { x: o.cx - ux.x * o.hw + uy.x * o.hh, y: o.cy - ux.y * o.hw + uy.y * o.hh },
+    { x: o.cx - ux.x * o.hw - uy.x * o.hh, y: o.cy - ux.y * o.hw - uy.y * o.hh },
+    { x: o.cx + ux.x * o.hw - uy.x * o.hh, y: o.cy + ux.y * o.hw - uy.y * o.hh },
+  ];
+}
+
+function project(corners: Vec2[], axis: Vec2): [number, number] {
+  let min = Infinity, max = -Infinity;
+  for (const c of corners) {
+    const p = c.x * axis.x + c.y * axis.y;
+    if (p < min) min = p;
+    if (p > max) max = p;
+  }
+  return [min, max];
+}
+
 export function obbVsAabb(obb: OBB, aabb: AABB): MTV | null {
   const cos = Math.cos(obb.angle);
   const sin = Math.sin(obb.angle);
   const ux: Vec2 = { x: cos, y: sin };
   const uy: Vec2 = { x: -sin, y: cos };
+  const wx: Vec2 = { x: 1, y: 0 };
+  const wy: Vec2 = { x: 0, y: 1 };
 
-  const obbCorners: Vec2[] = [
-    { x: obb.cx + ux.x * obb.hw + uy.x * obb.hh, y: obb.cy + ux.y * obb.hw + uy.y * obb.hh },
-    { x: obb.cx - ux.x * obb.hw + uy.x * obb.hh, y: obb.cy - ux.y * obb.hw + uy.y * obb.hh },
-    { x: obb.cx - ux.x * obb.hw - uy.x * obb.hh, y: obb.cy - ux.y * obb.hw - uy.y * obb.hh },
-    { x: obb.cx + ux.x * obb.hw - uy.x * obb.hh, y: obb.cy + ux.y * obb.hw - uy.y * obb.hh },
-  ];
-  const aabbCorners: Vec2[] = [
+  const obbCs = obbCorners(obb, ux, uy);
+  const aabbCs: Vec2[] = [
     { x: aabb.x,          y: aabb.y },
     { x: aabb.x + aabb.w, y: aabb.y },
     { x: aabb.x + aabb.w, y: aabb.y + aabb.h },
     { x: aabb.x,          y: aabb.y + aabb.h },
   ];
-
-  const axes: Vec2[] = [ux, uy, { x: 1, y: 0 }, { x: 0, y: 1 }];
+  const axes: Vec2[] = [ux, uy, wx, wy];
 
   let minDepth = Infinity;
   let minAxis: Vec2 = { x: 0, y: 0 };
 
-  for (const axis of axes) {
-    let aMin = Infinity, aMax = -Infinity;
-    for (const c of obbCorners) {
-      const p = c.x * axis.x + c.y * axis.y;
-      if (p < aMin) aMin = p;
-      if (p > aMax) aMax = p;
-    }
-    let bMin = Infinity, bMax = -Infinity;
-    for (const c of aabbCorners) {
-      const p = c.x * axis.x + c.y * axis.y;
-      if (p < bMin) bMin = p;
-      if (p > bMax) bMax = p;
-    }
+ for (const axis of axes) {
+    const [aMin, aMax] = project(obbCs, axis);
+    const [bMin, bMax] = project(aabbCs, axis);
     const overlap = Math.min(aMax, bMax) - Math.max(aMin, bMin);
     if (overlap <= 0) return null;
 
@@ -45,6 +50,36 @@ export function obbVsAabb(obb: OBB, aabb: AABB): MTV | null {
       const aabbCx = aabb.x + aabb.w / 2;
       const aabbCy = aabb.y + aabb.h / 2;
       const dir = (obb.cx - aabbCx) * axis.x + (obb.cy - aabbCy) * axis.y;
+      minAxis = dir < 0 ? { x: -axis.x, y: -axis.y } : axis;
+    }
+  }
+  return { axis: minAxis, depth: minDepth };
+}
+
+export function obbVsObb(a: OBB, b: OBB): MTV | null {
+  const aCos = Math.cos(a.angle), aSin = Math.sin(a.angle);
+  const bCos = Math.cos(b.angle), bSin = Math.sin(b.angle);
+  const aux: Vec2 = { x: aCos, y: aSin };
+  const auy: Vec2 = { x: -aSin, y: aCos };
+  const bux: Vec2 = { x: bCos, y: bSin };
+  const buy: Vec2 = { x: -bSin, y: bCos };
+
+  const aCorners = obbCorners(a, aux, auy);
+  const bCorners = obbCorners(b, bux, buy);
+  const axes: Vec2[] = [aux, auy, bux, buy];
+
+  let minDepth = Infinity;
+  let minAxis: Vec2 = { x: 0, y: 0 };
+
+  for (const axis of axes) {
+    const [aMin, aMax] = project(aCorners, axis);
+    const [bMin, bMax] = project(bCorners, axis);
+    const overlap = Math.min(aMax, bMax) - Math.max(aMin, bMin);
+    if (overlap <= 0) return null;
+
+    if (overlap < minDepth) {
+      minDepth = overlap;
+      const dir = (a.cx - b.cx) * axis.x + (a.cy - b.cy) * axis.y;
       minAxis = dir < 0 ? { x: -axis.x, y: -axis.y } : axis;
     }
   }
