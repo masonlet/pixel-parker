@@ -1,4 +1,5 @@
 import type { PhysicsBody } from "../physics/types.ts";
+import type { Sensor } from "../level/types.ts";
 
 export interface VehicleType {
   /** Identifier for this vehicle type */
@@ -42,4 +43,6 @@ export interface Vehicle {
   shiftTimer: number;
   /** Body colour hue in degrees, 0-360. */
   hue: number;
+  /** Sensors this vehicle is touching */
+  overlappingSensors: Sensor[];
 }
