@@ -2,7 +2,7 @@ import {
   TILE,
   TILE_SIZE,
   type Level
-} from "../level.ts";
+} from "../level/types.ts";
 
 const w = 40;
 const h = 40;

@@ -13,7 +13,8 @@ import {
   loadVehicleType
 } from "./vehicle/presets.ts";
 
-import { type Level, drawLevel } from "./level.ts";
+import { type Level } from "./level/types.ts";
+import { drawLevel } from "./level/render.ts";
 import { test1 } from "./levels/test1.ts";
 import { test2 } from "./levels/test2.ts";
 import { test3 } from "./levels/test3.ts";

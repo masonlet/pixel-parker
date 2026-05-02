@@ -1,5 +1,6 @@
-import type { OBB, AABB } from "./types.ts";
-import { TILE, TILE_SIZE, getTile, type Level } from "../level.ts";
+import type { OBB } from "./types.ts";
+import { TILE, TILE_SIZE, type Level } from "../level/types.ts";
+import { getTile } from "../level/query.ts";
 
 export function drawOBB(
   ctx: CanvasRenderingContext2D,
