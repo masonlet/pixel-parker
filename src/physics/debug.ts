@@ -39,3 +39,18 @@ export function drawWallAabbs(
     }
   }
 }
+
+export function drawSensors(
+  ctx: CanvasRenderingContext2D,
+  level: Level,
+  camX: number,
+  camY: number,
+): void {
+  ctx.strokeStyle = "cyan";
+  ctx.lineWidth = 2;
+  ctx.setLineDash([6, 4]);
+  for (const s of level.sensors) {
+    ctx.strokeRect(s.x - camX, s.y - camY, s.w, s.h);
+  }
+  ctx.setLineDash([]);
+}

@@ -13,5 +13,7 @@
     { "x": 7,  "y": 15 },
     { "x": 12, "y": 15 }
   ],
-  "sensors": []
+  "sensors": [
+    { "kind": "parking_spot", "x": 5, "y": 1, "w": 4, "h": 4 }
+  ]
 }

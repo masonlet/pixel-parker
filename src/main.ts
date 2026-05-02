@@ -3,7 +3,7 @@ import "./style.css";
 import { createGameCanvas } from "./canvas.ts";
 import { startLoop } from "./update.ts";
 import { isDown, wasPressed } from "./input.ts";
-import { drawWallAabbs, drawOBB } from "./physics/debug.ts";
+import { drawWallAabbs, drawOBB, drawSensors } from "./physics/debug.ts";
 
 import { createVehicle, drawVehicle } from "./vehicle/render.ts";
 import { applyInput, moveVehicle, stepVehiclePhysics, resolveVehiclePairs } from "./vehicle/physics.ts";
@@ -86,6 +86,7 @@ startLoop(
     for (const v of vehicles) drawVehicle(ctx, v, camX, camY);
     if (debugMode) {
       drawWallAabbs(ctx, level, camX, camY, canvas.width, canvas.height);
+      drawSensors(ctx, level, camX, camY);
       for (const v of vehicles) {
         drawOBB(ctx, {
           cx: v.body.position.x,
