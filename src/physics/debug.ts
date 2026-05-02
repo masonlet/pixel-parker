@@ -1,6 +1,7 @@
 import type { OBB } from "./types.ts";
 import { TILE, TILE_SIZE, type Level } from "../level/types.ts";
 import { getTile } from "../level/query.ts";
+import type { Sensor } from "../level/types.ts";
 
 export function drawOBB(
   ctx: CanvasRenderingContext2D,
@@ -45,11 +46,12 @@ export function drawSensors(
   level: Level,
   camX: number,
   camY: number,
+  active: ReadonlySet<Sensor> = new Set(),
 ): void {
-  ctx.strokeStyle = "cyan";
   ctx.lineWidth = 2;
   ctx.setLineDash([6, 4]);
   for (const s of level.sensors) {
+    ctx.strokeStyle = active.has(s) ? "lime" : "cyan";
     ctx.strokeRect(s.x - camX, s.y - camY, s.w, s.h);
   }
   ctx.setLineDash([]);

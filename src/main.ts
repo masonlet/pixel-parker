@@ -3,7 +3,13 @@ import "./style.css";
 import { createGameCanvas } from "./canvas.ts";
 import { startLoop } from "./update.ts";
 import { isDown, wasPressed } from "./input.ts";
-import { drawWallAabbs, drawOBB, drawSensors } from "./physics/debug.ts";
+
+import { type Level } from "./level/types.ts";
+import { loadLevel } from "./level/load.ts";
+import { drawLevel } from "./level/render.ts";
+
+import { sensorsOverlapping } from "./physics/sensors.ts";
+import type { Sensor } from "./level/types.ts";
 
 import { createVehicle, drawVehicle } from "./vehicle/render.ts";
 import { applyInput, moveVehicle, stepVehiclePhysics, resolveVehiclePairs } from "./vehicle/physics.ts";
@@ -13,9 +19,8 @@ import {
   loadVehicleType
 } from "./vehicle/presets.ts";
 
-import { type Level } from "./level/types.ts";
-import { loadLevel } from "./level/load.ts";
-import { drawLevel } from "./level/render.ts";
+import { drawWallAabbs, drawOBB, drawSensors } from "./physics/debug.ts";
+
 import test1 from "./levels/test1.json";
 import test2 from "./levels/test2.json";
 import test3 from "./levels/test3.json";
@@ -72,21 +77,25 @@ startLoop(
       moveVehicle(v, level, dt);
     }
     resolveVehiclePairs(vehicles);
-
+    for (const v of vehicles) v.overlappingSensors = sensorsOverlapping(v, level);
     active.hue = (active.hue + 60 * dt) % 360;
   },
   () => {
     const active = vehicles[vehicleIndex];
     if (!active) return;
+
     const camX = active.body.position.x - canvas.width / 2;
     const camY = active.body.position.y - canvas.height / 2;
+
     ctx.fillStyle = "#000";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
+
     drawLevel(ctx, level, camX, camY);
     for (const v of vehicles) drawVehicle(ctx, v, camX, camY);
+
     if (debugMode) {
       drawWallAabbs(ctx, level, camX, camY, canvas.width, canvas.height);
-      drawSensors(ctx, level, camX, camY);
+
       for (const v of vehicles) {
         drawOBB(ctx, {
           cx: v.body.position.x,
@@ -96,6 +105,9 @@ startLoop(
           angle: v.body.angle,
         }, camX, camY, `hsl(${v.hue}, 100%, 50%)`);
       }
+
+      const activeSensors = new Set<Sensor>(active.overlappingSensors);
+      drawSensors(ctx, level, camX, camY, activeSensors);
     }
   },
 );

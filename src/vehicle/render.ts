@@ -21,7 +21,8 @@ export function createVehicle(
     throttle: 0,
     steer: 0,
     shiftTimer: 0,
-    hue
+    hue,
+    overlappingSensors: []
   };
 }
 
