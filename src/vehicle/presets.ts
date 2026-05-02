@@ -32,7 +32,7 @@ export const truckStats: VehicleStats = {
 };
 
 export async function loadVehicleType(stats: VehicleStats): Promise<VehicleType> {
-  const sprite = await loadImage(`/img/vehicles/${stats.name}.png`);
-  const bodySprite = await loadImage(`/img/vehicles/${stats.name}-body.png`);
+  const sprite = await loadImage(`${import.meta.env.BASE_URL}img/vehicles/${stats.name}.png`);
+  const bodySprite = await loadImage(`${import.meta.env.BASE_URL}img/vehicles/${stats.name}-body.png`);
   return { ...stats, sprite, bodySprite };
 }
