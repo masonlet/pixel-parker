@@ -1,23 +1,5 @@
-export const TILE_SIZE = 32;
-
-export type TileId = number;
-
-export const TILE = {
-  EMPTY: 0,
-  WALL: 1,
-} as const;
-
-export interface Level {
-  width: number;
-  height: number;
-  tiles: TileId[];
-  spawns: Array<{ x: number; y: number }>;
-}
-
-export function getTile(level: Level, x: number, y: number): TileId {
-  if (x < 0 || y < 0 || x >= level.width || y >= level.height) return TILE.EMPTY;
-  return level.tiles[y * level.width + x] ?? TILE.EMPTY;
-}
+import { type Level, TILE, TILE_SIZE } from "./types.ts";
+import { getTile } from "./query.ts";
 
 export function drawLevel(
   ctx: CanvasRenderingContext2D,
