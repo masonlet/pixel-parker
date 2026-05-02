@@ -1,5 +1,6 @@
 import { tintImage } from "../assets.ts";
 import type { Vehicle, VehicleType } from "./types.ts";
+import { createBody } from "../physics/body.ts";
 
 export function createVehicle(
   type: VehicleType,
@@ -9,10 +10,16 @@ export function createVehicle(
 ): Vehicle {
   return {
     type,
-    x,
-    y,
-    angle: -Math.PI / 2,
-    velocity: 0,
+    body: createBody({
+      x,
+      y,
+      w: type.w,
+      h: type.h,
+      mass: type.mass,
+      angle: -Math.PI / 2,
+    }),
+    throttle: 0,
+    steer: 0,
     shiftTimer: 0,
     hue
   };
@@ -24,14 +31,14 @@ export function drawVehicle(
   camX: number,
   camY: number
 ): void {
-  const drawX = Math.floor(v.x - camX);
-  const drawY = Math.floor(v.y - camY);
+  const drawX = Math.floor(v.body.position.x - camX);
+  const drawY = Math.floor(v.body.position.y - camY);
 
   const tinted = tintImage(v.type.bodySprite, `hsl(${v.hue}, 100%, 50%)`);
 
   ctx.save();
   ctx.translate(drawX, drawY);
-  ctx.rotate(v.angle + Math.PI / 2);
+  ctx.rotate(v.body.angle + Math.PI / 2);
   ctx.drawImage(v.type.sprite, -v.type.sprite.width / 2, -v.type.sprite.height / 2);
   ctx.drawImage(tinted, -tinted.width / 2, -tinted.height / 2);
   ctx.restore();

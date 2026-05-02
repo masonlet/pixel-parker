@@ -1,0 +1,40 @@
+import type { OBB, AABB } from "./types.ts";
+import { TILE, TILE_SIZE, getTile, type Level } from "../level.ts";
+
+export function drawOBB(
+  ctx: CanvasRenderingContext2D,
+  obb: OBB,
+  camX: number,
+  camY: number,
+  color: string = "lime",
+): void {
+  ctx.save();
+  ctx.translate(obb.cx - camX, obb.cy - camY);
+  ctx.rotate(obb.angle);
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 2;
+  ctx.strokeRect(-obb.hw, -obb.hh, obb.hw * 2, obb.hh * 2);
+  ctx.restore();
+}
+
+export function drawWallAabbs(
+  ctx: CanvasRenderingContext2D,
+  level: Level,
+  camX: number,
+  camY: number,
+  viewW: number,
+  viewH: number,
+): void {
+  const minTX = Math.floor(camX / TILE_SIZE);
+  const maxTX = Math.floor((camX + viewW) / TILE_SIZE);
+  const minTY = Math.floor(camY / TILE_SIZE);
+  const maxTY = Math.floor((camY + viewH) / TILE_SIZE);
+  ctx.strokeStyle = "red";
+  ctx.lineWidth = 2;
+  for (let ty = minTY; ty <= maxTY; ty++) {
+    for (let tx = minTX; tx <= maxTX; tx++) {
+      if (getTile(level, tx, ty) !== TILE.WALL) continue;
+      ctx.strokeRect(tx * TILE_SIZE - camX, ty * TILE_SIZE - camY, TILE_SIZE, TILE_SIZE);
+    }
+  }
+}

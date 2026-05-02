@@ -3,9 +3,10 @@ import "./style.css";
 import { createGameCanvas } from "./canvas.ts";
 import { startLoop } from "./update.ts";
 import { isDown, wasPressed } from "./input.ts";
+import { drawWallAabbs, drawOBB } from "./physics/debug.ts";
 
 import { createVehicle, drawVehicle } from "./vehicle/render.ts";
-import { applyInput, moveVehicle } from "./vehicle/physics.ts";
+import { applyInput, moveVehicle, stepVehiclePhysics } from "./vehicle/physics.ts";
 import {
   carStats,
   truckStats,
@@ -20,7 +21,7 @@ const { canvas, ctx } = createGameCanvas();
 
 const levels = [test1, test2];
 let levelIndex = 0;
-let level = levels[levelIndex];
+let level: Level = levels[levelIndex]!;
 if (!level) throw new Error("Failed to get level(s)");
 
 const carType = await loadVehicleType(carStats);
@@ -37,15 +38,18 @@ function spawnVehicles(lvl: Level) {
 let vehicles = spawnVehicles(level);
 let vehicleIndex = 0;
 
+let debugMode = false;
+
 startLoop(
   (dt) => {
-    if (wasPressed("KeyQ")) {
+    if (wasPressed("Digit1")) {
       levelIndex = (levelIndex + 1) % levels.length;
       level = levels[levelIndex]!;
       vehicles = spawnVehicles(level);
       vehicleIndex = 0;
     }
-    if (wasPressed("KeyE")) vehicleIndex = (vehicleIndex + 1) % vehicles.length;
+    if (wasPressed("Digit2")) vehicleIndex = (vehicleIndex + 1) % vehicles.length;
+    if (wasPressed("Digit3")) debugMode = !debugMode;
 
     const active = vehicles[vehicleIndex];
     if (!active) return;
@@ -59,9 +63,10 @@ startLoop(
     if (isDown("KeyD")) steer += 1;
 
     for (const v of vehicles) {
-      if (v === active) applyInput(v, throttle, steer, dt);
-      else applyInput(v, 0, 0, dt);
-      moveVehicle(v, dt);
+      if (v === active) applyInput(v, throttle, steer);
+      else applyInput(v, 0, 0);
+      stepVehiclePhysics(v, dt);
+      moveVehicle(v, level, dt);
     }
 
     active.hue = (active.hue + 60 * dt) % 360;
@@ -69,11 +74,21 @@ startLoop(
   () => {
     const active = vehicles[vehicleIndex];
     if (!active) return;
-    const camX = active.x - canvas.width / 2;
-    const camY = active.y - canvas.height / 2;
+    const camX = active.body.position.x - canvas.width / 2;
+    const camY = active.body.position.y - canvas.height / 2;
     ctx.fillStyle = "#000";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     drawLevel(ctx, level, camX, camY);
     for (const v of vehicles) drawVehicle(ctx, v, camX, camY);
+    if (debugMode) {
+      drawWallAabbs(ctx, level, camX, camY, canvas.width, canvas.height);
+      drawOBB(ctx, {
+        cx: active.body.position.x,
+        cy: active.body.position.y,
+        hw: active.body.w / 2,
+        hh: active.body.h / 2,
+        angle: active.body.angle,
+      }, camX, camY, `hsl(${active.hue}, 100%, 50%)`);
+    }
   },
 );
