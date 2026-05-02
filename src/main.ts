@@ -2,7 +2,9 @@ import "./style.css";
 
 import { createGameCanvas } from "./canvas.ts";
 import { startLoop } from "./update.ts";
-import { isDown, wasPressed } from "./input.ts";
+
+import { initKeyboard, isDown, wasPressed } from "./input/keyboard.ts";
+import { initMouse } from "./input/mouse.ts";
 
 import { type Level } from "./level/types.ts";
 import { loadLevel } from "./level/load.ts";
@@ -47,6 +49,9 @@ let vehicles = spawnVehicles(level);
 let vehicleIndex = 0;
 
 let debugMode = false;
+
+initKeyboard();
+initMouse(canvas);
 
 startLoop(
   (dt) => {
