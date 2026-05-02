@@ -16,10 +16,11 @@ import {
 import { type Level, drawLevel } from "./level.ts";
 import { test1 } from "./levels/test1.ts";
 import { test2 } from "./levels/test2.ts";
+import { test3 } from "./levels/test3.ts";
 
 const { canvas, ctx } = createGameCanvas();
 
-const levels = [test1, test2];
+const levels = [test1, test2, test3];
 let levelIndex = 0;
 let level: Level = levels[levelIndex]!;
 if (!level) throw new Error("Failed to get level(s)");
