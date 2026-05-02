@@ -14,14 +14,15 @@ import {
 } from "./vehicle/presets.ts";
 
 import { type Level } from "./level/types.ts";
+import { loadLevel } from "./level/load.ts";
 import { drawLevel } from "./level/render.ts";
-import { test1 } from "./levels/test1.ts";
-import { test2 } from "./levels/test2.ts";
-import { test3 } from "./levels/test3.ts";
+import test1 from "./levels/test1.json";
+import test2 from "./levels/test2.json";
+import test3 from "./levels/test3.json";
 
 const { canvas, ctx } = createGameCanvas();
 
-const levels = [test1, test2, test3];
+const levels = [loadLevel(test1), loadLevel(test2), loadLevel(test3)];
 let levelIndex = 0;
 let level: Level = levels[levelIndex]!;
 if (!level) throw new Error("Failed to get level(s)");
