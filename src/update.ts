@@ -1,4 +1,4 @@
-import { clearFramePresses } from "./input.ts";
+import { clearFramePresses } from "./input/keyboard.ts";
 
 const TICK_RATE = 1 / 60;
 
