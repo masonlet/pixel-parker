@@ -1,3 +1,5 @@
+import type { PhysicsBody } from "../physics/types.ts";
+
 export interface VehicleType {
   /** Identifier for this vehicle type */
   name: string;
@@ -23,19 +25,19 @@ export interface VehicleType {
   brakeForce: number;
   /** Delay in seconds before gear engages after braking to a stop. */
   gearShiftDelay: number;
+  /** Mass in arbitrary units. Higher = harder to push. */
+  mass: number;
 }
 
 export interface Vehicle {
   /** Vehicle config. */
   type: VehicleType;
-  /** World-space X position in pixels. */
-  x: number;
-  /** World-space Y position in pixels. */
-  y: number;
-  /** Facing angle in radians. 0 = facing right */
-  angle: number;
-  /** Current forward velocity in pixels per second. */
-  velocity: number;
+  /** Vehicle body. */
+  body: PhysicsBody;
+  /** Driver throttle: -1 (reverse), 0, 1 (forward). */
+  throttle: number;
+  /** Driver steer: -1 (left), 0, 1 (right). */
+  steer: number;
   /** Seconds remaining on the gear-shift wait. */
   shiftTimer: number;
   /** Body colour hue in degrees, 0-360. */
