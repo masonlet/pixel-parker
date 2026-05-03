@@ -15,8 +15,10 @@ export function initKeyboard(): void {
 }
 
 export function isDown(code: string): boolean     { return keys.has(code); }
-export function wasPressed(code: string): boolean { return pressedThisFrame.has(code); }
-
-export function clearFramePresses(): void {
-  pressedThisFrame.clear();
+export function wasPressed(code: string): boolean {
+  if (pressedThisFrame.has(code)) {
+    pressedThisFrame.delete(code);
+    return true;
+  }
+  return false;
 }
