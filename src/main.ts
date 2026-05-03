@@ -1,10 +1,15 @@
 import "./style.css";
 
 import { createGameCanvas } from "./canvas.ts";
+import type { GameState } from "./state.ts";
 import { startLoop } from "./update.ts";
 
 import { initKeyboard, isDown, wasPressed } from "./input/keyboard.ts";
 import { initMouse } from "./input/mouse.ts";
+
+import { drawTitleMenu } from "./ui/title.ts";
+import { drawSettingsMenu } from "./ui/settings.ts";
+import { drawPauseMenu } from "./ui/pause.ts";
 
 import { type Level } from "./level/types.ts";
 import { loadLevel } from "./level/load.ts";
@@ -28,6 +33,7 @@ import test2 from "./levels/test2.json";
 import test3 from "./levels/test3.json";
 
 const { canvas, ctx } = createGameCanvas();
+let state = "title" as GameState;
 
 const levels = [loadLevel(test1), loadLevel(test2), loadLevel(test3)];
 let levelIndex = 0;
@@ -55,6 +61,13 @@ initMouse(canvas);
 
 startLoop(
   (dt) => {
+    if (wasPressed("Escape")) {
+      if (state === "playing") state = "paused";
+      else if (state === "paused") state = "playing";
+    }
+
+    if (state !== "playing") return;
+
     if (wasPressed("Digit1")) {
       levelIndex = (levelIndex + 1) % levels.length;
       level = levels[levelIndex]!;
@@ -86,33 +99,59 @@ startLoop(
     active.hue = (active.hue + 60 * dt) % 360;
   },
   () => {
-    const active = vehicles[vehicleIndex];
-    if (!active) return;
-
-    const camX = active.body.position.x - canvas.width / 2;
-    const camY = active.body.position.y - canvas.height / 2;
-
     ctx.fillStyle = "#000";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    drawLevel(ctx, level, camX, camY);
-    for (const v of vehicles) drawVehicle(ctx, v, camX, camY);
+    if (state === "title") {
+      const { startClicked, settingsClicked } = drawTitleMenu(ctx, canvas.width, canvas.height);
+      if (startClicked) state = "playing";
+      if (settingsClicked) state = "settings";
+      return;
+    }
 
-    if (debugMode) {
-      drawWallAabbs(ctx, level, camX, camY, canvas.width, canvas.height);
+    if (state === "settings") {
+      const { backClicked } = drawSettingsMenu(ctx, canvas.width, canvas.height);
+      if (backClicked) state = "title";
+      return;
+    }
 
-      for (const v of vehicles) {
-        drawOBB(ctx, {
-          cx: v.body.position.x,
-          cy: v.body.position.y,
-          hw: v.body.w / 2,
-          hh: v.body.h / 2,
-          angle: v.body.angle,
-        }, camX, camY, `hsl(${v.hue}, 100%, 50%)`);
+    if (state === "playing" || state === "paused") {
+      const active = vehicles[vehicleIndex];
+      if (!active) return;
+
+      const camX = active.body.position.x - canvas.width / 2;
+      const camY = active.body.position.y - canvas.height / 2;
+
+      drawLevel(ctx, level, camX, camY);
+      for (const v of vehicles) drawVehicle(ctx, v, camX, camY);
+
+      if (debugMode) {
+        drawWallAabbs(ctx, level, camX, camY, canvas.width, canvas.height);
+
+        for (const v of vehicles) {
+          drawOBB(ctx, {
+            cx: v.body.position.x,
+            cy: v.body.position.y,
+            hw: v.body.w / 2,
+            hh: v.body.h / 2,
+            angle: v.body.angle,
+          }, camX, camY, `hsl(${v.hue}, 100%, 50%)`);
+        }
+
+        const activeSensors = new Set<Sensor>(active.overlappingSensors);
+        drawSensors(ctx, level, camX, camY, activeSensors);
       }
+    }
 
-      const activeSensors = new Set<Sensor>(active.overlappingSensors);
-      drawSensors(ctx, level, camX, camY, activeSensors);
+    if (state === "paused") {
+      const action = drawPauseMenu(ctx, canvas.width, canvas.height);
+      if (action === "resume") state = "playing";
+      if (action === "restart") {
+        vehicles = spawnVehicles(level);
+        vehicleIndex = 0;
+        state = "playing";
+      }
+      if (action === "quit") state = "title";
     }
   },
 );
