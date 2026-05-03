@@ -1,4 +1,4 @@
-import { mouseX, mouseY, wasMouseClicked } from "../input/mouse.ts";
+import { mouseX, mouseY, wasMouseClicked } from "../../engine/input/mouse.ts";
 
 export interface Button {
   x: number;

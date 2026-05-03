@@ -1,36 +1,36 @@
 import "./style.css";
 
-import { createGameCanvas } from "./canvas.ts";
-import type { GameState } from "./state.ts";
-import { startLoop } from "./update.ts";
+import { createGameCanvas } from "./engine/canvas.ts";
+import { startLoop } from "./engine/update.ts";
 
-import { initKeyboard, isDown, wasPressed } from "./input/keyboard.ts";
-import { initMouse } from "./input/mouse.ts";
+import type { GameState } from "./game/state.ts";
 
-import { drawTitleMenu } from "./ui/title.ts";
-import { drawSettingsMenu } from "./ui/settings.ts";
-import { drawPauseMenu } from "./ui/pause.ts";
+import { initKeyboard, isDown, wasPressed } from "./engine/input/keyboard.ts";
+import { initMouse } from "./engine/input/mouse.ts";
 
-import { type Level } from "./level/types.ts";
-import { loadLevel } from "./level/load.ts";
-import { drawLevel } from "./level/render.ts";
+import { drawTitleMenu } from "./game/ui/title.ts";
+import { drawSettingsMenu } from "./game/ui/settings.ts";
+import { drawPauseMenu } from "./game/ui/pause.ts";
 
-import { sensorsOverlapping } from "./physics/sensors.ts";
-import type { Sensor } from "./level/types.ts";
+import { type Level } from "./game/level/types.ts";
+import { loadLevel } from "./game/level/load.ts";
+import { drawLevel } from "./game/level/render.ts";
 
-import { createVehicle, drawVehicle } from "./vehicle/render.ts";
-import { applyInput, moveVehicle, stepVehiclePhysics, resolveVehiclePairs } from "./vehicle/physics.ts";
+import { drawWallAabbs, drawOBB, drawSensors } from "./game/physics/debug.ts";
+import { sensorsOverlapping } from "./game/physics/sensors.ts";
+import type { Sensor } from "./game/level/types.ts";
+
+import { createVehicle, drawVehicle } from "./game/vehicle/render.ts";
+import { applyInput, moveVehicle, stepVehiclePhysics, resolveVehiclePairs } from "./game/vehicle/physics.ts";
 import {
   carStats,
   truckStats,
   loadVehicleType
-} from "./vehicle/presets.ts";
+} from "./game/vehicle/presets.ts";
 
-import { drawWallAabbs, drawOBB, drawSensors } from "./physics/debug.ts";
-
-import test1 from "./levels/test1.json";
-import test2 from "./levels/test2.json";
-import test3 from "./levels/test3.json";
+import test1 from "./game/levels/test1.json";
+import test2 from "./game/levels/test2.json";
+import test3 from "./game/levels/test3.json";
 
 const { canvas, ctx } = createGameCanvas();
 let state = "title" as GameState;

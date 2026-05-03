@@ -1,4 +1,4 @@
-import { loadImage } from "../assets.ts";
+import { loadImage } from "../../engine/assets.ts";
 import type { VehicleType } from "./types.ts";
 
 export type VehicleStats = Omit<VehicleType, "sprite" | "bodySprite">;

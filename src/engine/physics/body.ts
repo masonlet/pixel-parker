@@ -1,4 +1,3 @@
-
 import type { PhysicsBody } from "./types.ts";
 
 export function createBody(params: {

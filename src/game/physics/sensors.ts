@@ -1,8 +1,8 @@
-import type { Sensor } from "../level/types.ts";
-import type { Level } from "../level/types.ts";
+import { obbVsAabb } from "../../engine/physics/collision.ts";
+import type { OBB, AABB } from "../../engine/physics/types.ts";
+
+import type { Sensor, Level } from "../level/types.ts";
 import type { Vehicle } from "../vehicle/types.ts";
-import { obbVsAabb } from "./collision.ts";
-import type { OBB, AABB } from "./types.ts";
 
 function vehicleObb(v: Vehicle): OBB {
   return {

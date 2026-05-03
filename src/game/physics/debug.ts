@@ -1,4 +1,5 @@
-import type { OBB } from "./types.ts";
+import type { OBB } from "../../engine/physics/types.ts";
+
 import { TILE, TILE_SIZE, type Level } from "../level/types.ts";
 import { getTile } from "../level/query.ts";
 import type { Sensor } from "../level/types.ts";

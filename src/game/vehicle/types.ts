@@ -1,4 +1,4 @@
-import type { PhysicsBody } from "../physics/types.ts";
+import type { PhysicsBody } from "../../engine/physics/types.ts";
 import type { Sensor } from "../level/types.ts";
 
 export interface VehicleType {
