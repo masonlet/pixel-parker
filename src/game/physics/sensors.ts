@@ -1,5 +1,5 @@
-import { obbVsAabb } from "../../engine/physics/collision.ts";
 import type { OBB, AABB } from "../../engine/physics/types.ts";
+import { overlappingRegions } from "../../engine/physics/overlap.ts";
 
 import type { Sensor, Level } from "../level/types.ts";
 import type { Vehicle } from "../vehicle/types.ts";
@@ -16,10 +16,7 @@ function vehicleObb(v: Vehicle): OBB {
 
 export function sensorsOverlapping(v: Vehicle, level: Level): Sensor[] {
   const obb = vehicleObb(v);
-  const hits: Sensor[] = [];
-  for (const s of level.sensors) {
-    const aabb: AABB = { x: s.x, y: s.y, w: s.w, h: s.h };
-    if (obbVsAabb(obb, aabb)) hits.push(s);
-  }
-  return hits;
+  const aabbs: AABB[] = level.sensors.map(s => ({ x: s.x, y: s.y, w: s.w, h: s.h }));
+  const hits = overlappingRegions(obb, aabbs);
+  return hits.map(hit => level.sensors[aabbs.indexOf(hit)]!);
 }
