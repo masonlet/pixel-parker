@@ -1,19 +1,20 @@
-import type { Level } from "./level/types.ts";
-import type { Vehicle, VehicleType } from "./vehicle/types.ts";
-import type { Sensor } from "./level/types.ts";
-import { isDown, wasPressed } from "../engine/input/keyboard.ts";
-import { applyInput, moveVehicle, stepVehiclePhysics, resolveVehiclePairs } from "./vehicle/physics.ts";
-import { sensorsOverlapping } from "./physics/sensors.ts";
-import { createVehicle, drawVehicle } from "./vehicle/render.ts";
+import type { Level, Sensor } from "./level/types.ts";
 import { drawLevel } from "./level/render.ts";
+
+import { isDown, wasPressed } from "../engine/input/keyboard.ts";
+
+import { sensorsOverlapping } from "./physics/sensors.ts";
 import { drawWallAabbs, drawOBB, drawSensors } from "./physics/debug.ts";
+
+import type { Vehicle, VehicleType } from "./vehicle/types.ts";
+import { applyInput, moveVehicle, stepVehiclePhysics, resolveVehiclePairs } from "./vehicle/physics.ts";
+import { createVehicle, drawVehicle } from "./vehicle/render.ts";
 
 export interface PlayState {
   levels: Level[];
   levelIndex: number;
   level: Level;
-  carType: VehicleType;
-  truckType: VehicleType;
+  vehicleTypes: Record<string, VehicleType>;
   vehicles: Vehicle[];
   vehicleIndex: number;
   debugMode: boolean;
@@ -21,22 +22,20 @@ export interface PlayState {
 
 export function spawnVehicles(
   level: Level,
-  carType: VehicleType,
-  truckType: VehicleType,
+  vehicleTypes: Record<string, VehicleType>,
 ): Vehicle[] {
-  const [carSpawn, truckSpawn] = level.spawns;
-  if (!carSpawn || !truckSpawn) throw new Error("Level needs at least 2 spawns");
-  return [
-    createVehicle(carType, carSpawn.x, carSpawn.y, 180),
-    createVehicle(truckType, truckSpawn.x, truckSpawn.y, 30),
-  ];
+  return level.vehicles.map((lv, i) => {
+    const type = vehicleTypes[lv.type];
+    if (!type) throw new Error(`Level: unknown vehicle type "${lv.type}"`);
+    return createVehicle(type, lv.x, lv.y, i * 60);
+  });
 }
 
 export function updatePlay(p: PlayState, dt: number): void {
   if (wasPressed("Digit1")) {
     p.levelIndex = (p.levelIndex + 1) % p.levels.length;
     p.level = p.levels[p.levelIndex]!;
-    p.vehicles = spawnVehicles(p.level, p.carType, p.truckType);
+    p.vehicles = spawnVehicles(p.level, p.vehicleTypes);
     p.vehicleIndex = 0;
   }
   if (wasPressed("Digit2")) p.vehicleIndex = (p.vehicleIndex + 1) % p.vehicles.length;

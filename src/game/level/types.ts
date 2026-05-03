@@ -1,8 +1,14 @@
+export interface LevelVehicle {
+  type: string;
+  x: number;
+  y: number;
+}
+
 export interface Level {
   width: number;
   height: number;
   tiles: TileId[];
-  spawns: Array<{ x: number; y: number }>;
+  vehicles: LevelVehicle[];
   sensors: Sensor[];
 }
 
