@@ -1,6 +1,7 @@
 import "./style.css";
 
 import { createGameCanvas } from "./canvas.ts";
+import type { GameState } from "./state.ts";
 import { startLoop } from "./update.ts";
 
 import { initKeyboard, isDown, wasPressed } from "./input/keyboard.ts";
@@ -28,6 +29,7 @@ import test2 from "./levels/test2.json";
 import test3 from "./levels/test3.json";
 
 const { canvas, ctx } = createGameCanvas();
+let state = "title" as GameState;
 
 const levels = [loadLevel(test1), loadLevel(test2), loadLevel(test3)];
 let levelIndex = 0;
@@ -55,6 +57,8 @@ initMouse(canvas);
 
 startLoop(
   (dt) => {
+    if (state !== "playing") return;
+
     if (wasPressed("Digit1")) {
       levelIndex = (levelIndex + 1) % levels.length;
       level = levels[levelIndex]!;
