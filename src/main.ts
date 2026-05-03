@@ -9,6 +9,7 @@ import { initMouse } from "./input/mouse.ts";
 
 import { drawTitleMenu } from "./ui/title.ts";
 import { drawSettingsMenu } from "./ui/settings.ts";
+import { drawPauseMenu } from "./ui/pause.ts";
 
 import { type Level } from "./level/types.ts";
 import { loadLevel } from "./level/load.ts";
@@ -60,6 +61,11 @@ initMouse(canvas);
 
 startLoop(
   (dt) => {
+    if (wasPressed("Escape")) {
+      if (state === "playing") state = "paused";
+      else if (state === "paused") state = "playing";
+    }
+
     if (state !== "playing") return;
 
     if (wasPressed("Digit1")) {
@@ -109,7 +115,7 @@ startLoop(
       return;
     }
 
-    if (state === "playing") {
+    if (state === "playing" || state === "paused") {
       const active = vehicles[vehicleIndex];
       if (!active) return;
 
@@ -135,6 +141,17 @@ startLoop(
         const activeSensors = new Set<Sensor>(active.overlappingSensors);
         drawSensors(ctx, level, camX, camY, activeSensors);
       }
+    }
+
+    if (state === "paused") {
+      const action = drawPauseMenu(ctx, canvas.width, canvas.height);
+      if (action === "resume") state = "playing";
+      if (action === "restart") {
+        vehicles = spawnVehicles(level);
+        vehicleIndex = 0;
+        state = "playing";
+      }
+      if (action === "quit") state = "title";
     }
   },
 );
