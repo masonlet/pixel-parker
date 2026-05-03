@@ -1,4 +1,3 @@
-
 import { type Button, drawButton, isHovered, isClicked } from "./button.ts";
 
 export function drawTitleMenu(

@@ -1,8 +1,8 @@
 import type { Vehicle } from "./types.ts";
 import { TILE, TILE_SIZE, type Level } from "../level/types.ts";
 import { getTile } from "../level/query.ts";
-import { obbVsAabb, obbVsObb } from "../physics/collision.ts";
-import type { AABB, MTV, OBB } from "../physics/types.ts";
+import { obbVsAabb, obbVsObb } from "../../engine/physics/collision.ts";
+import type { AABB, MTV, OBB } from "../../engine/physics/types.ts";
 
 function signedForwardSpeed(v: Vehicle): number {
   return v.body.velocity.x * Math.cos(v.body.angle)
