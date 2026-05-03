@@ -1,4 +1,3 @@
-import { clearFramePresses } from "./input/keyboard.ts";
 import { clearFrameMouse } from "./input/mouse.ts";
 
 const TICK_RATE = 1 / 60;
@@ -22,7 +21,6 @@ export function startLoop(
     }
 
     render();
-    clearFramePresses();
     clearFrameMouse();
     requestAnimationFrame(frame);
   }
