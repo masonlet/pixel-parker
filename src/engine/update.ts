@@ -18,12 +18,12 @@ export function startLoop(
 
     while (accumulator >= TICK_RATE) {
       update(TICK_RATE);
-      clearFramePresses();
-      clearFrameMouse();
       accumulator -= TICK_RATE;
     }
 
     render();
+    clearFramePresses();
+    clearFrameMouse();
     requestAnimationFrame(frame);
   }
   requestAnimationFrame(frame);
