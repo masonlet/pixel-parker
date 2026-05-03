@@ -12,6 +12,7 @@ import { drawTitleMenu } from "./game/ui/title.ts";
 import { drawSettingsMenu } from "./game/ui/settings.ts";
 import { drawPauseMenu } from "./game/ui/pause.ts";
 
+import type { VehicleType } from "./game/vehicle/types.ts";
 import {
   loadVehicleType,
   carStats,
@@ -28,16 +29,18 @@ initKeyboard();
 initMouse(canvas);
 
 const levels = [loadLevel(test1), loadLevel(test2), loadLevel(test3)];
-const carType = await loadVehicleType(carStats);
-const truckType = await loadVehicleType(truckStats);
+
+const vehicleTypes: Record<string, VehicleType> = {
+  car: await loadVehicleType(carStats),
+  truck: await loadVehicleType(truckStats),
+};
 
 const playState: PlayState = {
   levels,
   levelIndex: 0,
   level: levels[0]!,
-  carType,
-  truckType,
-  vehicles: spawnVehicles(levels[0]!, carType, truckType),
+  vehicleTypes,
+  vehicles: spawnVehicles(levels[0]!, vehicleTypes),
   vehicleIndex: 0,
   debugMode: false,
 };
@@ -75,7 +78,7 @@ startLoop(
       const action = drawPauseMenu(ctx, canvas.width, canvas.height);
       if (action === "resume") state = "playing";
       if (action === "restart") {
-        playState.vehicles = spawnVehicles(playState.level, playState.carType, playState.truckType);
+        playState.vehicles = spawnVehicles(playState.level, playState.vehicleTypes);
         playState.vehicleIndex = 0;
         state = "playing";
       }

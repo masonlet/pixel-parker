@@ -9,9 +9,9 @@
     { "x": 19, "y": 0,  "w": 1,  "h": 30, "tile": "WALL" },
     { "x": 5,  "y": 5,  "w": 4,  "h": 2,  "tile": "WALL" }
   ],
-  "spawns": [
-    { "x": 7,  "y": 15 },
-    { "x": 12, "y": 15 }
+  "vehicles": [
+    { "type": "car",   "x": 7, "y": 15 },
+    { "type": "truck", "x": 12, "y": 15 }
   ],
   "sensors": [
     { "kind": "parking_spot", "x": 5, "y": 1, "w": 4, "h": 4 }

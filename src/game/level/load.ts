@@ -1,5 +1,5 @@
 import {
-  type Level, 
+  type Level, type LevelVehicle,
   type TileId, TILE, TILE_SIZE,
   type SensorKind, type Sensor, SENSOR_KINDS
 } from "./types.ts";
@@ -19,13 +19,13 @@ function isSensorKind(x: unknown): x is SensorKind {
 export function loadLevel(rawLevel: unknown): Level {
   if (!isObj(rawLevel)) throw new Error("Level: not an object");
 
-  const { width, height, fill, rects, spawns, sensors } = rawLevel;
+  const { width, height, fill, rects, vehicles, sensors } = rawLevel;
 
   if (typeof width !== "number" || width <= 0)   throw new Error("Level: invalid width");
   if (typeof height !== "number" || height <= 0) throw new Error("Level: invalid height");
   if (!isTileName(fill))      throw new Error(`Level: invalid fill "${fill}"`);
   if (!Array.isArray(rects))  throw new Error("Level: rects must be an array");
-  if (!Array.isArray(spawns)) throw new Error("Level: spawns must be an array");
+  if (!Array.isArray(vehicles)) throw new Error("Level: vehicles must be an array");
   if (!Array.isArray(sensors)) throw new Error("Level: sensors must be an array");
 
   const tiles: TileId[] = new Array(width * height).fill(TILE[fill]);
@@ -49,11 +49,13 @@ export function loadLevel(rawLevel: unknown): Level {
     }
   }
 
-  const parsedSpawns = spawns.map((s, i) => {
-    if (!isObj(s) || typeof s['x'] !== "number" || typeof s['y'] !== "number")
-      throw new Error(`Level: spawn ${i} invalid`);
-
-    return { x: s['x'] * TILE_SIZE, y: s['y'] * TILE_SIZE };
+  const parsedVehicles: LevelVehicle[] = vehicles.map((v, i) => {
+    if (!isObj(v)) throw new Error(`Level: vehicle ${i} not an object`);
+    const { type, x, y } = v;
+    if (typeof type !== "string") throw new Error(`Level: vehicle ${i} has non-string type`);
+    if (typeof x !== "number" || typeof y !== "number")
+      throw new Error(`Level: vehicle ${i} has non-number x/y`);
+    return { type, x: x * TILE_SIZE, y: y * TILE_SIZE };
   });
 
   const parsedSensors: Sensor[] = sensors.map((s, i) => {
@@ -66,5 +68,5 @@ export function loadLevel(rawLevel: unknown): Level {
     return { kind, x: x * TILE_SIZE, y: y * TILE_SIZE, w: w * TILE_SIZE, h: h * TILE_SIZE };
   });
 
-  return { width, height, tiles, spawns: parsedSpawns, sensors: parsedSensors };
+  return { width, height, tiles, vehicles: parsedVehicles, sensors: parsedSensors };
 }
