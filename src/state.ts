@@ -1,1 +1,1 @@
-export type GameState = "title" | "playing" | "paused";
+export type GameState = "title" | "settings" | "playing" | "paused";
