@@ -90,6 +90,6 @@ export function renderPlay(
       }, camX, camY, `hsl(${v.hue}, 100%, 50%)`);
     }
     const activeSensors = new Set<Sensor>(active.overlappingSensors);
-    drawSensors(ctx, p.level, camX, camY, activeSensors);
+    drawSensors(ctx, p.level, camX, camY, activeSensors, active.type.name);
   }
 }
