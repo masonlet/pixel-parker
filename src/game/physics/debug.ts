@@ -48,11 +48,13 @@ export function drawSensors(
   camX: number,
   camY: number,
   active: ReadonlySet<Sensor> = new Set(),
+  activeVehicleType: string | undefined = undefined,
 ): void {
   ctx.lineWidth = 2;
   ctx.setLineDash([6, 4]);
   for (const s of level.sensors) {
-    ctx.strokeStyle = active.has(s) ? "lime" : "cyan";
+    const targeted = !s.vehicle || s.vehicle === activeVehicleType;
+    ctx.strokeStyle = active.has(s) && targeted ? "lime" : "cyan";
     ctx.strokeRect(s.x - camX, s.y - camY, s.w, s.h);
   }
   ctx.setLineDash([]);

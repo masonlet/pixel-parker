@@ -34,4 +34,7 @@ export interface Sensor {
   w: number;
   /** Height in world pixels. */
   h: number;
+
+  /** Optional: restrict this sensor to a specific vehicle name. */
+  vehicle?: string;
 }
