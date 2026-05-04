@@ -1,5 +1,7 @@
 {
   "name": "truck",
+  "spritePath": "img/vehicles/truck.png",
+  "bodySpritePath": "img/vehicles/truck-body.png",
   "w": 152,
   "h": 77,
   "turnSpeed": 1.8,

@@ -4,6 +4,10 @@ import type { Sensor } from "../level/types.ts";
 export interface VehicleStats {
   /** Identifier for this vehicle type */
   name: string;
+  /** Base vehicle sprite path */
+  spritePath: string;
+  /** Tintable overlay sprite path */
+  bodySpritePath: string;
   /** Hitbox width in pixels. */
   w: number;
   /** Hitbox height in pixels. */

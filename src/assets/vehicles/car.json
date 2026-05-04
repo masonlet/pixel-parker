@@ -1,5 +1,7 @@
 {
   "name": "car",
+  "spritePath": "img/vehicles/car.png",
+  "bodySpritePath": "img/vehicles/car-body.png",
   "w": 128,
   "h": 76,
   "turnSpeed": 3,
