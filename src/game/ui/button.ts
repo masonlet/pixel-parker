@@ -24,7 +24,7 @@ export function drawButton(ctx: CanvasRenderingContext2D, b: Button, hover: bool
   ctx.lineWidth = 2;
   ctx.strokeRect(b.x, b.y, b.w, b.h);
   ctx.fillStyle = "#fff";
-  ctx.font = "20px sans-serif";
+  ctx.font = `${b.h * 0.4}px sans-serif`;
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
   ctx.fillText(b.label, b.x + b.w / 2, b.y + b.h / 2);
