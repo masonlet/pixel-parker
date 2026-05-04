@@ -5,6 +5,8 @@ import { startLoop } from "./engine/update.ts";
 import { initKeyboard, wasPressed } from "./engine/input/keyboard.ts";
 import { initMouse } from "./engine/input/mouse.ts";
 
+import { initAudio, registerSound, playSound } from "./engine/audio.ts";
+
 import type { GameState } from "./game/state.ts";
 import { type PlayState, updatePlay, renderPlay, spawnVehicles } from "./game/play.ts";
 
@@ -18,6 +20,10 @@ import { loadCampaign } from "./game/campaign/load.ts";
 const { canvas, ctx } = createGameCanvas();
 initKeyboard();
 initMouse(canvas);
+initAudio();
+
+await registerSound("button", "audio/ui/button.wav");
+await registerSound("win", "audio/ui/win.wav");
 
 const campaign = await loadCampaign("test");
 
@@ -40,7 +46,10 @@ startLoop(
       else if (state === "paused") state = "playing";
     }
     if (state !== "playing") return;
-    if (updatePlay(playState, dt)) state = "won";
+    if (updatePlay(playState, dt)) {
+      playSound("win");
+      state = "won";
+    }
   },
   () => {
     ctx.fillStyle = "#000";
@@ -48,13 +57,22 @@ startLoop(
 
     if (state === "title") {
       const { startClicked, settingsClicked } = drawTitleMenu(ctx, canvas.width, canvas.height);
-      if (startClicked) state = "playing";
-      if (settingsClicked) state = "settings";
+      if (startClicked) {
+        playSound("button");
+        state = "playing";
+      }
+      if (settingsClicked) {
+        playSound("button");
+        state = "settings";
+      }
       return;
     }
     if (state === "settings") {
       const { backClicked } = drawSettingsMenu(ctx, canvas.width, canvas.height);
-      if (backClicked) state = "title";
+      if (backClicked) {
+        playSound("button");
+        state = "title";
+      }
       return;
     }
     if (state === "playing" || state === "paused" || state === "won")
@@ -62,23 +80,34 @@ startLoop(
 
     if (state === "paused") {
       const action = drawPauseMenu(ctx, canvas.width, canvas.height);
-      if (action === "resume") state = "playing";
+      if (action === "resume") {
+        playSound("button");
+        state = "playing";
+      }
       if (action === "restart") {
+        playSound("button");
         playState.vehicles = spawnVehicles(playState.level, playState.vehicleTypes);
         playState.vehicleIndex = 0;
         state = "playing";
       }
-      if (action === "quit") state = "title";
+      if (action === "quit") {
+        playSound("button");
+        state = "title";
+      }
     }
 
     if (state === "won") {
       const action = drawWonMenu(ctx, canvas.width, canvas.height);
       if (action === "restart") {
+        playSound("button");
         playState.vehicles = spawnVehicles(playState.level, playState.vehicleTypes);
         playState.vehicleIndex = 0;
         state = "playing";
       }
-      if (action === "quit") state = "title";
+      if (action === "quit") {
+        playSound("button");
+        state = "title";
+      }
     }
   },
 );
