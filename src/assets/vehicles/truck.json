@@ -1,0 +1,15 @@
+{
+  "name": "truck",
+  "spritePath": "img/vehicles/truck.png",
+  "bodySpritePath": "img/vehicles/truck-body.png",
+  "w": 152,
+  "h": 77,
+  "turnSpeed": 1.8,
+  "maxSpeed": 140,
+  "maxReverseSpeed": 60,
+  "accel": 150,
+  "friction": 100,
+  "brakeForce": 280,
+  "gearShiftDelay": 0.4,
+  "mass": 2500
+}

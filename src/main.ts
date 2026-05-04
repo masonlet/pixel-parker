@@ -18,12 +18,12 @@ import {
   loadVehicleType,
   carStats,
   truckStats
-} from "./game/vehicle/presets.ts";
+} from "./game/vehicle/load.ts";
 
 import { loadLevel } from "./game/level/load.ts";
-import test1 from "./game/levels/test1.json";
-import test2 from "./game/levels/test2.json";
-import test3 from "./game/levels/test3.json";
+import test1 from "./assets/levels/test1.json";
+import test2 from "./assets/levels/test2.json";
+import test3 from "./assets/levels/test3.json";
 
 const { canvas, ctx } = createGameCanvas();
 initKeyboard();

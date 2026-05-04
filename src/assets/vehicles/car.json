@@ -1,0 +1,15 @@
+{
+  "name": "car",
+  "spritePath": "img/vehicles/car.png",
+  "bodySpritePath": "img/vehicles/car-body.png",
+  "w": 128,
+  "h": 76,
+  "turnSpeed": 3,
+  "maxSpeed": 200,
+  "maxReverseSpeed": 100,
+  "accel": 300,
+  "friction": 150,
+  "brakeForce": 400,
+  "gearShiftDelay": 0.2,
+  "mass": 1000
+}
