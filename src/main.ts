@@ -18,7 +18,7 @@ import {
   loadVehicleType,
   carStats,
   truckStats
-} from "./game/vehicle/presets.ts";
+} from "./game/vehicle/load.ts";
 
 import { loadLevel } from "./game/level/load.ts";
 import test1 from "./assets/levels/test1.json";
