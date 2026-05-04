@@ -7,6 +7,7 @@ import { getTile } from "../level/query.ts";
 
 import type { Vehicle } from "../vehicle/types.ts";
 import { vehicleObb } from "./sensors.ts";
+import { isParkedIn, DEFAULT_PARK_PADDING } from "../win.ts";
 
 export function drawOBB(
   ctx: CanvasRenderingContext2D,
@@ -46,9 +47,6 @@ export function drawWallAabbs(
   }
 }
 
-const DEFAULT_PARK_PADDING = 8;
-const STOPPED_THRESHOLD = 5;
-
 export function drawSensors(
   ctx: CanvasRenderingContext2D,
   level: Level,
@@ -67,18 +65,14 @@ export function drawSensors(
     let color = "cyan";
     if (subject) {
        if (s.kind === "parking_spot") {
-        const padding = s.padding ?? DEFAULT_PARK_PADDING;
-        const aabb = { x: s.x, y: s.y, w: s.w, h: s.h };
         const obb = vehicleObb(subject);
-        if (obbInsideAabb(obb, aabb, padding)) {
-          const stopped = Math.hypot(
-            subject.body.velocity.x,
-            subject.body.velocity.y,
-          ) < STOPPED_THRESHOLD;
-          color = stopped ? "lime" : "magenta";
-        } else if (obbVsAabb(obb, aabb)) {
+        const aabb = { x: s.x, y: s.y, w: s.w, h: s.h };
+        if (isParkedIn(subject, s))
+          color = "lime";
+        else if (obbInsideAabb(obb, aabb, s.padding ?? DEFAULT_PARK_PADDING))
+          color = "magenta";
+        else if (obbVsAabb(obb, aabb))
           color = "yellow";
-        }
       } else if (subject.overlappingSensors.includes(s)) {
         color = "lime";
       }
