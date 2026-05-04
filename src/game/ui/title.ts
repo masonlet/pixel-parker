@@ -1,4 +1,5 @@
 import { type Button, drawButton, isHovered, isClicked } from "./button.ts";
+import { getLayout } from "./layout.ts";
 
 export function drawTitleMenu(
   ctx: CanvasRenderingContext2D,
@@ -8,13 +9,8 @@ export function drawTitleMenu(
   ctx.fillStyle = "#000";
   ctx.fillRect(0, 0, canvasW, canvasH);
 
-  const scale = Math.min(canvasW, canvasH);
-  const gap = scale * 0.03;
-  const cx = canvasW / 2;
-  const cy = canvasH / 2;
+  const { scale, gap, cx, cy, btnW, btnH } = getLayout(canvasW, canvasH);
 
-  const btnW = scale * 0.4;
-  const btnH = scale * 0.1;
   const startBtn: Button = {
     x: cx - btnW / 2,
     y: cy - btnH / 2,
