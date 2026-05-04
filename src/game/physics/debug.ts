@@ -1,8 +1,12 @@
 import type { OBB } from "../../engine/physics/types.ts";
+import { obbVsAabb } from "../../engine/physics/collision.ts";
+import { obbInsideAabb } from "../../engine/physics/overlap.ts";
 
 import { TILE, TILE_SIZE, type Level } from "../level/types.ts";
 import { getTile } from "../level/query.ts";
-import type { Sensor } from "../level/types.ts";
+
+import type { Vehicle } from "../vehicle/types.ts";
+import { vehicleObb } from "./sensors.ts";
 
 export function drawOBB(
   ctx: CanvasRenderingContext2D,
@@ -42,19 +46,45 @@ export function drawWallAabbs(
   }
 }
 
+const DEFAULT_PARK_PADDING = 8;
+const STOPPED_THRESHOLD = 5;
+
 export function drawSensors(
   ctx: CanvasRenderingContext2D,
   level: Level,
   camX: number,
   camY: number,
-  active: ReadonlySet<Sensor> = new Set(),
-  activeVehicleType: string | undefined = undefined,
+  vehicles: Vehicle[] = [],
+  activeVehicle: Vehicle | undefined = undefined,
 ): void {
   ctx.lineWidth = 2;
   ctx.setLineDash([6, 4]);
   for (const s of level.sensors) {
-    const targeted = !s.vehicle || s.vehicle === activeVehicleType;
-    ctx.strokeStyle = active.has(s) && targeted ? "lime" : "cyan";
+    const subject = s.vehicle
+      ? vehicles.find(v => v.type.name === s.vehicle)
+      : activeVehicle;
+
+    let color = "cyan";
+    if (subject) {
+       if (s.kind === "parking_spot") {
+        const padding = s.padding ?? DEFAULT_PARK_PADDING;
+        const aabb = { x: s.x, y: s.y, w: s.w, h: s.h };
+        const obb = vehicleObb(subject);
+        if (obbInsideAabb(obb, aabb, padding)) {
+          const stopped = Math.hypot(
+            subject.body.velocity.x,
+            subject.body.velocity.y,
+          ) < STOPPED_THRESHOLD;
+          color = stopped ? "lime" : "magenta";
+        } else if (obbVsAabb(obb, aabb)) {
+          color = "yellow";
+        }
+      } else if (subject.overlappingSensors.includes(s)) {
+        color = "lime";
+      }
+    }
+
+    ctx.strokeStyle = color;
     ctx.strokeRect(s.x - camX, s.y - camY, s.w, s.h);
   }
   ctx.setLineDash([]);

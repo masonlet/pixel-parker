@@ -37,4 +37,6 @@ export interface Sensor {
 
   /** Optional: restrict this sensor to a specific vehicle name. */
   vehicle?: string;
+  /** Optional: require vehicle to be a certain distance from sides of sensor */
+  padding?: number;
 }

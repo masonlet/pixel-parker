@@ -1,4 +1,4 @@
-import type { Level, Sensor } from "./level/types.ts";
+import type { Level } from "./level/types.ts";
 import { drawLevel } from "./level/render.ts";
 
 import { isDown, wasPressed } from "../engine/input/keyboard.ts";
@@ -89,7 +89,6 @@ export function renderPlay(
         angle: v.body.angle,
       }, camX, camY, `hsl(${v.hue}, 100%, 50%)`);
     }
-    const activeSensors = new Set<Sensor>(active.overlappingSensors);
-    drawSensors(ctx, p.level, camX, camY, activeSensors, active.type.name);
+    drawSensors(ctx, p.level, camX, camY, p.vehicles, active);
   }
 }

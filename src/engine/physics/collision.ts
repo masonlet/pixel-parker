@@ -1,23 +1,5 @@
 import type { Vec2, OBB, AABB, MTV } from "./types.ts";
-
-function obbCorners(o: OBB, ux: Vec2, uy: Vec2): Vec2[] {
-  return [
-    { x: o.cx + ux.x * o.hw + uy.x * o.hh, y: o.cy + ux.y * o.hw + uy.y * o.hh },
-    { x: o.cx - ux.x * o.hw + uy.x * o.hh, y: o.cy - ux.y * o.hw + uy.y * o.hh },
-    { x: o.cx - ux.x * o.hw - uy.x * o.hh, y: o.cy - ux.y * o.hw - uy.y * o.hh },
-    { x: o.cx + ux.x * o.hw - uy.x * o.hh, y: o.cy + ux.y * o.hw - uy.y * o.hh },
-  ];
-}
-
-function project(corners: Vec2[], axis: Vec2): [number, number] {
-  let min = Infinity, max = -Infinity;
-  for (const c of corners) {
-    const p = c.x * axis.x + c.y * axis.y;
-    if (p < min) min = p;
-    if (p > max) max = p;
-  }
-  return [min, max];
-}
+import { obbCorners, aabbCorners, project } from "./geometry.ts";
 
 export function obbVsAabb(obb: OBB, aabb: AABB): MTV | null {
   const cos = Math.cos(obb.angle);
@@ -27,13 +9,8 @@ export function obbVsAabb(obb: OBB, aabb: AABB): MTV | null {
   const wx: Vec2 = { x: 1, y: 0 };
   const wy: Vec2 = { x: 0, y: 1 };
 
-  const obbCs = obbCorners(obb, ux, uy);
-  const aabbCs: Vec2[] = [
-    { x: aabb.x,          y: aabb.y },
-    { x: aabb.x + aabb.w, y: aabb.y },
-    { x: aabb.x + aabb.w, y: aabb.y + aabb.h },
-    { x: aabb.x,          y: aabb.y + aabb.h },
-  ];
+  const obbCs = obbCorners(obb);
+  const aabbCs = aabbCorners(aabb);
   const axes: Vec2[] = [ux, uy, wx, wy];
 
   let minDepth = Infinity;
@@ -64,8 +41,8 @@ export function obbVsObb(a: OBB, b: OBB): MTV | null {
   const bux: Vec2 = { x: bCos, y: bSin };
   const buy: Vec2 = { x: -bSin, y: bCos };
 
-  const aCorners = obbCorners(a, aux, auy);
-  const bCorners = obbCorners(b, bux, buy);
+  const aCorners = obbCorners(a);
+  const bCorners = obbCorners(b);
   const axes: Vec2[] = [aux, auy, bux, buy];
 
   let minDepth = Infinity;
