@@ -63,6 +63,8 @@ export function drawSensors(
       : activeVehicle;
 
     let color = "cyan";
+    if (s.vehicle && s.vehicle === activeVehicle?.type.name) color = "white";
+
     if (subject) {
        if (s.kind === "parking_spot") {
         const obb = vehicleObb(subject);
