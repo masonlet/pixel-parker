@@ -35,3 +35,13 @@ export function arr(obj: Record<string, unknown>, key: string, ctx: string): unk
   if (!Array.isArray(v)) throw new Error(`${ctx}: ${key} must be an array`);
   return v;
 }
+
+export function makeCollector() {
+  const errors: string[] = [];
+  return {
+    errors,
+    tryGet: <T>(fn: () => T): T | undefined => {
+      try { return fn(); } catch (e) { errors.push((e as Error).message); return undefined; }
+    },
+  };
+}

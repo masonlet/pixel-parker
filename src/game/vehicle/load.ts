@@ -1,6 +1,6 @@
 import { loadImage } from "../../engine/assets.ts";
 import type { VehicleType, VehicleStats } from "./types.ts";
-import { isObj, num, str } from "../utils/validate.ts";
+import { isObj, num, str, makeCollector } from "../utils/validate.ts";
 
 import car from "../../assets/vehicles/car.json";
 import truck from "../../assets/vehicles/truck.json";
@@ -10,10 +10,7 @@ function parseVehicleStats(data: unknown): VehicleStats {
   const name = str(data, "name", "vehicle");
   const ctx = `vehicle ${name}`;
 
-  const errors: string[] = [];
-  const tryGet = <T>(fn: () => T): T | undefined => {
-    try { return fn(); } catch (e) { errors.push((e as Error).message); return undefined; }
-  };
+  const { errors, tryGet } = makeCollector();
 
   const stats = {
     name,

@@ -3,7 +3,7 @@ import {
   type TileId, TILE, TILE_SIZE,
   type SensorKind, type Sensor, SENSOR_KINDS
 } from "./types.ts";
-import { isObj, num, optNum, str, optStr, arr } from "../utils/validate.ts";
+import { isObj, num, optNum, str, optStr, arr, makeCollector } from "../utils/validate.ts";
 
 function isTileName(x: unknown): x is keyof typeof TILE {
   return typeof x === "string" && x in TILE;
@@ -27,19 +27,26 @@ export function loadLevel(rawLevel: unknown): Level {
   const rects = arr(rawLevel, "rects", "Level");
   const vehiclesRaw = arr(rawLevel, "vehicles", "Level");
   const sensorsRaw = arr(rawLevel, "sensors", "Level");
-
   const tiles: TileId[] = new Array(width * height).fill(TILE[fillRaw]);
+
+  const { errors, tryGet } = makeCollector();
 
   for (const [i, rect] of rects.entries()) {
     const ctx = `Level: rect ${i}`;
 
-    if (!isObj(rect)) throw new Error(`${ctx} not an object`);
-    const x = num(rect, "x", ctx);
-    const y = num(rect, "y", ctx);
-    const w = num(rect, "w", ctx);
-    const h = num(rect, "h", ctx);
+    if (!isObj(rect)) { errors.push(`${ctx} not an object`); continue; }
+    const x = tryGet(() => num(rect, "x", ctx));
+    const y = tryGet(() => num(rect, "y", ctx));
+    const w = tryGet(() => num(rect, "w", ctx));
+    const h = tryGet(() => num(rect, "h", ctx));
     const tileRaw = rect["tile"];
-    if (!isTileName(tileRaw)) throw new Error(`${ctx}: invalid tile "${tileRaw}"`);
+    if (!isTileName(tileRaw)) {
+      errors.push(`${ctx}: invalid tile "${tileRaw}"`);
+      continue;
+    }
+    if (x === undefined || y === undefined
+     || w === undefined || h === undefined
+    ) continue;
 
     const tileId = TILE[tileRaw];
     for (let ty = y; ty < y + h; ty++) {
@@ -50,41 +57,43 @@ export function loadLevel(rawLevel: unknown): Level {
     }
   }
 
-  const vehicles: LevelVehicle[] = vehiclesRaw.map((v, i) => {
+  const vehicles: LevelVehicle[] = [];
+  for (const [i, v] of vehiclesRaw.entries()) {
     const ctx = `Level: vehicle ${i}`;
-    if (!isObj(v)) throw new Error(`${ctx} not an object`);
-    return {
-      type: str(v, "type", ctx),
-      x: num(v, "x", ctx) * TILE_SIZE,
-      y: num(v, "y", ctx) * TILE_SIZE,
-    };
-  });
+    if (!isObj(v)) { errors.push(`${ctx} not an object`); continue; }
+    const type = tryGet(() => str(v, "type", ctx));
+    const x = tryGet(() => num(v, "x", ctx));
+    const y = tryGet(() => num(v, "y", ctx));
+    if (type === undefined || x === undefined || y === undefined) continue;
+    vehicles.push({ type, x: x * TILE_SIZE, y: y * TILE_SIZE });
+  }
 
-  const sensors: Sensor[] = sensorsRaw.map((s, i) => {
+  const sensors: Sensor[] = [];
+  for (const [i, s] of sensorsRaw.entries()) {
     const ctx = `Level: sensor ${i}`;
-    if (!isObj(s)) throw new Error(`${ctx} not an object`);
+    if (!isObj(s)) { errors.push(`${ctx} not an object`); continue; }
     const kindRaw = s["kind"];
-    if (!isSensorKind(kindRaw)) throw new Error(`${ctx}: invalid kind "${kindRaw}"`);
-    const x = num(s, "x", ctx);
-    const y = num(s, "y", ctx);
-    const w = num(s, "w", ctx);
-    const h = num(s, "h", ctx);
+    if (!isSensorKind(kindRaw)) { errors.push(`${ctx}: invalid kind "${kindRaw}"`); continue; }
+    const x = tryGet(() => num(s, "x", ctx));
+    const y = tryGet(() => num(s, "y", ctx));
+    const w = tryGet(() => num(s, "w", ctx));
+    const h = tryGet(() => num(s, "h", ctx));
+    const vehicle = tryGet(() => optStr(s, "vehicle", ctx));
+    const padding = tryGet(() => optNum(s, "padding", ctx));
+    if (x === undefined || y === undefined || w === undefined || h === undefined) continue;
 
     const sensor: Sensor = {
       kind: kindRaw,
-      x: x * TILE_SIZE,
-      y: y * TILE_SIZE,
-      w: w * TILE_SIZE,
-      h: h * TILE_SIZE,
+      x: x * TILE_SIZE, y: y * TILE_SIZE, w: w * TILE_SIZE, h: h * TILE_SIZE,
     };
-
-    const vehicle = optStr(s, "vehicle", ctx);
-    const padding = optNum(s, "padding", ctx);
     if (vehicle !== undefined) sensor.vehicle = vehicle;
     if (padding !== undefined) sensor.padding = padding * TILE_SIZE;
-    
-    return sensor;
-  });
+    sensors.push(sensor);
+  }
+
+  if (errors.length) throw new Error(
+    `Level failed validation:\n  ${errors.join("\n  ")}`
+  );
 
   return { width, height, tiles, vehicles, sensors };
 }
