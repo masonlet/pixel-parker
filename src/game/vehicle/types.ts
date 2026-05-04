@@ -1,13 +1,9 @@
 import type { PhysicsBody } from "../../engine/physics/types.ts";
 import type { Sensor } from "../level/types.ts";
 
-export interface VehicleType {
+export interface VehicleStats {
   /** Identifier for this vehicle type */
   name: string;
-  /** Base vehicle sprite */
-  sprite: HTMLImageElement;
-  /** Tintable overlay sprite */
-  bodySprite: HTMLImageElement;
   /** Hitbox width in pixels. */
   w: number;
   /** Hitbox height in pixels. */
@@ -28,6 +24,13 @@ export interface VehicleType {
   gearShiftDelay: number;
   /** Mass in arbitrary units. Higher = harder to push. */
   mass: number;
+}
+
+export interface VehicleType extends VehicleStats {
+  /** Base vehicle sprite */
+  sprite: HTMLImageElement;
+  /** Tintable overlay sprite */
+  bodySprite: HTMLImageElement;
 }
 
 export interface Vehicle {

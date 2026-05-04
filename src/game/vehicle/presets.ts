@@ -1,7 +1,5 @@
 import { loadImage } from "../../engine/assets.ts";
-import type { VehicleType } from "./types.ts";
-
-export type VehicleStats = Omit<VehicleType, "sprite" | "bodySprite">;
+import type { VehicleType, VehicleStats } from "./types.ts";
 
 export const carStats: VehicleStats = {
   name: "car",
