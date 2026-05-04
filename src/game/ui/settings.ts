@@ -1,4 +1,5 @@
 import { type Button, drawButton, isHovered, isClicked } from "./button.ts";
+import { isMuted, setMuted } from "../../engine/audio.ts";
 
 export function drawSettingsMenu(
   ctx: CanvasRenderingContext2D,
@@ -14,9 +15,15 @@ export function drawSettingsMenu(
   ctx.textBaseline = "middle";
   ctx.fillText("Settings", canvasW / 2, 120);
 
-  ctx.font = "20px sans-serif";
-  ctx.fillStyle = "#888";
-  ctx.fillText("PLACEHOLDER", canvasW / 2, canvasH / 2);
+    const muteBtn: Button = {
+    x: canvasW / 2 - 100,
+    y: canvasH / 2 - 25,
+    w: 200,
+    h: 50,
+    label: isMuted() ? "Unmute" : "Mute",
+  };
+  drawButton(ctx, muteBtn, isHovered(muteBtn));
+  if (isClicked(muteBtn)) setMuted(!isMuted());
 
   const backBtn: Button = { x: canvasW / 2 - 100, y: canvasH - 100, w: 200, h: 50, label: "Back" };
   drawButton(ctx, backBtn, isHovered(backBtn));
