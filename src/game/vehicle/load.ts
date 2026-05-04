@@ -1,24 +1,9 @@
 import { loadImage } from "../../engine/assets.ts";
 import type { VehicleType, VehicleStats } from "./types.ts";
+import { num, str } from "../utils/validate.ts";
 
 import car from "../../assets/vehicles/car.json";
 import truck from "../../assets/vehicles/truck.json";
-
-function num(obj: Record<string, unknown>, key: string, name: string): number {
-  const v = obj[key];
-  if (typeof v !== "number" || !Number.isFinite(v)) throw new Error(
-    `vehicle ${name}: ${key} must be a finite number`
-  );
-  return v;
-}
-
-function str(obj: Record<string, unknown>, key: string, name: string): string {
-  const v = obj[key];
-  if (typeof v !== "string" || v.length === 0) throw new Error(
-    `vehicle ${name}: ${key} must be a non-empty string`
-  );
-  return v;
-}
 
 function parseVehicleStats(data: unknown): VehicleStats {
   if (!data || typeof data !== "object") throw new Error("vehicle stats must be an object");

@@ -3,10 +3,7 @@ import {
   type TileId, TILE, TILE_SIZE,
   type SensorKind, type Sensor, SENSOR_KINDS
 } from "./types.ts";
-
-function isObj(x: unknown): x is Record<string, unknown> {
-  return typeof x === "object" && x !== null;
-}
+import { isObj } from "../utils/validate.ts";
 
 function isTileName(x: unknown): x is keyof typeof TILE {
   return typeof x === "string" && x in TILE;

@@ -1,0 +1,25 @@
+export function isObj(x: unknown): x is Record<string, unknown> {
+  return typeof x === "object" && x !== null;
+}
+
+export function num(obj: Record<string, unknown>, key: string, ctx: string): number {
+  const v = obj[key];
+  if (typeof v !== "number" || !Number.isFinite(v)) throw new Error(
+    `${ctx}: ${key} must be a finite number`
+  );
+  return v;
+}
+
+export function str(obj: Record<string, unknown>, key: string, ctx: string): string {
+  const v = obj[key];
+  if (typeof v !== "string" || v.length === 0) throw new Error(
+    `${ctx}: ${key} must be a non-empty string`
+  );
+  return v;
+}
+
+export function arr(obj: Record<string, unknown>, key: string, ctx: string): unknown[] {
+  const v = obj[key];
+  if (!Array.isArray(v)) throw new Error(`${ctx}: ${key} must be an array`);
+  return v;
+}
