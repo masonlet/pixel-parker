@@ -5,6 +5,7 @@ export interface LevelVehicle {
 }
 
 export interface Level {
+  name?: string;
   width: number;
   height: number;
   tiles: TileId[];

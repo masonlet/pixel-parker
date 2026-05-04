@@ -3,10 +3,7 @@ import {
   type TileId, TILE, TILE_SIZE,
   type SensorKind, type Sensor, SENSOR_KINDS
 } from "./types.ts";
-
-function isObj(x: unknown): x is Record<string, unknown> {
-  return typeof x === "object" && x !== null;
-}
+import { isObj, num, optNum, str, optStr, arr, makeCollector } from "../utils/validate.ts";
 
 function isTileName(x: unknown): x is keyof typeof TILE {
   return typeof x === "string" && x in TILE;
@@ -19,28 +16,39 @@ function isSensorKind(x: unknown): x is SensorKind {
 export function loadLevel(rawLevel: unknown): Level {
   if (!isObj(rawLevel)) throw new Error("Level: not an object");
 
-  const { width, height, fill, rects, vehicles, sensors } = rawLevel;
+  const width = num(rawLevel, "width", "Level");
+  const height = num(rawLevel, "height", "Level");
+  if (width <= 0) throw new Error("Level: width must be > 0");
+  if (height <= 0) throw new Error("Level: height must be > 0");
 
-  if (typeof width !== "number" || width <= 0)   throw new Error("Level: invalid width");
-  if (typeof height !== "number" || height <= 0) throw new Error("Level: invalid height");
-  if (!isTileName(fill))      throw new Error(`Level: invalid fill "${fill}"`);
-  if (!Array.isArray(rects))  throw new Error("Level: rects must be an array");
-  if (!Array.isArray(vehicles)) throw new Error("Level: vehicles must be an array");
-  if (!Array.isArray(sensors)) throw new Error("Level: sensors must be an array");
+  const fillRaw = rawLevel["fill"];
+  if (!isTileName(fillRaw)) throw new Error(`Level: invalid fill "${fillRaw}"`);
 
-  const tiles: TileId[] = new Array(width * height).fill(TILE[fill]);
+  const rects = arr(rawLevel, "rects", "Level");
+  const vehiclesRaw = arr(rawLevel, "vehicles", "Level");
+  const sensorsRaw = arr(rawLevel, "sensors", "Level");
+  const tiles: TileId[] = new Array(width * height).fill(TILE[fillRaw]);
+
+  const { errors, tryGet } = makeCollector();
 
   for (const [i, rect] of rects.entries()) {
-    if (!isObj(rect)) throw new Error(`Level: rect ${i} not an object`);
+    const ctx = `Level: rect ${i}`;
 
-    const { x, y, w, h, tile } = rect;
-    if (typeof x !== "number" || typeof y !== "number" ||
-        typeof w !== "number" || typeof h !== "number"
-    ) throw new Error(`Level: rect ${i} has non-number x/y/w/h`);
+    if (!isObj(rect)) { errors.push(`${ctx} not an object`); continue; }
+    const x = tryGet(() => num(rect, "x", ctx));
+    const y = tryGet(() => num(rect, "y", ctx));
+    const w = tryGet(() => num(rect, "w", ctx));
+    const h = tryGet(() => num(rect, "h", ctx));
+    const tileRaw = rect["tile"];
+    if (!isTileName(tileRaw)) {
+      errors.push(`${ctx}: invalid tile "${tileRaw}"`);
+      continue;
+    }
+    if (x === undefined || y === undefined
+     || w === undefined || h === undefined
+    ) continue;
 
-    if (!isTileName(tile)) throw new Error(`Level: rect ${i} invalid tile "${tile}"`);
-
-    const tileId = TILE[tile];
+    const tileId = TILE[tileRaw];
     for (let ty = y; ty < y + h; ty++) {
       for (let tx = x; tx < x + w; tx++) {
         if (tx < 0 || ty < 0 || tx >= width || ty >= height) continue;
@@ -49,38 +57,43 @@ export function loadLevel(rawLevel: unknown): Level {
     }
   }
 
-  const parsedVehicles: LevelVehicle[] = vehicles.map((v, i) => {
-    if (!isObj(v)) throw new Error(`Level: vehicle ${i} not an object`);
-    const { type, x, y } = v;
-    if (typeof type !== "string") throw new Error(`Level: vehicle ${i} has non-string type`);
-    if (typeof x !== "number" || typeof y !== "number")
-      throw new Error(`Level: vehicle ${i} has non-number x/y`);
-    return { type, x: x * TILE_SIZE, y: y * TILE_SIZE };
-  });
+  const vehicles: LevelVehicle[] = [];
+  for (const [i, v] of vehiclesRaw.entries()) {
+    const ctx = `Level: vehicle ${i}`;
+    if (!isObj(v)) { errors.push(`${ctx} not an object`); continue; }
+    const type = tryGet(() => str(v, "type", ctx));
+    const x = tryGet(() => num(v, "x", ctx));
+    const y = tryGet(() => num(v, "y", ctx));
+    if (type === undefined || x === undefined || y === undefined) continue;
+    vehicles.push({ type, x: x * TILE_SIZE, y: y * TILE_SIZE });
+  }
 
-  const parsedSensors: Sensor[] = sensors.map((s, i) => {
-    if (!isObj(s)) throw new Error(`Level: sensor ${i} not an object`);
-    const { kind, x, y, w, h, vehicle, padding } = s;
-    if (!isSensorKind(kind)) throw new Error(`Level: sensor ${i} invalid kind "${kind}"`);
-    if (typeof x !== "number" || typeof y !== "number" ||
-        typeof w !== "number" || typeof h !== "number"
-    ) throw new Error(`Level: sensor ${i} has non-number x/y/w/h`);
-    if (vehicle !== undefined && typeof vehicle !== "string")
-      throw new Error(`Level: sensor ${i} vehicle must be a string if present`);
-    if (padding !== undefined && (typeof padding !== "number" || padding < 0))
-      throw new Error(`Level: sensor ${i} padding must be a positive number`);
+  const sensors: Sensor[] = [];
+  for (const [i, s] of sensorsRaw.entries()) {
+    const ctx = `Level: sensor ${i}`;
+    if (!isObj(s)) { errors.push(`${ctx} not an object`); continue; }
+    const kindRaw = s["kind"];
+    if (!isSensorKind(kindRaw)) { errors.push(`${ctx}: invalid kind "${kindRaw}"`); continue; }
+    const x = tryGet(() => num(s, "x", ctx));
+    const y = tryGet(() => num(s, "y", ctx));
+    const w = tryGet(() => num(s, "w", ctx));
+    const h = tryGet(() => num(s, "h", ctx));
+    const vehicle = tryGet(() => optStr(s, "vehicle", ctx));
+    const padding = tryGet(() => optNum(s, "padding", ctx));
+    if (x === undefined || y === undefined || w === undefined || h === undefined) continue;
 
     const sensor: Sensor = {
-      kind,
-      x: x * TILE_SIZE,
-      y: y * TILE_SIZE,
-      w: w * TILE_SIZE,
-      h: h * TILE_SIZE,
+      kind: kindRaw,
+      x: x * TILE_SIZE, y: y * TILE_SIZE, w: w * TILE_SIZE, h: h * TILE_SIZE,
     };
     if (vehicle !== undefined) sensor.vehicle = vehicle;
     if (padding !== undefined) sensor.padding = padding * TILE_SIZE;
-    return sensor;
-  });
+    sensors.push(sensor);
+  }
 
-  return { width, height, tiles, vehicles: parsedVehicles, sensors: parsedSensors };
+  if (errors.length) throw new Error(
+    `Level failed validation:\n  ${errors.join("\n  ")}`
+  );
+
+  return { width, height, tiles, vehicles, sensors };
 }

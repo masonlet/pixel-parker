@@ -13,35 +13,20 @@ import { drawSettingsMenu } from "./game/ui/settings.ts";
 import { drawPauseMenu } from "./game/ui/pause.ts";
 import { drawWonMenu } from "./game/ui/won.ts";
 
-import type { VehicleType } from "./game/vehicle/types.ts";
-import {
-  loadVehicleType,
-  carStats,
-  truckStats
-} from "./game/vehicle/load.ts";
-
-import { loadLevel } from "./game/level/load.ts";
-import test1 from "./assets/levels/test1.json";
-import test2 from "./assets/levels/test2.json";
-import test3 from "./assets/levels/test3.json";
+import { loadCampaign } from "./game/campaign/load.ts";
 
 const { canvas, ctx } = createGameCanvas();
 initKeyboard();
 initMouse(canvas);
 
-const levels = [loadLevel(test1), loadLevel(test2), loadLevel(test3)];
-
-const vehicleTypes: Record<string, VehicleType> = {
-  car: await loadVehicleType(carStats),
-  truck: await loadVehicleType(truckStats),
-};
+const campaign = await loadCampaign("test");
 
 const playState: PlayState = {
-  levels,
+  levels: campaign.levels,
   levelIndex: 0,
-  level: levels[0]!,
-  vehicleTypes,
-  vehicles: spawnVehicles(levels[0]!, vehicleTypes),
+  level: campaign.levels[0]!,
+  vehicleTypes: campaign.vehicleTypes,
+  vehicles: spawnVehicles(campaign.levels[0]!, campaign.vehicleTypes),
   vehicleIndex: 0,
   debugMode: false,
 };
