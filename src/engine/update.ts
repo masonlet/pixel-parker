@@ -1,4 +1,4 @@
-import { clearFrameMouse } from "./input/mouse.ts";
+import { clearFramePointer } from "./input/pointer.ts";
 
 const TICK_RATE = 1 / 60;
 
@@ -21,7 +21,7 @@ export function startLoop(
     }
 
     render();
-    clearFrameMouse();
+    clearFramePointer();
     requestAnimationFrame(frame);
   }
   requestAnimationFrame(frame);

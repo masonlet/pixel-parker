@@ -3,7 +3,7 @@ import "./style.css";
 import { createGameCanvas } from "./engine/canvas.ts";
 import { startLoop } from "./engine/update.ts";
 import { initKeyboard, wasPressed } from "./engine/input/keyboard.ts";
-import { initMouse } from "./engine/input/mouse.ts";
+import { initPointer } from "./engine/input/pointer.ts";
 
 import { initAudio, registerSound, playSound } from "./engine/audio.ts";
 
@@ -19,7 +19,7 @@ import { loadCampaign } from "./game/campaign/load.ts";
 
 const { canvas, ctx } = createGameCanvas();
 initKeyboard();
-initMouse(canvas);
+initPointer(canvas);
 initAudio();
 
 await registerSound("button", "audio/ui/button.wav");

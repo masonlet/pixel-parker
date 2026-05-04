@@ -1,4 +1,4 @@
-import { mouseX, mouseY, wasMouseClicked } from "../../engine/input/mouse.ts";
+import { pointerX, pointerY, wasPointerClicked } from "../../engine/input/pointer.ts";
 
 export interface Button {
   x: number;
@@ -9,12 +9,12 @@ export interface Button {
 }
 
 export function isHovered(b: Button): boolean {
-  const mx = mouseX(), my = mouseY();
+  const mx = pointerX(), my = pointerY();
   return mx >= b.x && mx <= b.x + b.w && my >= b.y && my <= b.y + b.h;
 }
 
 export function isClicked(b: Button): boolean {
-  return isHovered(b) && wasMouseClicked();
+  return isHovered(b) && wasPointerClicked();
 }
 
 export function drawButton(ctx: CanvasRenderingContext2D, b: Button, hover: boolean): void {
