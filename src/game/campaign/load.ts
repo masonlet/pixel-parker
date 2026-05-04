@@ -1,9 +1,14 @@
-import type { Campaign, CampaignData, CampaignEntry } from "./types.ts";
+import type { Campaign, CampaignData, CampaignAudio, CampaignEntry } from "./types.ts";
+
 import type { Level } from "../level/types.ts";
-import type { VehicleType } from "../vehicle/types.ts";
-import { isObj, str, arr, makeCollector } from "../utils/validate.ts";
 import { loadLevel } from "../level/load.ts";
+
+import type { VehicleType } from "../vehicle/types.ts";
 import { loadVehicleType, parseVehicleStats } from "../vehicle/load.ts";
+
+import { registerSound } from "../../engine/audio.ts";
+
+import { isObj, str, optStr, arr, makeCollector } from "../utils/validate.ts";
 
 const campaignFiles = import.meta.glob("../../assets/campaigns/*/**/*.json", {
   eager: true,
@@ -34,6 +39,7 @@ function parseCampaign(data: unknown): CampaignData {
     name: str(data, "name", "Campaign"),
     vehicleTypes: arr(data, "vehicleTypes", "Campaign") as CampaignEntry<unknown>[],
     levels: arr(data, "levels", "Campaign") as CampaignEntry<unknown>[],
+    audio: data["audio"] ?? {},
   };
 }
 
@@ -89,6 +95,18 @@ export async function loadCampaign(folder: string): Promise<Campaign> {
     }
   }
 
+  const audio: CampaignAudio = {};
+  if (isObj(campaign.audio)) {
+    const a = campaign.audio;
+    const button = optStr(a, "button", `${ctx}: audio`);
+    const win = optStr(a, "win", `${ctx}: audio`);
+    if (button) audio.button = button;
+    if (win) audio.win = win;
+  }
+
   if (errors.length) throw new Error(`${ctx} failed validation:\n  ${errors.join("\n  ")}`);
-  return { name: campaign.name, vehicleTypes, levels };
+
+  if (audio.button) await registerSound("button", audio.button);
+  if (audio.win)    await registerSound("win", audio.win);
+  return { name: campaign.name, vehicleTypes, levels, audio };
 }
