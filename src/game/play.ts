@@ -1,5 +1,6 @@
 import type { Level } from "./level/types.ts";
 import { drawLevel } from "./level/render.ts";
+import { checkLevelWon } from "./win.ts";
 
 import { isDown, wasPressed } from "../engine/input/keyboard.ts";
 
@@ -31,7 +32,7 @@ export function spawnVehicles(
   });
 }
 
-export function updatePlay(p: PlayState, dt: number): void {
+export function updatePlay(p: PlayState, dt: number): boolean {
   if (wasPressed("Digit1")) {
     p.levelIndex = (p.levelIndex + 1) % p.levels.length;
     p.level = p.levels[p.levelIndex]!;
@@ -42,7 +43,7 @@ export function updatePlay(p: PlayState, dt: number): void {
   if (wasPressed("Digit3")) p.debugMode = !p.debugMode;
 
   const active = p.vehicles[p.vehicleIndex];
-  if (!active) return;
+  if (!active) return false;
 
   let throttle = 0;
   if (isDown("KeyW")) throttle += 1;
@@ -61,6 +62,8 @@ export function updatePlay(p: PlayState, dt: number): void {
   resolveVehiclePairs(p.vehicles);
   for (const v of p.vehicles) v.overlappingSensors = sensorsOverlapping(v, p.level);
   active.hue = (active.hue + 60 * dt) % 360;
+
+  return checkLevelWon(p.level, p.vehicles);
 }
 
 export function renderPlay(
