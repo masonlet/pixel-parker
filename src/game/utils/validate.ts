@@ -9,12 +9,24 @@ export function num(obj: Record<string, unknown>, key: string, ctx: string): num
   );
   return v;
 }
+export function optNum(obj: Record<string, unknown>, key: string, ctx: string): number | undefined {
+  const v = obj[key];
+  if (v === undefined) return undefined;
+  if (typeof v !== "number" || !Number.isFinite(v)) throw new Error(`${ctx}: ${key} must be a finite number if present`);
+  return v;
+}
 
 export function str(obj: Record<string, unknown>, key: string, ctx: string): string {
   const v = obj[key];
   if (typeof v !== "string" || v.length === 0) throw new Error(
     `${ctx}: ${key} must be a non-empty string`
   );
+  return v;
+}
+export function optStr(obj: Record<string, unknown>, key: string, ctx: string): string | undefined {
+  const v = obj[key];
+  if (v === undefined) return undefined;
+  if (typeof v !== "string" || v.length === 0) throw new Error(`${ctx}: ${key} must be a non-empty string if present`);
   return v;
 }
 
