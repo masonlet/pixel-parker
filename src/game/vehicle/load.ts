@@ -1,32 +1,40 @@
 import { loadImage } from "../../engine/assets.ts";
 import type { VehicleType, VehicleStats } from "./types.ts";
-import { num, str } from "../utils/validate.ts";
+import { isObj, num, str } from "../utils/validate.ts";
 
 import car from "../../assets/vehicles/car.json";
 import truck from "../../assets/vehicles/truck.json";
 
 function parseVehicleStats(data: unknown): VehicleStats {
-  if (!data || typeof data !== "object") throw new Error("vehicle stats must be an object");
-  const obj = data as Record<string, unknown>;
-  const name = obj['name'];
-  if (typeof name !== "string" || name.length === 0) throw new Error(
-    "vehicle: name must be a non-empty string"
-  );
-  return {
-    name,
-    spritePath: str(obj, "spritePath", name),
-    bodySpritePath: str(obj, "bodySpritePath", name),
-    w: num(obj, "w", name),
-    h: num(obj, "h", name),
-    turnSpeed: num(obj, "turnSpeed", name),
-    maxSpeed: num(obj, "maxSpeed", name),
-    maxReverseSpeed: num(obj, "maxReverseSpeed", name),
-    accel: num(obj, "accel", name),
-    friction: num(obj, "friction", name),
-    brakeForce: num(obj, "brakeForce", name),
-    gearShiftDelay: num(obj, "gearShiftDelay", name),
-    mass: num(obj, "mass", name),
+  if (!isObj(data)) throw new Error("vehicle stats must be an object");
+  const name = str(data, "name", "vehicle");
+  const ctx = `vehicle ${name}`;
+
+  const errors: string[] = [];
+  const tryGet = <T>(fn: () => T): T | undefined => {
+    try { return fn(); } catch (e) { errors.push((e as Error).message); return undefined; }
   };
+
+  const stats = {
+    name,
+    spritePath: tryGet(() => str(data, "spritePath", ctx)),
+    bodySpritePath: tryGet(() => str(data, "bodySpritePath", ctx)),
+    w: tryGet(() => num(data, "w", ctx)),
+    h: tryGet(() => num(data, "h", ctx)),
+    turnSpeed: tryGet(() => num(data, "turnSpeed", ctx)),
+    maxSpeed: tryGet(() => num(data, "maxSpeed", ctx)),
+    maxReverseSpeed: tryGet(() => num(data, "maxReverseSpeed", ctx)),
+    accel: tryGet(() => num(data, "accel", ctx)),
+    friction: tryGet(() => num(data, "friction", ctx)),
+    brakeForce: tryGet(() => num(data, "brakeForce", ctx)),
+    gearShiftDelay: tryGet(() => num(data, "gearShiftDelay", ctx)),
+    mass: tryGet(() => num(data, "mass", ctx)),
+  }
+
+  if (errors.length) throw new Error(
+    `${ctx} failed validation:\n  ${errors.join("\n  ")}`
+  );
+  return stats as VehicleStats;
 }
 
 export const carStats = parseVehicleStats(car);
