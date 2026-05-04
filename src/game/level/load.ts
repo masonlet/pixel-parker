@@ -60,13 +60,15 @@ export function loadLevel(rawLevel: unknown): Level {
 
   const parsedSensors: Sensor[] = sensors.map((s, i) => {
     if (!isObj(s)) throw new Error(`Level: sensor ${i} not an object`);
-    const { kind, x, y, w, h, vehicle } = s;
+    const { kind, x, y, w, h, vehicle, padding } = s;
     if (!isSensorKind(kind)) throw new Error(`Level: sensor ${i} invalid kind "${kind}"`);
     if (typeof x !== "number" || typeof y !== "number" ||
         typeof w !== "number" || typeof h !== "number"
     ) throw new Error(`Level: sensor ${i} has non-number x/y/w/h`);
-     if (vehicle !== undefined && typeof vehicle !== "string")
-    throw new Error(`Level: sensor ${i} vehicle must be a string if present`);
+    if (vehicle !== undefined && typeof vehicle !== "string")
+      throw new Error(`Level: sensor ${i} vehicle must be a string if present`);
+    if (padding !== undefined && (typeof padding !== "number" || padding < 0))
+      throw new Error(`Level: sensor ${i} padding must be a positive number`);
 
     const sensor: Sensor = {
       kind,
@@ -76,6 +78,7 @@ export function loadLevel(rawLevel: unknown): Level {
       h: h * TILE_SIZE,
     };
     if (vehicle !== undefined) sensor.vehicle = vehicle;
+    if (padding !== undefined) sensor.padding = padding * TILE_SIZE;
     return sensor;
   });
 

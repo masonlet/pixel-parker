@@ -4,7 +4,7 @@ import { overlappingRegions } from "../../engine/physics/overlap.ts";
 import type { Sensor, Level } from "../level/types.ts";
 import type { Vehicle } from "../vehicle/types.ts";
 
-function vehicleObb(v: Vehicle): OBB {
+export function vehicleObb(v: Vehicle): OBB {
   return {
     cx: v.body.position.x,
     cy: v.body.position.y,

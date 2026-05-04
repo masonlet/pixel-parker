@@ -7,14 +7,14 @@
     { "x": 0,  "y": 29, "w": 20, "h": 1,  "tile": "WALL" },
     { "x": 0,  "y": 0,  "w": 1,  "h": 30, "tile": "WALL" },
     { "x": 19, "y": 0,  "w": 1,  "h": 30, "tile": "WALL" },
-    { "x": 5,  "y": 5,  "w": 4,  "h": 2,  "tile": "WALL" }
+    { "x": 5,  "y": 5,  "w": 6,  "h": 2,  "tile": "WALL" }
   ],
   "vehicles": [
     { "type": "car",   "x": 7, "y": 15 },
     { "type": "truck", "x": 12, "y": 15 }
   ],
   "sensors": [
-    { "kind": "parking_spot", "x": 5, "y": 1, "w": 4, "h": 4 },
+    { "kind": "parking_spot", "x": 5, "y": 1, "w": 6, "h": 4 },
     { "kind": "stop_sign",    "x": 1, "y": 5, "w": 4, "h": 2, "vehicle": "car" }
   ]
 }
