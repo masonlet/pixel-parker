@@ -1,5 +1,5 @@
+import { getLayout, drawTitle } from "./layout.ts";
 import { type Button, drawButton, isHovered, isClicked } from "./button.ts";
-import { getLayout } from "./layout.ts";
 
 export function drawTitleMenu(
   ctx: CanvasRenderingContext2D,
@@ -10,6 +10,9 @@ export function drawTitleMenu(
   ctx.fillRect(0, 0, canvasW, canvasH);
 
   const { scale, gap, cx, cy, btnW, btnH } = getLayout(canvasW, canvasH);
+
+  const titleY = cy - btnH * 1.5 - gap * 2;
+  drawTitle(ctx, "Pixel Parker", cx, titleY, scale, 0.12);
 
   const startBtn: Button = {
     x: cx - btnW / 2,
@@ -23,14 +26,6 @@ export function drawTitleMenu(
     w: btnW, h: btnH,
     label: "SETTINGS"
   };
-
-  const titleY = cy - btnH * 1.5 - gap * 2;
-  const titleSize = Math.floor(scale * 0.12);
-  ctx.fillStyle = "#fff";
-  ctx.font = `bold ${titleSize}px sans-serif`;
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
-  ctx.fillText("Pixel Parker", cx, titleY);
 
   drawButton(ctx, startBtn, isHovered(startBtn));
   drawButton(ctx, settingsBtn, isHovered(settingsBtn));

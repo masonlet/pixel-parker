@@ -1,4 +1,4 @@
-import { getLayout } from "./layout.ts";
+import { getLayout, drawTitle } from "./layout.ts";
 import { type Button, drawButton, isHovered, isClicked } from "./button.ts";
 import { isMuted, setMuted } from "../../engine/audio.ts";
 
@@ -12,13 +12,8 @@ export function drawSettingsMenu(
 
   const { scale, gap, cx, cy, btnW, btnH } = getLayout(canvasW, canvasH);
 
-  const titleSize = Math.floor(scale * 0.1);
   const titleY = scale * 0.15;
-  ctx.fillStyle = "#fff";
-  ctx.font = `bold ${titleSize}px sans-serif`;
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
-  ctx.fillText("Settings", cx, titleY);
+  drawTitle(ctx, "Settings", cx, titleY, scale);
 
   const muteBtn: Button = {
     x: cx - btnW / 2,

@@ -18,3 +18,11 @@ export function getLayout(canvasW: number, canvasH: number): Layout {
     btnH: scale * 0.1,
   };
 }
+
+export function drawTitle(ctx: CanvasRenderingContext2D, text: string, x: number, y: number, scale: number, sizeFactor = 0.1): void {
+  ctx.fillStyle = "#fff";
+  ctx.font = `bold ${Math.floor(scale * sizeFactor)}px sans-serif`;
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText(text, x, y);
+}
