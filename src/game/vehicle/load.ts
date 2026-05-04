@@ -2,10 +2,7 @@ import { loadImage } from "../../engine/assets.ts";
 import type { VehicleType, VehicleStats } from "./types.ts";
 import { isObj, num, str, makeCollector } from "../utils/validate.ts";
 
-import car from "../../assets/vehicles/car.json";
-import truck from "../../assets/vehicles/truck.json";
-
-function parseVehicleStats(data: unknown): VehicleStats {
+export function parseVehicleStats(data: unknown): VehicleStats {
   if (!isObj(data)) throw new Error("vehicle stats must be an object");
   const name = str(data, "name", "vehicle");
   const ctx = `vehicle ${name}`;
@@ -33,9 +30,6 @@ function parseVehicleStats(data: unknown): VehicleStats {
   );
   return stats as VehicleStats;
 }
-
-export const carStats = parseVehicleStats(car);
-export const truckStats = parseVehicleStats(truck);
 
 export async function loadVehicleType(stats: VehicleStats): Promise<VehicleType> {
   const [sprite, bodySprite] = await Promise.all([
