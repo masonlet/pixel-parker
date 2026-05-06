@@ -1,3 +1,5 @@
+import { registerSound } from "web-engine/audio.ts";
+
 import type { Campaign, CampaignData, CampaignAudio, CampaignEntry } from "./types.ts";
 
 import type { Level } from "../level/types.ts";
@@ -5,8 +7,6 @@ import { loadLevel } from "../level/load.ts";
 
 import type { VehicleType } from "../vehicle/types.ts";
 import { loadVehicleType, parseVehicleStats } from "../vehicle/load.ts";
-
-import { registerSound } from "../../engine/audio.ts";
 
 import { isObj, str, optStr, arr, makeCollector } from "../utils/validate.ts";
 

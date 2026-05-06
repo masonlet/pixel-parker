@@ -1,4 +1,4 @@
-import { pointerX, pointerY, wasPointerClicked } from "../../engine/input/pointer.ts";
+import { pointerX, pointerY, wasPointerClicked } from "web-engine/input/pointer.ts";
 
 export interface Button {
   x: number;

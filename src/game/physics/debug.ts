@@ -1,6 +1,6 @@
-import type { OBB } from "../../engine/physics/types.ts";
-import { obbVsAabb } from "../../engine/physics/collision.ts";
-import { obbInsideAabb } from "../../engine/physics/overlap.ts";
+import type { OBB } from "web-engine/physics/types.ts";
+import { obbVsAabb } from "web-engine/physics/collision.ts";
+import { obbInsideAabb } from "web-engine/physics/overlap.ts";
 
 import { TILE, TILE_SIZE, type Level } from "../level/types.ts";
 import { getTile } from "../level/query.ts";

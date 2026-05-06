@@ -1,6 +1,7 @@
-import { tintImage } from "../../engine/assets.ts";
+import { tintImage } from "web-engine/assets.ts";
+import { createBody } from "web-engine/physics/body.ts";
+
 import type { Vehicle, VehicleType } from "./types.ts";
-import { createBody } from "../../engine/physics/body.ts";
 
 export function createVehicle(
   type: VehicleType,

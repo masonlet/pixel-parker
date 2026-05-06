@@ -1,6 +1,7 @@
+import { isMuted, setMuted } from "web-engine/audio.ts";
+
 import { getLayout, drawTitle } from "./layout.ts";
 import { type Button, drawButton, isHovered, isClicked } from "./button.ts";
-import { isMuted, setMuted } from "../../engine/audio.ts";
 
 export function drawSettingsMenu(
   ctx: CanvasRenderingContext2D,

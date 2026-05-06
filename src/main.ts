@@ -1,11 +1,10 @@
 import "./style.css";
 
-import { createGameCanvas } from "./engine/canvas.ts";
-import { startLoop } from "./engine/update.ts";
-import { initKeyboard, wasPressed } from "./engine/input/keyboard.ts";
-import { initPointer } from "./engine/input/pointer.ts";
-
-import { initAudio, registerSound, playSound } from "./engine/audio.ts";
+import { createGameCanvas } from "web-engine/canvas.ts";
+import { startLoop } from "web-engine/update.ts";
+import { initKeyboard, wasPressed } from "web-engine/input/keyboard.ts";
+import { initPointer } from "web-engine/input/pointer.ts";
+import { initAudio, registerSound, playSound } from "web-engine/audio.ts";
 
 import type { GameState } from "./game/state.ts";
 import { type PlayState, updatePlay, renderPlay, spawnVehicles } from "./game/play.ts";

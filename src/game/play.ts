@@ -1,8 +1,8 @@
+import { isDown, wasPressed } from "web-engine/input/keyboard.ts";
+
 import type { Level } from "./level/types.ts";
 import { drawLevel } from "./level/render.ts";
 import { checkLevelWon } from "./win.ts";
-
-import { isDown, wasPressed } from "../engine/input/keyboard.ts";
 
 import { sensorsOverlapping } from "./physics/sensors.ts";
 import { drawWallAabbs, drawOBB, drawSensors } from "./physics/debug.ts";

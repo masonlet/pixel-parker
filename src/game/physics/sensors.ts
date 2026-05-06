@@ -1,5 +1,5 @@
-import type { OBB, AABB } from "../../engine/physics/types.ts";
-import { overlappingRegions } from "../../engine/physics/overlap.ts";
+import type { OBB, AABB } from "web-engine/physics/types.ts";
+import { overlappingRegions } from "web-engine/physics/overlap.ts";
 
 import type { Sensor, Level } from "../level/types.ts";
 import type { Vehicle } from "../vehicle/types.ts";

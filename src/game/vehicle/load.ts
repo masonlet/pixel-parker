@@ -1,4 +1,5 @@
-import { loadImage } from "../../engine/assets.ts";
+import { loadImage } from "web-engine/assets.ts";
+
 import type { VehicleType, VehicleStats } from "./types.ts";
 import { isObj, num, str, makeCollector } from "../utils/validate.ts";
 
