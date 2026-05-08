@@ -28,7 +28,8 @@ export function createPlayState(campaign: Campaign): PlayState {
     debugMode: false,
   };
 }
-export function updatePlay(p: PlayState, dt: number): boolean {
+
+export function updatePlayState(p: PlayState, dt: number): boolean {
   if (wasPressed("Digit1")) {
     p.levelIndex = (p.levelIndex + 1) % p.levels.length;
     p.level = p.levels[p.levelIndex]!;

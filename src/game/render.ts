@@ -67,8 +67,8 @@ export function renderFrame(
     return state;
   }
 
-  if (state === "playing" 
-   || state === "paused" 
+  if (state === "playing"
+   || state === "paused"
    || state === "won"
   ) renderPlay(ctx, playState, canvas.width, canvas.height);
 

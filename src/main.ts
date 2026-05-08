@@ -6,7 +6,7 @@ import { registerSound, playSound } from "web-engine/audio.ts";
 
 import { bootstrapGame } from "./game/game.ts";
 import type { GameState } from "./game/types.ts";
-import { createPlayState, updatePlay } from "./game/play.ts";
+import { createPlayState, updatePlayState } from "./game/play.ts";
 import { renderFrame } from "./game/render.ts";
 
 import { loadCampaign } from "./campaign/load.ts";
@@ -28,7 +28,7 @@ startLoop(
       else if (state === "paused")  state = "playing";
     }
     if (state !== "playing") return;
-    if (updatePlay(playState, dt)) {
+    if (updatePlayState(playState, dt)) {
       playSound("win");
       state = "won";
     }
