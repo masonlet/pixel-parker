@@ -7,7 +7,7 @@ import { getTile } from "../level/query.ts";
 
 import type { Vehicle } from "../vehicle/types.ts";
 import { vehicleObb } from "./sensors.ts";
-import { isParkedIn, DEFAULT_PARK_PADDING } from "../win.ts";
+import { isParkedIn, DEFAULT_PARK_PADDING } from "../game/win.ts";
 
 export function drawOBB(
   ctx: CanvasRenderingContext2D,

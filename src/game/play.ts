@@ -1,38 +1,38 @@
 import { isDown, wasPressed } from "web-engine/input/keyboard.ts";
 
-import type { Level } from "./level/types.ts";
-import { drawLevel } from "./level/render.ts";
+import type { PlayState } from "./types.ts";
+
 import { checkLevelWon } from "./win.ts";
 
-import { sensorsOverlapping } from "./physics/sensors.ts";
-import { drawWallAabbs, drawOBB, drawSensors } from "./physics/debug.ts";
+import { drawLevel } from "../level/render.ts";
 
-import type { Vehicle, VehicleType } from "./vehicle/types.ts";
-import { applyInput, moveVehicle, stepVehiclePhysics, resolveVehiclePairs } from "./vehicle/physics.ts";
-import { createVehicle, drawVehicle } from "./vehicle/render.ts";
+import type { Campaign } from "../campaign/types.ts";
 
-export interface PlayState {
-  levels: Level[];
-  levelIndex: number;
-  level: Level;
-  vehicleTypes: Record<string, VehicleType>;
-  vehicles: Vehicle[];
-  vehicleIndex: number;
-  debugMode: boolean;
+import { spawnVehicles } from "../vehicle/spawn.ts";
+import {
+  applyInput,
+  moveVehicle,
+  stepVehiclePhysics,
+  resolveVehiclePairs
+} from "../vehicle/physics.ts";
+import { drawVehicle } from "../vehicle/render.ts";
+
+import { sensorsOverlapping } from "../physics/sensors.ts";
+import { drawWallAabbs, drawOBB, drawSensors } from "../physics/debug.ts";
+
+export function createPlayState(campaign: Campaign): PlayState {
+  return {
+    levels: campaign.levels,
+    levelIndex: 0,
+    level: campaign.levels[0]!,
+    vehicleTypes: campaign.vehicleTypes,
+    vehicles: spawnVehicles(campaign.levels[0]!, campaign.vehicleTypes),
+    vehicleIndex: 0,
+    debugMode: false,
+  };
 }
 
-export function spawnVehicles(
-  level: Level,
-  vehicleTypes: Record<string, VehicleType>,
-): Vehicle[] {
-  return level.vehicles.map((lv, i) => {
-    const type = vehicleTypes[lv.type];
-    if (!type) throw new Error(`Level: unknown vehicle type "${lv.type}"`);
-    return createVehicle(type, lv.x, lv.y, i * 60);
-  });
-}
-
-export function updatePlay(p: PlayState, dt: number): boolean {
+export function updatePlayState(p: PlayState, dt: number): boolean {
   if (wasPressed("Digit1")) {
     p.levelIndex = (p.levelIndex + 1) % p.levels.length;
     p.level = p.levels[p.levelIndex]!;
@@ -66,7 +66,7 @@ export function updatePlay(p: PlayState, dt: number): boolean {
   return checkLevelWon(p.level, p.vehicles);
 }
 
-export function renderPlay(
+export function renderPlayState(
   ctx: CanvasRenderingContext2D,
   p: PlayState,
   canvasW: number,
@@ -94,4 +94,9 @@ export function renderPlay(
     }
     drawSensors(ctx, p.level, camX, camY, p.vehicles, active);
   }
+}
+
+export function resetPlayState(p: PlayState): void {
+  p.vehicles = spawnVehicles(p.level, p.vehicleTypes);
+  p.vehicleIndex = 0;
 }
