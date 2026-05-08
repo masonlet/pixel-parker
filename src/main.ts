@@ -5,8 +5,8 @@ import { wasPressed } from "web-engine/input/keyboard.ts";
 import { registerSound, playSound } from "web-engine/audio.ts";
 
 import { bootstrapGame } from "./game/game.ts";
-import type { PlayState, GameState } from "./game/types.ts";
-import { updatePlay } from "./game/update.ts";
+import type { GameState } from "./game/types.ts";
+import { createPlayState, updatePlay, resetPlayState } from "./game/play.ts";
 import { renderPlay } from "./game/render.ts";
 
 import { drawTitleMenu } from "./ui/title.ts";
@@ -16,24 +16,13 @@ import { drawWonMenu } from "./ui/won.ts";
 
 import { loadCampaign } from "./campaign/load.ts";
 
-import { spawnVehicles } from "./vehicle/spawn.ts";
-
 const { canvas, ctx } = bootstrapGame();
 
 await registerSound("button", "audio/ui/button.wav");
 await registerSound("win", "audio/ui/win.wav");
 
 const campaign = await loadCampaign("test");
-
-const playState: PlayState = {
-  levels: campaign.levels,
-  levelIndex: 0,
-  level: campaign.levels[0]!,
-  vehicleTypes: campaign.vehicleTypes,
-  vehicles: spawnVehicles(campaign.levels[0]!, campaign.vehicleTypes),
-  vehicleIndex: 0,
-  debugMode: false,
-};
+const playState = createPlayState(campaign);
 
 let state = "title" as GameState;
 
@@ -84,8 +73,7 @@ startLoop(
       }
       if (action === "restart") {
         playSound("button");
-        playState.vehicles = spawnVehicles(playState.level, playState.vehicleTypes);
-        playState.vehicleIndex = 0;
+        resetPlayState(playState);
         state = "playing";
       }
       if (action === "quit") {
@@ -98,8 +86,7 @@ startLoop(
       const action = drawWonMenu(ctx, canvas.width, canvas.height);
       if (action === "restart") {
         playSound("button");
-        playState.vehicles = spawnVehicles(playState.level, playState.vehicleTypes);
-        playState.vehicleIndex = 0;
+        resetPlayState(playState);
         state = "playing";
       }
       if (action === "quit") {

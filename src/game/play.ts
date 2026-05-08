@@ -2,6 +2,8 @@ import { isDown, wasPressed } from "web-engine/input/keyboard.ts";
 
 import type { PlayState } from "./types.ts";
 
+import type { Campaign } from "../campaign/types.ts";
+
 import { checkLevelWon } from "./win.ts";
 
 import { spawnVehicles } from "../vehicle/spawn.ts";
@@ -15,6 +17,17 @@ import {
   resolveVehiclePairs
 } from "../vehicle/physics.ts";
 
+export function createPlayState(campaign: Campaign): PlayState {
+  return {
+    levels: campaign.levels,
+    levelIndex: 0,
+    level: campaign.levels[0]!,
+    vehicleTypes: campaign.vehicleTypes,
+    vehicles: spawnVehicles(campaign.levels[0]!, campaign.vehicleTypes),
+    vehicleIndex: 0,
+    debugMode: false,
+  };
+}
 export function updatePlay(p: PlayState, dt: number): boolean {
   if (wasPressed("Digit1")) {
     p.levelIndex = (p.levelIndex + 1) % p.levels.length;
@@ -47,4 +60,9 @@ export function updatePlay(p: PlayState, dt: number): boolean {
   active.hue = (active.hue + 60 * dt) % 360;
 
   return checkLevelWon(p.level, p.vehicles);
+}
+
+export function resetPlayState(p: PlayState): void {
+  p.vehicles = spawnVehicles(p.level, p.vehicleTypes);
+  p.vehicleIndex = 0;
 }
