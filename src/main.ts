@@ -4,9 +4,10 @@ import { startLoop } from "web-engine/update.ts";
 import { wasPressed } from "web-engine/input/keyboard.ts";
 import { registerSound, playSound } from "web-engine/audio.ts";
 
+import { bootstrapGame } from "./game/game.ts";
 import type { GameState } from "./game/state.ts";
-import { updatePlay, spawnVehicles } from "./game/play.ts";
 import type { PlayState } from "./game/types.ts";
+import { updatePlay } from "./game/update.ts";
 import { renderPlay } from "./game/render.ts";
 
 import { drawTitleMenu } from "./ui/title.ts";
@@ -15,7 +16,8 @@ import { drawPauseMenu } from "./ui/pause.ts";
 import { drawWonMenu } from "./ui/won.ts";
 
 import { loadCampaign } from "./campaign/load.ts";
-import { bootstrapGame } from "./game/game.ts";
+
+import { spawnVehicles } from "./vehicle/spawn.ts";
 
 const { canvas, ctx } = bootstrapGame();
 
