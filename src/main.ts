@@ -6,8 +6,8 @@ import { initKeyboard, wasPressed } from "web-engine/input/keyboard.ts";
 import { initPointer } from "web-engine/input/pointer.ts";
 import { initAudio, registerSound, playSound } from "web-engine/audio.ts";
 
-import type { GameState } from "./state.ts";
-import { type PlayState, updatePlay, renderPlay, spawnVehicles } from "./play.ts";
+import type { GameState } from "./game/state.ts";
+import { type PlayState, updatePlay, renderPlay, spawnVehicles } from "./game/play.ts";
 
 import { drawTitleMenu } from "./ui/title.ts";
 import { drawSettingsMenu } from "./ui/settings.ts";
@@ -17,6 +17,7 @@ import { drawWonMenu } from "./ui/won.ts";
 import { loadCampaign } from "./campaign/load.ts";
 
 const { canvas, ctx } = createGameCanvas();
+
 initKeyboard();
 initPointer(canvas);
 initAudio();

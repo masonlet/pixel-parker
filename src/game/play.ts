@@ -1,15 +1,21 @@
 import { isDown, wasPressed } from "web-engine/input/keyboard.ts";
 
-import type { Level } from "./level/types.ts";
-import { drawLevel } from "./level/render.ts";
 import { checkLevelWon } from "./win.ts";
 
-import { sensorsOverlapping } from "./physics/sensors.ts";
-import { drawWallAabbs, drawOBB, drawSensors } from "./physics/debug.ts";
+import type { Level } from "../level/types.ts";
+import { drawLevel } from "../level/render.ts";
 
-import type { Vehicle, VehicleType } from "./vehicle/types.ts";
-import { applyInput, moveVehicle, stepVehiclePhysics, resolveVehiclePairs } from "./vehicle/physics.ts";
-import { createVehicle, drawVehicle } from "./vehicle/render.ts";
+import { sensorsOverlapping } from "../physics/sensors.ts";
+import { drawWallAabbs, drawOBB, drawSensors } from "../physics/debug.ts";
+
+import type { Vehicle, VehicleType } from "../vehicle/types.ts";
+import {
+  applyInput,
+  moveVehicle,
+  stepVehiclePhysics,
+  resolveVehiclePairs
+} from "../vehicle/physics.ts";
+import { createVehicle, drawVehicle } from "../vehicle/render.ts";
 
 export interface PlayState {
   levels: Level[];
