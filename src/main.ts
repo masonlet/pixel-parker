@@ -1,10 +1,8 @@
 import "./style.css";
 
-import { createGameCanvas } from "web-engine/canvas.ts";
 import { startLoop } from "web-engine/update.ts";
-import { initKeyboard, wasPressed } from "web-engine/input/keyboard.ts";
-import { initPointer } from "web-engine/input/pointer.ts";
-import { initAudio, registerSound, playSound } from "web-engine/audio.ts";
+import { wasPressed } from "web-engine/input/keyboard.ts";
+import { registerSound, playSound } from "web-engine/audio.ts";
 
 import type { GameState } from "./game/state.ts";
 import { type PlayState, updatePlay, renderPlay, spawnVehicles } from "./game/play.ts";
@@ -15,12 +13,9 @@ import { drawPauseMenu } from "./ui/pause.ts";
 import { drawWonMenu } from "./ui/won.ts";
 
 import { loadCampaign } from "./campaign/load.ts";
+import { bootstrapGame } from "./game/game.ts";
 
-const { canvas, ctx } = createGameCanvas();
-
-initKeyboard();
-initPointer(canvas);
-initAudio();
+const { canvas, ctx } = bootstrapGame();
 
 await registerSound("button", "audio/ui/button.wav");
 await registerSound("win", "audio/ui/win.wav");
