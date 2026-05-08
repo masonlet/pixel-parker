@@ -10,3 +10,9 @@ export interface PlayState {
   vehicleIndex: number;
   debugMode: boolean;
 }
+
+export type GameState =  "title"
+                       | "settings"
+                       | "playing"
+                       | "paused"
+                       | "won";

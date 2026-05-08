@@ -5,8 +5,7 @@ import { wasPressed } from "web-engine/input/keyboard.ts";
 import { registerSound, playSound } from "web-engine/audio.ts";
 
 import { bootstrapGame } from "./game/game.ts";
-import type { GameState } from "./game/state.ts";
-import type { PlayState } from "./game/types.ts";
+import type { PlayState, GameState } from "./game/types.ts";
 import { updatePlay } from "./game/update.ts";
 import { renderPlay } from "./game/render.ts";
 
