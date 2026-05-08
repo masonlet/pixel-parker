@@ -6,13 +6,8 @@ import { registerSound, playSound } from "web-engine/audio.ts";
 
 import { bootstrapGame } from "./game/game.ts";
 import type { GameState } from "./game/types.ts";
-import { createPlayState, updatePlay, resetPlayState } from "./game/play.ts";
-import { renderPlay } from "./game/render.ts";
-
-import { drawTitleMenu } from "./ui/title.ts";
-import { drawSettingsMenu } from "./ui/settings.ts";
-import { drawPauseMenu } from "./ui/pause.ts";
-import { drawWonMenu } from "./ui/won.ts";
+import { createPlayState, updatePlay } from "./game/play.ts";
+import { renderFrame } from "./game/render.ts";
 
 import { loadCampaign } from "./campaign/load.ts";
 
@@ -29,8 +24,8 @@ let state = "title" as GameState;
 startLoop(
   (dt) => {
     if (wasPressed("Escape")) {
-      if (state === "playing") state = "paused";
-      else if (state === "paused") state = "playing";
+      if      (state === "playing") state = "paused";
+      else if (state === "paused")  state = "playing";
     }
     if (state !== "playing") return;
     if (updatePlay(playState, dt)) {
@@ -39,60 +34,6 @@ startLoop(
     }
   },
   () => {
-    ctx.fillStyle = "#000";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    if (state === "title") {
-      const { startClicked, settingsClicked } = drawTitleMenu(ctx, canvas.width, canvas.height);
-      if (startClicked) {
-        playSound("button");
-        state = "playing";
-      }
-      if (settingsClicked) {
-        playSound("button");
-        state = "settings";
-      }
-      return;
-    }
-    if (state === "settings") {
-      const { backClicked } = drawSettingsMenu(ctx, canvas.width, canvas.height);
-      if (backClicked) {
-        playSound("button");
-        state = "title";
-      }
-      return;
-    }
-    if (state === "playing" || state === "paused" || state === "won")
-      renderPlay(ctx, playState, canvas.width, canvas.height);
-
-    if (state === "paused") {
-      const action = drawPauseMenu(ctx, canvas.width, canvas.height);
-      if (action === "resume") {
-        playSound("button");
-        state = "playing";
-      }
-      if (action === "restart") {
-        playSound("button");
-        resetPlayState(playState);
-        state = "playing";
-      }
-      if (action === "quit") {
-        playSound("button");
-        state = "title";
-      }
-    }
-
-    if (state === "won") {
-      const action = drawWonMenu(ctx, canvas.width, canvas.height);
-      if (action === "restart") {
-        playSound("button");
-        resetPlayState(playState);
-        state = "playing";
-      }
-      if (action === "quit") {
-        playSound("button");
-        state = "title";
-      }
-    }
+    state = renderFrame(ctx, canvas, playState, state);
   },
 );
