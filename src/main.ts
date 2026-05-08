@@ -6,7 +6,7 @@ import { registerSound } from "web-engine/audio.ts";
 import { bootstrapGame } from "./game/game.ts";
 import type { GameState } from "./game/types.ts";
 import { createPlayState } from "./game/play.ts";
-import { updateFrame, renderFrame } from "./game/render.ts";
+import { updateFrame, renderFrame } from "./game/frame.ts";
 
 import { loadCampaign } from "./campaign/load.ts";
 
