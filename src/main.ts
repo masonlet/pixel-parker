@@ -10,10 +10,11 @@ import { updateFrame, renderFrame } from "./game/render.ts";
 
 import { loadCampaign } from "./campaign/load.ts";
 
+const { canvas, ctx } = bootstrapGame();
+
 await registerSound("button", "audio/ui/button.wav");
 await registerSound("win", "audio/ui/win.wav");
 
-const { canvas, ctx } = bootstrapGame();
 const campaign = await loadCampaign("test");
 const playState = createPlayState(campaign);
 let state = "title" as GameState;
