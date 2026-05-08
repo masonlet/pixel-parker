@@ -5,7 +5,9 @@ import { wasPressed } from "web-engine/input/keyboard.ts";
 import { registerSound, playSound } from "web-engine/audio.ts";
 
 import type { GameState } from "./game/state.ts";
-import { type PlayState, updatePlay, renderPlay, spawnVehicles } from "./game/play.ts";
+import { updatePlay, spawnVehicles } from "./game/play.ts";
+import type { PlayState } from "./game/types.ts";
+import { renderPlay } from "./game/render.ts";
 
 import { drawTitleMenu } from "./ui/title.ts";
 import { drawSettingsMenu } from "./ui/settings.ts";
