@@ -1,13 +1,12 @@
 import "./style.css";
 
 import { startLoop } from "web-engine/update.ts";
-import { wasPressed } from "web-engine/input/keyboard.ts";
-import { registerSound, playSound } from "web-engine/audio.ts";
+import { registerSound } from "web-engine/audio.ts";
 
 import { bootstrapGame } from "./game/game.ts";
 import type { GameState } from "./game/types.ts";
-import { createPlayState, updatePlayState } from "./game/play.ts";
-import { renderFrame } from "./game/render.ts";
+import { createPlayState } from "./game/play.ts";
+import { updateFrame, renderFrame } from "./game/render.ts";
 
 import { loadCampaign } from "./campaign/load.ts";
 
@@ -22,18 +21,6 @@ const playState = createPlayState(campaign);
 let state = "title" as GameState;
 
 startLoop(
-  (dt) => {
-    if (wasPressed("Escape")) {
-      if      (state === "playing") state = "paused";
-      else if (state === "paused")  state = "playing";
-    }
-    if (state !== "playing") return;
-    if (updatePlayState(playState, dt)) {
-      playSound("win");
-      state = "won";
-    }
-  },
-  () => {
-    state = renderFrame(ctx, canvas, playState, state);
-  },
+  (dt) => { state = updateFrame(state, playState, dt);          },
+  (  ) => { state = renderFrame(ctx, canvas, playState, state); },
 );

@@ -1,13 +1,31 @@
 import { playSound } from "web-engine/audio.ts";
+import { wasPressed } from "web-engine/input/keyboard.ts";
 
 import type { PlayState, GameState } from "./types.ts";
+import { renderPlayState, updatePlayState, resetPlayState } from "./play.ts";
 
 import { drawTitleMenu } from "../ui/title.ts";
 import { drawSettingsMenu } from "../ui/settings.ts";
 import { drawPauseMenu } from "../ui/pause.ts";
 import { drawWonMenu } from "../ui/won.ts";
 
-import { renderPlayState, resetPlayState } from "./play.ts";
+export function updateFrame(
+  state: GameState,
+  playState: PlayState,
+  dt: number
+): GameState {
+  if (wasPressed("Escape")) {
+    if      (state === "playing") return "paused";
+    else if (state === "paused")  return "playing";
+  }
+  if (state !== "playing") return state;
+  if (updatePlayState(playState, dt)) {
+    playSound("win");
+    return "won";
+  }
+
+  return state;
+}
 
 export function renderFrame(
   ctx: CanvasRenderingContext2D,
