@@ -10,7 +10,8 @@ import { loadVehicleType, parseVehicleStats } from "../vehicle/load.ts";
 
 import { isObj, str, optStr, arr, makeCollector } from "../utils/validate.ts";
 
-const campaignFiles = import.meta.glob("../assets/campaigns/*/**/*.json", {
+const path = "../../assets/campaigns/";
+const campaignFiles = import.meta.glob("../../assets/campaigns/**/*.json", {
   eager: true,
   import: "default"
 }) as Record<string, unknown>;
@@ -44,7 +45,7 @@ function parseCampaign(data: unknown): CampaignData {
 }
 
 export async function loadCampaign(folder: string): Promise<Campaign> {
-  const basePath = `../assets/campaigns/${folder}`;
+  const basePath = `${path}${folder}`;
   const campaignKey = `${basePath}/campaign.json`;
   const raw = campaignFiles[campaignKey];
   if (raw === undefined) throw new Error(`Campaign "${folder}": campaign.json not found at ${campaignKey}`);
