@@ -8,7 +8,7 @@ import { updateTitleMenu, drawTitleMenu } from "../ui/title.ts";
 import { drawSettingsMenu } from "../ui/settings.ts";
 import { drawLevelSelect } from "../ui/levels.ts";
 import { updatePauseMenu, drawPauseMenu } from "../ui/pause.ts";
-import { drawWonMenu } from "../ui/won.ts";
+import { updateWonMenu, drawWonMenu } from "../ui/won.ts";
 
 export function updateFrame(
   state: GameState,
@@ -39,10 +39,13 @@ export function renderFrame(
   ctx.fillRect(0, 0, W, H);
 
   if (state === "menu-title") {
-    const titleState = updateTitleMenu(W, H);
-    drawTitleMenu(ctx, W, H, titleState);
-    if (titleState.start.state.clicked)    { playSound("button"); return playState.levels.length > 1 ? "menu-levels" : "level-playing"; }
-    if (titleState.settings.state.clicked) { playSound("button"); return "menu-settings"; }
+    const titleAction = updateTitleMenu(W, H);
+    drawTitleMenu(ctx, W, H, titleAction);
+    if (titleAction.start.state.clicked) {
+      playSound("button");
+      return playState.levels.length > 1 ? "menu-levels" : "level-playing";
+    }
+    if (titleAction.settings.state.clicked) { playSound("button"); return "menu-settings"; }
     return state;
   }
 
@@ -81,11 +84,15 @@ export function renderFrame(
   }
 
   if (state === "level-won") {
-    const action = drawWonMenu(ctx, W, H, playState.levelIndex < playState.levels.length - 1);
-    if (action === "quit") { playSound("button"); return "menu-title"; }
-    if (action === "next") { playSound("button"); selectLevel(playState, playState.levelIndex + 1); return "level-playing"; }
-    if (action === "restart") {
+    const wonAction = updateWonMenu(W, H, playState.levelIndex < playState.levels.length - 1)
+    drawWonMenu(ctx, W, H, wonAction);
+    if (wonAction.action === "quit") { playSound("button"); return "menu-title"; }
+    if (wonAction.action === "next") {
       playSound("button");
+      selectLevel(playState, playState.levelIndex + 1); return "level-playing";
+    }
+    if (wonAction.action === "restart") {
+      playSound("button");  
       resetPlayState(playState);
       return "level-playing";
     }
