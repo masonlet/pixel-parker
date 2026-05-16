@@ -4,11 +4,11 @@ import { wasPressed } from "web-engine/input/keyboard.ts";
 import type { PlayState, GameState } from "./types.ts";
 import { renderPlayState, selectLevel, updatePlayState, resetPlayState } from "./play.ts";
 
-import { updateTitleMenu, drawTitleMenu } from "../ui/title.ts";
+import { updateTitleMenu,    drawTitleMenu    } from "../ui/title.ts";
 import { updateSettingsMenu, drawSettingsMenu } from "../ui/settings.ts";
-import { drawLevelSelect } from "../ui/levels.ts";
-import { updatePauseMenu, drawPauseMenu } from "../ui/pause.ts";
-import { updateWonMenu, drawWonMenu } from "../ui/won.ts";
+import { updateLevelSelect,  drawLevelSelect  } from "../ui/levels.ts";
+import { updatePauseMenu,    drawPauseMenu    } from "../ui/pause.ts";
+import { updateWonMenu,      drawWonMenu      } from "../ui/won.ts";
 
 export function updateFrame(
   state: GameState,
@@ -57,11 +57,12 @@ export function renderFrame(
   }
 
   if (state === "menu-levels"){
-    const { clickedIndex, backClicked } = drawLevelSelect(ctx, playState.levels, W, H);
-    if (backClicked) { playSound("button"); return "menu-title"; }
-    if (clickedIndex !== null) {
+    const levelAction = updateLevelSelect(W, H, playState.levels);
+    drawLevelSelect(ctx, W, H, levelAction);
+    if (levelAction.back.state.clicked) { playSound("button"); return "menu-title"; }
+    if (levelAction.clickedIndex !== null) {
       playSound("button");
-      selectLevel(playState, clickedIndex);
+      selectLevel(playState, levelAction.clickedIndex);
       return "level-playing";
     }
     return state;
