@@ -7,7 +7,7 @@ import { renderPlayState, selectLevel, updatePlayState, resetPlayState } from ".
 import { drawTitleMenu } from "../ui/title.ts";
 import { drawSettingsMenu } from "../ui/settings.ts";
 import { drawLevelSelect } from "../ui/levels.ts";
-import { drawPauseMenu } from "../ui/pause.ts";
+import { updatePauseMenu, drawPauseMenu } from "../ui/pause.ts";
 import { drawWonMenu } from "../ui/won.ts";
 
 export function updateFrame(
@@ -67,10 +67,11 @@ export function renderFrame(
   ) renderPlayState(ctx, playState, canvas.width, canvas.height);
 
   if (state === "level-paused") {
-    const action = drawPauseMenu(ctx, canvas.width, canvas.height);
-    if (action === "resume") { playSound("button"); return "level-playing"; }
-    if (action === "quit")   { playSound("button"); return "menu-title";   }
-    if (action === "restart") {
+    const pauseState = updatePauseMenu(canvas.width, canvas.height);
+    drawPauseMenu(ctx, canvas.width, canvas.height, pauseState);
+    if (pauseState.action === "resume") { playSound("button"); return "level-playing"; }
+    if (pauseState.action === "quit")   { playSound("button"); return "menu-title";   }
+    if (pauseState.action === "restart") {
       playSound("button");
       resetPlayState(playState);
       return "level-playing";
