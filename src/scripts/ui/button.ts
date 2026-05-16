@@ -1,17 +1,14 @@
 import { pointerX, pointerY, wasPointerClicked } from "web-engine/input/pointer.ts";
-import { type Button } from "./types";
+import type { Button, ButtonState } from "./types";
 
-export function isHovered(b: Button): boolean {
+export function getButtonState(b: Button): ButtonState {
   const mx = pointerX(), my = pointerY();
-  return mx >= b.x && mx <= b.x + b.w && my >= b.y && my <= b.y + b.h;
+  const hovered = mx >= b.x && mx <= b.x + b.w && my >= b.y && my <= b.y + b.h;
+  return { hovered, clicked: hovered && wasPointerClicked() };
 }
 
-export function isClicked(b: Button): boolean {
-  return isHovered(b) && wasPointerClicked();
-}
-
-export function drawButton(ctx: CanvasRenderingContext2D, b: Button, hover: boolean): void {
-  ctx.fillStyle = hover ? "#444" : "#222";
+export function drawButton(ctx: CanvasRenderingContext2D, b: Button, state: ButtonState): void {
+  ctx.fillStyle = state.hovered ? "#444" : "#222";
   ctx.fillRect(b.x, b.y, b.w, b.h);
   ctx.strokeStyle = "#fff";
   ctx.lineWidth = 2;

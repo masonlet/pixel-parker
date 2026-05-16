@@ -1,6 +1,6 @@
 import { getLayout, drawTitle } from "./layout.ts";
 import type { Button, PauseAction } from "./types.ts";
-import { drawButton, isHovered, isClicked } from "./button.ts";
+import { drawButton, getButtonState } from "./button.ts";
 
 export function drawPauseMenu(
   ctx: CanvasRenderingContext2D,
@@ -22,12 +22,16 @@ export function drawPauseMenu(
   const restartBtn: Button = { x: cx - btnW/2, y: firstY + (btnH + gap),     w: btnW, h: btnH, label: "Restart" };
   const quitBtn:    Button = { x: cx - btnW/2, y: firstY + (btnH + gap) * 2, w: btnW, h: btnH, label: "Quit"    };
 
-  drawButton(ctx, resumeBtn, isHovered(resumeBtn));
-  drawButton(ctx, restartBtn, isHovered(restartBtn));
-  drawButton(ctx, quitBtn, isHovered(quitBtn));
+  const resumeState  = getButtonState(resumeBtn);
+  const restartState = getButtonState(restartBtn);
+  const quitState    = getButtonState(quitBtn);
 
-  if (isClicked(resumeBtn)) return "resume";
-  if (isClicked(restartBtn)) return "restart";
-  if (isClicked(quitBtn)) return "quit";
+  drawButton(ctx, resumeBtn,  resumeState);
+  drawButton(ctx, restartBtn, restartState);
+  drawButton(ctx, quitBtn,    quitState);
+
+  if (resumeState.clicked)  return "resume";
+  if (restartState.clicked) return "restart";
+  if (quitState.clicked)    return "quit";
   return null;
 }

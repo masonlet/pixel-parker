@@ -1,7 +1,7 @@
 import { isMuted, setMuted, getVolume, setVolume } from "web-engine/audio/mixer.ts";
 
 import { getLayout, drawTitle } from "./layout.ts";
-import { drawButton, isHovered, isClicked } from "./button.ts";
+import { drawButton, getButtonState } from "./button.ts";
 import { drawSlider, updateSlider } from "./slider.ts";
 import type { Button, Slider, SliderState } from "./types.ts";
 
@@ -32,8 +32,9 @@ export function drawSettingsMenu(
     w: btnW, h: btnH,
     label: isMuted() ? "Unmute" : "Mute",
   };
-  drawButton(ctx, muteBtn, isHovered(muteBtn));
-  if (isClicked(muteBtn)) setMuted(!isMuted());
+  const muteState = getButtonState(muteBtn);
+  drawButton(ctx, muteBtn, muteState);
+  if (muteState.clicked) setMuted(!isMuted());
 
   volSlider.x = cx - btnW / 2;
   volSlider.y = cy + btnH / 2 + gap;
@@ -50,7 +51,8 @@ export function drawSettingsMenu(
     w: btnW, h: btnH,
     label: "Back"
   };
-  drawButton(ctx, backBtn, isHovered(backBtn));
+  const backState = getButtonState(backBtn);
+  drawButton(ctx, backBtn, backState);
 
-  return { backClicked: isClicked(backBtn) };
+  return { backClicked: backState.clicked };
 }
