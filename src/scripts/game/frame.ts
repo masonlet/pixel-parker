@@ -15,13 +15,13 @@ export function updateFrame(
   dt: number
 ): GameState {
   if (wasPressed("Escape")) {
-    if      (state === "playing") return "paused";
-    else if (state === "paused")  return "playing";
+    if      (state === "level-playing") return "level-paused";
+    else if (state === "level-paused")  return "level-playing";
   }
-  if (state !== "playing") return state;
+  if (state !== "level-playing") return state;
   if (updatePlayState(playState, dt)) {
     playSound("win");
-    return "won";
+    return "level-won";
   }
 
   return state;
@@ -36,42 +36,42 @@ export function renderFrame(
   ctx.fillStyle = "#000";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  if (state === "title") {
+  if (state === "menu-title") {
     const { startClicked, settingsClicked } = drawTitleMenu(ctx, canvas.width, canvas.height);
-    if (startClicked)    { playSound("button"); return "playing";  }
-    if (settingsClicked) { playSound("button"); return "settings"; }
+    if (startClicked)    { playSound("button"); return "level-playing";  }
+    if (settingsClicked) { playSound("button"); return "menu-settings"; }
     return state;
   }
 
-  if (state === "settings") {
+  if (state === "menu-settings") {
     const { backClicked } = drawSettingsMenu(ctx, canvas.width, canvas.height);
-    if (backClicked) { playSound("button"); state = "title"; }
+    if (backClicked) { playSound("button"); state = "menu-title"; }
     return state;
   }
 
-  if (state === "playing"
-   || state === "paused"
-   || state === "won"
+  if (state === "level-playing"
+   || state === "level-paused"
+   || state === "level-won"
   ) renderPlayState(ctx, playState, canvas.width, canvas.height);
 
-  if (state === "paused") {
+  if (state === "level-paused") {
     const action = drawPauseMenu(ctx, canvas.width, canvas.height);
-    if (action === "resume") { playSound("button"); return "playing"; }
-    if (action === "quit")   { playSound("button"); return "title";   }
+    if (action === "resume") { playSound("button"); return "level-playing"; }
+    if (action === "quit")   { playSound("button"); return "menu-title";   }
     if (action === "restart") {
       playSound("button");
       resetPlayState(playState);
-      return "playing";
+      return "level-playing";
     }
   }
 
-  if (state === "won") {
+  if (state === "level-won") {
     const action = drawWonMenu(ctx, canvas.width, canvas.height);
-    if (action === "quit") { playSound("button"); return "title"; }
+    if (action === "quit") { playSound("button"); return "menu-title"; }
     if (action === "restart") {
       playSound("button");
       resetPlayState(playState);
-      return "playing";
+      return "level-playing";
     }
   }
 

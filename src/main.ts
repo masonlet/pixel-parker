@@ -17,7 +17,7 @@ await registerSound("win", "audio/ui/win.wav");
 
 const campaign = await loadCampaign("test");
 const playState = createPlayState(campaign);
-let state = "title" as GameState;
+let state = "menu-title" as GameState;
 
 startLoop(
   (dt) => { state = updateFrame(state, playState, dt);          },

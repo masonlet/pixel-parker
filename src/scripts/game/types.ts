@@ -11,8 +11,8 @@ export interface PlayState {
   debugMode: boolean;
 }
 
-export type GameState = "title"
-                      | "settings"
-                      | "playing"
-                      | "paused"
-                      | "won";
+export type GameState = "menu-title"
+                      | "menu-settings"
+                      | "level-playing"
+                      | "level-paused"
+                      | "level-won";
