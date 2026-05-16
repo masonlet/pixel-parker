@@ -13,6 +13,7 @@ export interface PlayState {
 
 export type GameState = "menu-title"
                       | "menu-settings"
+                      | "menu-levels"
                       | "level-playing"
                       | "level-paused"
                       | "level-won";
