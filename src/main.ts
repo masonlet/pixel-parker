@@ -4,7 +4,7 @@ import { startLoop } from "web-engine/update.ts";
 import { registerSound } from "web-engine/audio/registry.ts";
 
 import { bootstrapGame } from "./scripts/game/game.ts";
-import type { GameState } from "./scripts/game/types.ts";
+import type { FrameState } from "./scripts/game/types.ts";
 import { createPlayState } from "./scripts/game/play.ts";
 import { updateFrame, renderFrame } from "./scripts/game/frame.ts";
 
@@ -17,9 +17,9 @@ await registerSound("win", "audio/ui/win.wav");
 
 const campaign = await loadCampaign("test");
 const playState = createPlayState(campaign);
-let state = "menu-title" as GameState;
+let frame: FrameState | null = null;
 
 startLoop(
-  (dt) => { state = updateFrame(state, playState, dt);          },
-  (  ) => { state = renderFrame(ctx, canvas, playState, state); },
+  (dt) => { frame = updateFrame(canvas, frame, playState, dt); },
+  (  ) => { renderFrame(ctx, canvas, playState, frame!);       },
 );
