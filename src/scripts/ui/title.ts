@@ -1,5 +1,6 @@
 import { getLayout, drawTitle } from "./layout.ts";
-import { type Button, drawButton, isHovered, isClicked } from "./button.ts";
+import type { Button } from "./types.ts";
+import { drawButton, getButtonState } from "./button.ts";
 
 export function drawTitleMenu(
   ctx: CanvasRenderingContext2D,
@@ -27,11 +28,14 @@ export function drawTitleMenu(
     label: "SETTINGS"
   };
 
-  drawButton(ctx, startBtn, isHovered(startBtn));
-  drawButton(ctx, settingsBtn, isHovered(settingsBtn));
+  const startState = getButtonState(startBtn);
+  const settingsState = getButtonState(settingsBtn);
+
+  drawButton(ctx, startBtn, startState);
+  drawButton(ctx, settingsBtn, settingsState);
 
   return {
-    startClicked: isClicked(startBtn),
-    settingsClicked: isClicked(settingsBtn),
+    startClicked: startState.clicked,
+    settingsClicked: settingsState.clicked,
   };
 }

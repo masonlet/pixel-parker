@@ -1,7 +1,6 @@
 import { getLayout, drawTitle } from "./layout.ts";
-import { type Button, drawButton, isHovered, isClicked } from "./button.ts";
-
-export type WonAction = "next" | "restart" | "quit" | null;
+import type { Button, WonAction } from "./types.ts";
+import { drawButton, getButtonState } from "./button.ts";
 
 export function drawWonMenu(
   ctx: CanvasRenderingContext2D,
@@ -24,15 +23,19 @@ export function drawWonMenu(
   const restartBtn: Button = { x: cx - btnW/2, y: firstY,                        w: btnW, h: btnH, label: "Restart" };
   const quitBtn:    Button = { x: cx - btnW/2, y: firstY + (btnH + gap) * (btnCount - 1), w: btnW, h: btnH, label: "Quit"    };
 
-  drawButton(ctx, restartBtn, isHovered(restartBtn));
+  const restartState = getButtonState(restartBtn);
+  const quitState    = getButtonState(quitBtn);
+
+  drawButton(ctx, restartBtn, restartState);
   if (hasNext) {
     const nextBtn: Button = { x: cx - btnW/2, y: firstY + (btnH + gap), w: btnW, h: btnH, label: "Next" };
-    drawButton(ctx, nextBtn, isHovered(nextBtn));
-    if (isClicked(nextBtn)) return "next";
+    const nextState = getButtonState(nextBtn);
+    drawButton(ctx, nextBtn, nextState);
+    if (nextState.clicked) return "next";
   }
-  drawButton(ctx, quitBtn, isHovered(quitBtn));
+  drawButton(ctx, quitBtn, quitState);
 
-  if (isClicked(restartBtn)) return "restart";
-  if (isClicked(quitBtn))    return "quit";
+  if (restartState.clicked) return "restart";
+  if (quitState.clicked)    return "quit";
   return null;
 }

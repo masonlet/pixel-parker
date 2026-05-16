@@ -1,5 +1,6 @@
 import { getLayout, drawTitle } from "./layout.ts";
-import { type Button, drawButton, isHovered, isClicked } from "./button.ts";
+import { drawButton, getButtonState } from "./button.ts";
+import type { Button } from "./types.ts";
 import type { Level } from "../level/types.ts";
 
 export function drawLevelSelect(
@@ -34,8 +35,9 @@ export function drawLevelSelect(
       w: cellW, h: btnH,
       label: levels[i]?.name ?? `Level ${i + 1}`,
     };
-    drawButton(ctx, btn, isHovered(btn));
-    if (isClicked(btn)) clickedIndex = i;
+    const state = getButtonState(btn);
+    drawButton(ctx, btn, state);
+    if (state.clicked) clickedIndex = i;
   }
 
   const backBtn: Button = {
@@ -44,7 +46,8 @@ export function drawLevelSelect(
     w: btnW, h: btnH,
     label: "Back",
   };
-  drawButton(ctx, backBtn, isHovered(backBtn));
+  const backState = getButtonState(backBtn);
+  drawButton(ctx, backBtn, backState);
 
-  return { clickedIndex, backClicked: isClicked(backBtn) };
+  return { clickedIndex, backClicked: backState.clicked };
 }

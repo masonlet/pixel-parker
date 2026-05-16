@@ -1,14 +1,17 @@
 import { isMuted, setMuted, getVolume, setVolume } from "web-engine/audio/mixer.ts";
 
 import { getLayout, drawTitle } from "./layout.ts";
-import { type Button, drawButton, isHovered, isClicked } from "./button.ts";
-import { type Slider, drawSlider, sliderValue } from "./slider.ts";
+import type { Button, Slider, SliderState } from "./types.ts";
+import { drawButton, getButtonState } from "./button.ts";
+import { drawSlider, updateSlider } from "./slider.ts";
 
-  const volSlider: Slider = {
-    x: 0, y: 0,
-    w: 0, h: 0,
-    label: "Volume",
-  };
+const volSlider: Slider = {
+  x: 0, y: 0,
+  w: 0, h: 0,
+  label: "Volume",
+};
+
+let volState: SliderState = { dragging: false, value: getVolume() };
 
 export function drawSettingsMenu(
   ctx: CanvasRenderingContext2D,
@@ -29,16 +32,18 @@ export function drawSettingsMenu(
     w: btnW, h: btnH,
     label: isMuted() ? "Unmute" : "Mute",
   };
-  drawButton(ctx, muteBtn, isHovered(muteBtn));
-  if (isClicked(muteBtn)) setMuted(!isMuted());
+  const muteState = getButtonState(muteBtn);
+  drawButton(ctx, muteBtn, muteState);
+  if (muteState.clicked) setMuted(!isMuted());
 
   volSlider.x = cx - btnW / 2;
   volSlider.y = cy + btnH / 2 + gap;
   volSlider.w = btnW;
   volSlider.h = btnH;
-  drawSlider(ctx, volSlider, getVolume());
-  const newVol = sliderValue(volSlider);
-  if (newVol !== null) setVolume(newVol);
+
+  volState = updateSlider(volSlider, volState);
+  setVolume(volState.value);
+  drawSlider(ctx, volSlider, volState.value);
 
   const backBtn: Button = {
     x: cx - btnW / 2,
@@ -46,7 +51,8 @@ export function drawSettingsMenu(
     w: btnW, h: btnH,
     label: "Back"
   };
-  drawButton(ctx, backBtn, isHovered(backBtn));
+  const backState = getButtonState(backBtn);
+  drawButton(ctx, backBtn, backState);
 
-  return { backClicked: isClicked(backBtn) };
+  return { backClicked: backState.clicked };
 }
