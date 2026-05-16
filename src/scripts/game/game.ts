@@ -12,4 +12,3 @@ export function bootstrapGame() {
 
   return { canvas, ctx };
 }
-
