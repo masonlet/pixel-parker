@@ -5,7 +5,7 @@ import type { PlayState, GameState } from "./types.ts";
 import { renderPlayState, selectLevel, updatePlayState, resetPlayState } from "./play.ts";
 
 import { updateTitleMenu, drawTitleMenu } from "../ui/title.ts";
-import { drawSettingsMenu } from "../ui/settings.ts";
+import { updateSettingsMenu, drawSettingsMenu } from "../ui/settings.ts";
 import { drawLevelSelect } from "../ui/levels.ts";
 import { updatePauseMenu, drawPauseMenu } from "../ui/pause.ts";
 import { updateWonMenu, drawWonMenu } from "../ui/won.ts";
@@ -52,8 +52,9 @@ export function renderFrame(
   }
 
   if (state === "menu-settings") {
-    const { backClicked } = drawSettingsMenu(ctx, canvas.width, canvas.height);
-    if (backClicked) { playSound("button"); state = "menu-title"; }
+    const settingsState = updateSettingsMenu(canvas.width, canvas.height);
+    drawSettingsMenu(ctx, canvas.width, canvas.height, settingsState);
+    if (settingsState.back.state.clicked) { playSound("button"); return "menu-title"; }
     return state;
   }
 

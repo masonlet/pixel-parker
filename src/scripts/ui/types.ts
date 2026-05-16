@@ -28,6 +28,11 @@ export interface ButtonEntry {
   state: ButtonState;
 }
 
+export interface SliderEntry {
+  slider: Slider;
+  state: SliderState;
+}
+
 export interface MenuLayout {
   cx:     number;
   scale:  number;
@@ -56,7 +61,7 @@ export interface WonMenuState extends MenuLayout {
 export interface SettingsMenuState extends MenuLayout {
   mute:  ButtonEntry;
   back:  ButtonEntry;
-  vol:   SliderState;
+  vol:   SliderEntry;
   muted: boolean;
 }
 
