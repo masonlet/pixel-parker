@@ -1,23 +1,13 @@
 import { getLayout, drawTitle } from "./layout.ts";
-import { drawButton, getButtonState } from "./button.ts";
-import type { Button } from "./types.ts";
+import { getButtonState, drawButton } from "./button.ts";
+import type { Button, LevelSelectState } from "./types.ts";
 import type { Level } from "../level/types.ts";
 
-export function drawLevelSelect(
-  ctx: CanvasRenderingContext2D,
-  levels: Level[],
-  canvasW: number,
-  canvasH: number,
-): { clickedIndex: number | null; backClicked: boolean } {
-  ctx.fillStyle = "#000";
-  ctx.fillRect(0, 0, canvasW, canvasH);
-
+export function updateLevelSelect(canvasW: number, canvasH: number, levels: Level[]): LevelSelectState {
   const { scale, gap, cx, cy, btnW, btnH } = getLayout(canvasW, canvasH);
-
   const titleY = scale * 0.15;
-  drawTitle(ctx, "Select Level", cx, titleY, scale);
 
-  const cols = 3;
+  const cols  = 3;
   const cellW = btnH * 3;
   const gridW = cellW * cols + gap * (cols - 1);
   const gridH = btnH * 3 + gap * 2;
@@ -25,8 +15,7 @@ export function drawLevelSelect(
   const gridY = cy - gridH / 2;
 
   let clickedIndex: number | null = null;
-
-  for (let i = 0; i < Math.min(levels.length, 9); i++) {
+  const levelEntries = Array.from({ length: Math.min(levels.length, 9) }, (_, i) => {
     const col = i % cols;
     const row = Math.floor(i / cols);
     const btn: Button = {
@@ -36,18 +25,25 @@ export function drawLevelSelect(
       label: levels[i]?.name ?? `Level ${i + 1}`,
     };
     const state = getButtonState(btn);
-    drawButton(ctx, btn, state);
     if (state.clicked) clickedIndex = i;
-  }
+    return { btn, state };
+  });
 
-  const backBtn: Button = {
-    x: cx - btnW / 2,
-    y: canvasH - btnH - gap * 2,
-    w: btnW, h: btnH,
-    label: "Back",
-  };
-  const backState = getButtonState(backBtn);
-  drawButton(ctx, backBtn, backState);
+  const backBtn: Button = { x: cx - btnW/2, y: canvasH - btnH - gap*2, w: btnW, h: btnH, label: "Back" };
+  const back = { btn: backBtn, state: getButtonState(backBtn) };
 
-  return { clickedIndex, backClicked: backState.clicked };
+  return { cx, scale, titleY, levels: levelEntries, back, clickedIndex };
+}
+
+export function drawLevelSelect(
+  ctx: CanvasRenderingContext2D,
+  canvasW: number,
+  canvasH: number,
+  state: LevelSelectState,
+): void {
+  ctx.fillStyle = "#000";
+  ctx.fillRect(0, 0, canvasW, canvasH);
+  drawTitle(ctx, "Select Level", state.cx, state.titleY, state.scale);
+  for (const entry of state.levels) drawButton(ctx, entry.btn, entry.state);
+  drawButton(ctx, state.back.btn, state.back.state);
 }

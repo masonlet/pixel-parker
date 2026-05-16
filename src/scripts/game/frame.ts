@@ -1,92 +1,119 @@
 import { playSound } from "web-engine/audio/playback.ts";
 import { wasPressed } from "web-engine/input/keyboard.ts";
 
-import type { PlayState, GameState } from "./types.ts";
+import type { PlayState, FrameState } from "./types.ts";
 import { renderPlayState, selectLevel, updatePlayState, resetPlayState } from "./play.ts";
 
-import { drawTitleMenu } from "../ui/title.ts";
-import { drawSettingsMenu } from "../ui/settings.ts";
-import { drawLevelSelect } from "../ui/levels.ts";
-import { drawPauseMenu } from "../ui/pause.ts";
-import { drawWonMenu } from "../ui/won.ts";
+import { updateTitleMenu,    drawTitleMenu    } from "../ui/title.ts";
+import { updateSettingsMenu, drawSettingsMenu } from "../ui/settings.ts";
+import { updateLevelSelect,  drawLevelSelect  } from "../ui/levels.ts";
+import { updatePauseMenu,    drawPauseMenu    } from "../ui/pause.ts";
+import { updateWonMenu,      drawWonMenu      } from "../ui/won.ts";
+
+function button(frame: FrameState): FrameState { playSound("button"); return frame; }
 
 export function updateFrame(
-  state: GameState,
+  canvas: HTMLCanvasElement,
+  frame: FrameState | null,
   playState: PlayState,
   dt: number
-): GameState {
+): FrameState {
+  const { width: w, height: h } = canvas;
+
+  if (frame === null) return { game: "menu-title", ui: updateTitleMenu(w, h) };
+
   if (wasPressed("Escape")) {
-    if      (state === "level-playing") return "level-paused";
-    else if (state === "level-paused")  return "level-playing";
-  }
-  if (state !== "level-playing") return state;
-  if (updatePlayState(playState, dt)) {
-    playSound("win");
-    return "level-won";
+    if (frame.game === "level-playing") return { game: "level-paused",  ui: updatePauseMenu(w, h) };
+    if (frame.game === "level-paused")  return { game: "level-playing", ui: null };
   }
 
-  return state;
+  if (frame.game === "level-playing") {
+    if (updatePlayState(playState, dt)) {
+      playSound("win");
+      return {
+        game: "level-won",
+        ui: updateWonMenu(w, h, playState.levelIndex < playState.levels.length - 1)
+      };
+    }
+    return frame;
+  }
+
+  switch (frame.game) {
+    case "menu-title": {
+      const ui = updateTitleMenu(w, h);
+      if (ui.start.state.clicked) return button(playState.levels.length > 1
+        ? { game: "menu-levels", ui: updateLevelSelect(w, h, playState.levels) }
+        : { game: "level-playing", ui: null });
+      if (ui.settings.state.clicked) return button({
+        game: "menu-settings",
+        ui: updateSettingsMenu(w, h)
+      });
+      return { game: "menu-title", ui };
+    }
+    case "menu-settings": {
+      const ui = updateSettingsMenu(w, h);
+      if (ui.back.state.clicked) return button({
+        game: "menu-title",
+        ui: updateTitleMenu(w, h)
+      });
+      return { game: "menu-settings", ui };
+    }
+    case "menu-levels": {
+      const ui = updateLevelSelect(w, h, playState.levels);
+      if (ui.back.state.clicked) return button({ game: "menu-title", ui: updateTitleMenu(w, h) });
+      if (ui.clickedIndex !== null) {
+        selectLevel(playState, ui.clickedIndex);
+        return button({ game: "level-playing", ui: null });
+      }
+      return { game: "menu-levels", ui };
+    }
+    case "level-paused": {
+      const ui = updatePauseMenu(w, h);
+      if (ui.action === "resume") return button({ game: "level-playing", ui: null });
+      if (ui.action === "quit") return button({ game: "menu-title", ui: updateTitleMenu(w, h) });
+      if (ui.action === "restart") {
+        resetPlayState(playState);
+        return button({ game: "level-playing", ui: null });
+      }
+      return { game: "level-paused", ui };
+    }
+    case "level-won": {
+      const ui = updateWonMenu(w, h, playState.levelIndex < playState.levels.length - 1);
+      if (ui.action === "quit") return button({ game: "menu-title", ui: updateTitleMenu(w, h) });
+      if (ui.action === "next") {
+        selectLevel(playState, playState.levelIndex + 1);
+        return button({ game: "level-playing", ui: null });
+      }
+      if (ui.action === "restart") {
+        resetPlayState(playState);
+        return button({ game: "level-playing", ui: null });
+      }
+      return { game: "level-won", ui };
+    }
+  }
 }
 
 export function renderFrame(
   ctx: CanvasRenderingContext2D,
   canvas: HTMLCanvasElement,
   playState: PlayState,
-  state: GameState
-): GameState {
+  frame: FrameState
+): void {
+  const { width: w, height: h } = canvas;
+
   ctx.fillStyle = "#000";
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.fillRect(0, 0, w, h);
 
-  if (state === "menu-title") {
-    const { startClicked, settingsClicked } = drawTitleMenu(ctx, canvas.width, canvas.height);
-    if (startClicked)    { playSound("button"); return playState.levels.length > 1 ? "menu-levels" : "level-playing"; }
-    if (settingsClicked) { playSound("button"); return "menu-settings"; }
-    return state;
+  if (frame.game === "level-playing"
+   || frame.game === "level-paused"
+   || frame.game === "level-won"
+  ) renderPlayState(ctx, playState, w, h);
+
+  switch (frame.game) {
+    case "menu-title":    if (frame.ui) drawTitleMenu   (ctx, w, h, frame.ui); break;
+    case "menu-settings": if (frame.ui) drawSettingsMenu(ctx, w, h, frame.ui); break;
+    case "menu-levels":   if (frame.ui) drawLevelSelect (ctx, w, h, frame.ui); break;
+    case "level-paused":  if (frame.ui) drawPauseMenu   (ctx, w, h, frame.ui); break;
+    case "level-won":     if (frame.ui) drawWonMenu     (ctx, w, h, frame.ui); break;
   }
-
-  if (state === "menu-settings") {
-    const { backClicked } = drawSettingsMenu(ctx, canvas.width, canvas.height);
-    if (backClicked) { playSound("button"); state = "menu-title"; }
-    return state;
-  }
-
-  if (state === "menu-levels"){
-    const { clickedIndex, backClicked } = drawLevelSelect(ctx, playState.levels, canvas.width, canvas.height);
-    if (backClicked) { playSound("button"); return "menu-title"; }
-    if (clickedIndex !== null) {
-      playSound("button");
-      selectLevel(playState, clickedIndex);
-      return "level-playing";
-    }
-    return state;
-  }
-
-  if (state === "level-playing"
-   || state === "level-paused"
-   || state === "level-won"
-  ) renderPlayState(ctx, playState, canvas.width, canvas.height);
-
-  if (state === "level-paused") {
-    const action = drawPauseMenu(ctx, canvas.width, canvas.height);
-    if (action === "resume") { playSound("button"); return "level-playing"; }
-    if (action === "quit")   { playSound("button"); return "menu-title";   }
-    if (action === "restart") {
-      playSound("button");
-      resetPlayState(playState);
-      return "level-playing";
-    }
-  }
-
-  if (state === "level-won") {
-    const action = drawWonMenu(ctx, canvas.width, canvas.height, playState.levelIndex < playState.levels.length - 1);
-    if (action === "quit") { playSound("button"); return "menu-title"; }
-    if (action === "next") { playSound("button"); selectLevel(playState, playState.levelIndex + 1); return "level-playing"; }
-    if (action === "restart") {
-      playSound("button");
-      resetPlayState(playState);
-      return "level-playing";
-    }
-  }
-
-  return state;
 }
