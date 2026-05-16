@@ -8,7 +8,7 @@ import { updateTitleMenu, drawTitleMenu } from "../ui/title.ts";
 import { drawSettingsMenu } from "../ui/settings.ts";
 import { drawLevelSelect } from "../ui/levels.ts";
 import { updatePauseMenu, drawPauseMenu } from "../ui/pause.ts";
-import { drawWonMenu } from "../ui/won.ts";
+import { updateWonMenu, drawWonMenu } from "../ui/won.ts";
 
 export function updateFrame(
   state: GameState,
@@ -86,10 +86,18 @@ export function renderFrame(
   }
 
   if (state === "level-won") {
-    const action = drawWonMenu(ctx, canvas.width, canvas.height, playState.levelIndex < playState.levels.length - 1);
-    if (action === "quit") { playSound("button"); return "menu-title"; }
-    if (action === "next") { playSound("button"); selectLevel(playState, playState.levelIndex + 1); return "level-playing"; }
-    if (action === "restart") {
+    const wonState = updateWonMenu(canvas.width, canvas.height, playState.levelIndex < playState.levels.length - 1);
+    drawWonMenu(ctx, canvas.width, canvas.height, wonState);
+    if (wonState.action === "quit") {
+      playSound("button");
+      return "menu-title";
+    }
+    if (wonState.action === "next") {
+      playSound("button");
+      selectLevel(playState, playState.levelIndex + 1);
+      return "level-playing";
+    }
+    if (wonState.action === "restart") {
       playSound("button");
       resetPlayState(playState);
       return "level-playing";
