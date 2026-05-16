@@ -32,13 +32,15 @@ export function createPlayState(campaign: Campaign): PlayState {
   };
 }
 
+export function selectLevel(p: PlayState, index: number): void {
+  p.levelIndex = index;
+  p.level = p.levels[index]!;
+  p.vehicles = spawnVehicles(p.level, p.vehicleTypes);
+  p.vehicleIndex = 0;
+}
+
 export function updatePlayState(p: PlayState, dt: number): boolean {
-  if (wasPressed("Digit1")) {
-    p.levelIndex = (p.levelIndex + 1) % p.levels.length;
-    p.level = p.levels[p.levelIndex]!;
-    p.vehicles = spawnVehicles(p.level, p.vehicleTypes);
-    p.vehicleIndex = 0;
-  }
+  if (wasPressed("Digit1")) return true;
   if (wasPressed("Digit2")) p.vehicleIndex = (p.vehicleIndex + 1) % p.vehicles.length;
   if (wasPressed("Digit3")) p.debugMode = !p.debugMode;
 
