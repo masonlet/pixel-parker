@@ -20,7 +20,55 @@ export interface ButtonState {
 
 export interface SliderState {
   dragging: boolean;
-  value: number;
+  value:    number;
+}
+
+export interface ButtonEntry {
+  btn:   Button;
+  state: ButtonState;
+}
+
+export interface SliderEntry {
+  slider: Slider;
+  state:  SliderState;
+}
+
+export interface MenuLayout {
+  cx:     number;
+  scale:  number;
+  titleY: number;
+}
+
+export interface PauseMenuState extends MenuLayout {
+  resume:  ButtonEntry;
+  restart: ButtonEntry;
+  quit:    ButtonEntry;
+  action:  PauseAction;
+}
+
+export interface TitleMenuState extends MenuLayout {
+  start:    ButtonEntry;
+  settings: ButtonEntry;
+}
+
+export interface WonMenuState extends MenuLayout {
+  restart: ButtonEntry;
+  next:    ButtonEntry | null;
+  quit:    ButtonEntry;
+  action:  WonAction;
+}
+
+export interface SettingsMenuState extends MenuLayout {
+  mute:  ButtonEntry;
+  back:  ButtonEntry;
+  vol:   SliderEntry;
+  muted: boolean;
+}
+
+export interface LevelSelectState extends MenuLayout {
+  levels:       ButtonEntry[];
+  back:         ButtonEntry;
+  clickedIndex: number | null;
 }
 
 export type PauseAction = "resume" | "restart" | "quit" | null;
