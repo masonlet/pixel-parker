@@ -1,9 +1,9 @@
 import { isMuted, setMuted, getVolume, setVolume } from "web-engine/audio/mixer.ts";
 
 import { getLayout, drawTitle } from "./layout.ts";
+import type { Button, Slider, SliderState } from "./types.ts";
 import { drawButton, getButtonState } from "./button.ts";
 import { drawSlider, updateSlider } from "./slider.ts";
-import type { Button, Slider, SliderState } from "./types.ts";
 
 const volSlider: Slider = {
   x: 0, y: 0,
@@ -42,7 +42,7 @@ export function drawSettingsMenu(
   volSlider.h = btnH;
 
   volState = updateSlider(volSlider, volState);
-  if (volState.dragging) setVolume(volState.value);
+  setVolume(volState.value);
   drawSlider(ctx, volSlider, volState.value);
 
   const backBtn: Button = {

@@ -1,5 +1,5 @@
 import { pointerX, pointerY, wasPointerClicked } from "web-engine/input/pointer.ts";
-import type { Button, ButtonState } from "./types";
+import type { Button, ButtonState } from "./types.ts";
 
 export function getButtonState(b: Button): ButtonState {
   const mx = pointerX(), my = pointerY();

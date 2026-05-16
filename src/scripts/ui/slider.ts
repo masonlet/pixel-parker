@@ -1,5 +1,5 @@
 import { isPointerDown, wasPointerClicked, pointerX, pointerY } from "web-engine/input/pointer.ts";
-import type { Slider, SliderState } from "./types";
+import type { Slider, SliderState } from "./types.ts";
 
 export function drawSlider(ctx: CanvasRenderingContext2D, s: Slider, value: number): void {
   ctx.fillStyle = "#222";
