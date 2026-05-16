@@ -1,8 +1,11 @@
 import { isPointerDown, wasPointerClicked, pointerX, pointerY } from "web-engine/input/pointer.ts";
 
-export type Slider = { x: number; y: number; w: number; h: number; label?: string };
-
-let dragging = false;
+export type Slider = {
+  x: number; y: number;
+  w: number; h: number;
+  label?: string;
+  dragging?: boolean
+};
 
 export function drawSlider(ctx: CanvasRenderingContext2D, s: Slider, value: number): void {
   ctx.fillStyle = "#222";
@@ -27,12 +30,12 @@ export function drawSlider(ctx: CanvasRenderingContext2D, s: Slider, value: numb
 
 export function sliderValue(s: Slider): number | null {
   const x = pointerX(), y = pointerY();
-  if (!isPointerDown()) { dragging = false; return null; }
+  if (!isPointerDown()) { s.dragging = false; return null; }
   if (wasPointerClicked()) if (x >= s.x
                             && x <= s.x + s.w
                             && y >= s.y
                             && y <= s.y + s.h
-                           ) dragging = true;
-  if (!dragging) return null;
+                           ) s.dragging = true;
+  if (!s.dragging) return null;
   return Math.max(0, Math.min(1, (x - s.x) / s.w));
 }
