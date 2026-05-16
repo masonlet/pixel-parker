@@ -28,33 +28,39 @@ export interface ButtonEntry {
   state: ButtonState;
 }
 
-export interface PauseMenuState {
+export interface MenuLayout {
+  cx:     number;
+  scale:  number;
+  titleY: number;
+}
+
+export interface PauseMenuState extends MenuLayout {
   resume:  ButtonEntry;
   restart: ButtonEntry;
   quit:    ButtonEntry;
   action:  PauseAction;
 }
 
-export interface TitleMenuState {
+export interface TitleMenuState extends MenuLayout {
   start:    ButtonEntry;
   settings: ButtonEntry;
 }
 
-export interface WonMenuState {
+export interface WonMenuState extends MenuLayout {
   restart: ButtonEntry;
   next:    ButtonEntry | null;
   quit:    ButtonEntry;
   action:  WonAction;
 }
 
-export interface SettingsMenuState {
+export interface SettingsMenuState extends MenuLayout {
   mute:  ButtonEntry;
   back:  ButtonEntry;
   vol:   SliderState;
   muted: boolean;
 }
 
-export interface LevelSelectState {
+export interface LevelSelectState extends MenuLayout {
   levels:       ButtonEntry[];
   back:         ButtonEntry;
   clickedIndex: number | null;
