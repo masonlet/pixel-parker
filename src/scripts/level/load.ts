@@ -16,6 +16,8 @@ function isSensorKind(x: unknown): x is SensorKind {
 export function loadLevel(rawLevel: unknown): Level {
   if (!isObj(rawLevel)) throw new Error("Level: not an object");
 
+  const name = optStr(rawLevel, "name", "Level");
+
   const width = num(rawLevel, "width", "Level");
   const height = num(rawLevel, "height", "Level");
   if (width <= 0) throw new Error("Level: width must be > 0");
@@ -95,5 +97,7 @@ export function loadLevel(rawLevel: unknown): Level {
     `Level failed validation:\n  ${errors.join("\n  ")}`
   );
 
-  return { width, height, tiles, vehicles, sensors };
+  const level: Level = { width, height, tiles, vehicles, sensors };
+  if (name !== undefined) level.name = name;
+  return level;
 }
