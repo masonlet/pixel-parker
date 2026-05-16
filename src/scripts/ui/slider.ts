@@ -1,6 +1,8 @@
-import { isPointerDown, pointerX, pointerY } from "web-engine/input/pointer.ts";
+import { isPointerDown, wasPointerClicked, pointerX, pointerY } from "web-engine/input/pointer.ts";
 
 export type Slider = { x: number; y: number; w: number; h: number; label?: string };
+
+let dragging = false;
 
 export function drawSlider(ctx: CanvasRenderingContext2D, s: Slider, value: number): void {
   ctx.fillStyle = "#222";
@@ -17,15 +19,20 @@ export function drawSlider(ctx: CanvasRenderingContext2D, s: Slider, value: numb
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillText(
-      s.label ? `${s.label}: ${Math.round(value * 100)}%` : `${Math.round(value * 100)}%`,
+      `${s.label}: ${Math.round(value * 100)}%`,
       s.x + s.w / 2, s.y + s.h / 2
     );
   }
 }
 
 export function sliderValue(s: Slider): number | null {
-  if (!isPointerDown()) return null;
   const x = pointerX(), y = pointerY();
-  if (x > s.x + s.w || y < s.y || y > s.y + s.h) return null;
+  if (!isPointerDown()) { dragging = false; return null; }
+  if (wasPointerClicked()) if (x >= s.x
+                            && x <= s.x + s.w
+                            && y >= s.y
+                            && y <= s.y + s.h
+                           ) dragging = true;
+  if (!dragging) return null;
   return Math.max(0, Math.min(1, (x - s.x) / s.w));
 }
