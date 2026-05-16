@@ -1,4 +1,4 @@
-import { playSound } from "web-engine/audio.ts";
+import { playSound } from "web-engine/audio/playback.ts";
 import { wasPressed } from "web-engine/input/keyboard.ts";
 
 import type { PlayState, GameState } from "./types.ts";

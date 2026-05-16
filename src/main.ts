@@ -1,7 +1,7 @@
 import "./style.css";
 
 import { startLoop } from "web-engine/update.ts";
-import { registerSound } from "web-engine/audio.ts";
+import { registerSound } from "web-engine/audio/registry.ts";
 
 import { bootstrapGame } from "./scripts/game/game.ts";
 import type { GameState } from "./scripts/game/types.ts";

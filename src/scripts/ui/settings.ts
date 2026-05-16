@@ -1,4 +1,4 @@
-import { isMuted, setMuted } from "web-engine/audio.ts";
+import { isMuted, setMuted } from "web-engine/audio/mixer.ts";
 
 import { getLayout, drawTitle } from "./layout.ts";
 import { type Button, drawButton, isHovered, isClicked } from "./button.ts";

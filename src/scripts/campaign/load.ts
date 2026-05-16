@@ -1,4 +1,4 @@
-import { registerSound } from "web-engine/audio.ts";
+import { registerSound } from "web-engine/audio/registry.ts";
 
 import type { Campaign, CampaignData, CampaignAudio, CampaignEntry } from "./types.ts";
 
