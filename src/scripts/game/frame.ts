@@ -4,7 +4,7 @@ import { wasPressed } from "web-engine/input/keyboard.ts";
 import type { PlayState, GameState } from "./types.ts";
 import { renderPlayState, selectLevel, updatePlayState, resetPlayState } from "./play.ts";
 
-import { drawTitleMenu } from "../ui/title.ts";
+import { updateTitleMenu, drawTitleMenu } from "../ui/title.ts";
 import { drawSettingsMenu } from "../ui/settings.ts";
 import { drawLevelSelect } from "../ui/levels.ts";
 import { updatePauseMenu, drawPauseMenu } from "../ui/pause.ts";
@@ -38,9 +38,16 @@ export function renderFrame(
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   if (state === "menu-title") {
-    const { startClicked, settingsClicked } = drawTitleMenu(ctx, canvas.width, canvas.height);
-    if (startClicked)    { playSound("button"); return playState.levels.length > 1 ? "menu-levels" : "level-playing"; }
-    if (settingsClicked) { playSound("button"); return "menu-settings"; }
+    const titleState = updateTitleMenu(canvas.width, canvas.height);
+    drawTitleMenu(ctx, canvas.width, canvas.height, titleState);
+    if (titleState.start.state.clicked) {
+      playSound("button");
+      return playState.levels.length > 1 ? "menu-levels" : "level-playing";
+    }
+    if (titleState.settings.state.clicked) {
+      playSound("button");
+      return "menu-settings";
+    }
     return state;
   }
 
