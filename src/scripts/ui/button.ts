@@ -1,12 +1,5 @@
 import { pointerX, pointerY, wasPointerClicked } from "web-engine/input/pointer.ts";
-
-export interface Button {
-  x: number;
-  y: number;
-  w: number;
-  h: number;
-  label: string;
-}
+import { type Button } from "./types";
 
 export function isHovered(b: Button): boolean {
   const mx = pointerX(), my = pointerY();

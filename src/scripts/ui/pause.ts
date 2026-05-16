@@ -1,7 +1,6 @@
 import { getLayout, drawTitle } from "./layout.ts";
-import { type Button, drawButton, isHovered, isClicked } from "./button.ts";
-
-export type PauseAction = "resume" | "restart" | "quit" | null;
+import type { Button, PauseAction } from "./types.ts";
+import { drawButton, isHovered, isClicked } from "./button.ts";
 
 export function drawPauseMenu(
   ctx: CanvasRenderingContext2D,

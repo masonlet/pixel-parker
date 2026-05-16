@@ -1,5 +1,6 @@
 import { getLayout, drawTitle } from "./layout.ts";
-import { type Button, drawButton, isHovered, isClicked } from "./button.ts";
+import { type Button } from "./types.ts";
+import { drawButton, isHovered, isClicked } from "./button.ts";
 
 export function drawTitleMenu(
   ctx: CanvasRenderingContext2D,

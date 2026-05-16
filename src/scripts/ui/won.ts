@@ -1,7 +1,6 @@
 import { getLayout, drawTitle } from "./layout.ts";
-import { type Button, drawButton, isHovered, isClicked } from "./button.ts";
-
-export type WonAction = "next" | "restart" | "quit" | null;
+import type { Button, WonAction } from "./types.ts";
+import { drawButton, isHovered, isClicked } from "./button.ts";
 
 export function drawWonMenu(
   ctx: CanvasRenderingContext2D,
