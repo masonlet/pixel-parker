@@ -4,11 +4,11 @@ import { wasPressed } from "web-engine/input/keyboard.ts";
 import type { PlayState, GameState } from "./types.ts";
 import { renderPlayState, selectLevel, updatePlayState, resetPlayState } from "./play.ts";
 
-import { drawTitleMenu } from "../ui/title.ts";
-import { drawSettingsMenu } from "../ui/settings.ts";
+import { updateTitleMenu, drawTitleMenu } from "../ui/title.ts";
+import { updateSettingsMenu, drawSettingsMenu } from "../ui/settings.ts";
 import { drawLevelSelect } from "../ui/levels.ts";
-import { drawPauseMenu } from "../ui/pause.ts";
-import { drawWonMenu } from "../ui/won.ts";
+import { updatePauseMenu, drawPauseMenu } from "../ui/pause.ts";
+import { updateWonMenu, drawWonMenu } from "../ui/won.ts";
 
 export function updateFrame(
   state: GameState,
@@ -38,15 +38,23 @@ export function renderFrame(
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   if (state === "menu-title") {
-    const { startClicked, settingsClicked } = drawTitleMenu(ctx, canvas.width, canvas.height);
-    if (startClicked)    { playSound("button"); return playState.levels.length > 1 ? "menu-levels" : "level-playing"; }
-    if (settingsClicked) { playSound("button"); return "menu-settings"; }
+    const titleState = updateTitleMenu(canvas.width, canvas.height);
+    drawTitleMenu(ctx, canvas.width, canvas.height, titleState);
+    if (titleState.start.state.clicked) {
+      playSound("button");
+      return playState.levels.length > 1 ? "menu-levels" : "level-playing";
+    }
+    if (titleState.settings.state.clicked) {
+      playSound("button");
+      return "menu-settings";
+    }
     return state;
   }
 
   if (state === "menu-settings") {
-    const { backClicked } = drawSettingsMenu(ctx, canvas.width, canvas.height);
-    if (backClicked) { playSound("button"); state = "menu-title"; }
+    const settingsState = updateSettingsMenu(canvas.width, canvas.height);
+    drawSettingsMenu(ctx, canvas.width, canvas.height, settingsState);
+    if (settingsState.back.state.clicked) { playSound("button"); return "menu-title"; }
     return state;
   }
 
@@ -67,10 +75,11 @@ export function renderFrame(
   ) renderPlayState(ctx, playState, canvas.width, canvas.height);
 
   if (state === "level-paused") {
-    const action = drawPauseMenu(ctx, canvas.width, canvas.height);
-    if (action === "resume") { playSound("button"); return "level-playing"; }
-    if (action === "quit")   { playSound("button"); return "menu-title";   }
-    if (action === "restart") {
+    const pauseState = updatePauseMenu(canvas.width, canvas.height);
+    drawPauseMenu(ctx, canvas.width, canvas.height, pauseState);
+    if (pauseState.action === "resume") { playSound("button"); return "level-playing"; }
+    if (pauseState.action === "quit")   { playSound("button"); return "menu-title";   }
+    if (pauseState.action === "restart") {
       playSound("button");
       resetPlayState(playState);
       return "level-playing";
@@ -78,10 +87,18 @@ export function renderFrame(
   }
 
   if (state === "level-won") {
-    const action = drawWonMenu(ctx, canvas.width, canvas.height, playState.levelIndex < playState.levels.length - 1);
-    if (action === "quit") { playSound("button"); return "menu-title"; }
-    if (action === "next") { playSound("button"); selectLevel(playState, playState.levelIndex + 1); return "level-playing"; }
-    if (action === "restart") {
+    const wonState = updateWonMenu(canvas.width, canvas.height, playState.levelIndex < playState.levels.length - 1);
+    drawWonMenu(ctx, canvas.width, canvas.height, wonState);
+    if (wonState.action === "quit") {
+      playSound("button");
+      return "menu-title";
+    }
+    if (wonState.action === "next") {
+      playSound("button");
+      selectLevel(playState, playState.levelIndex + 1);
+      return "level-playing";
+    }
+    if (wonState.action === "restart") {
       playSound("button");
       resetPlayState(playState);
       return "level-playing";
