@@ -22,4 +22,5 @@ let frame: FrameState | null = null;
 startLoop(
   (dt) => { frame = updateFrame(canvas, frame, playState, dt); },
   (  ) => { renderFrame(ctx, canvas, playState, frame!);       },
+  { tickRate: "variable" },
 );
