@@ -34,24 +34,25 @@ export function renderFrame(
   playState: PlayState,
   state: GameState
 ): GameState {
+  const W = canvas.width, H = canvas.height;
   ctx.fillStyle = "#000";
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.fillRect(0, 0, W, H);
 
   if (state === "menu-title") {
-    const { startClicked, settingsClicked } = drawTitleMenu(ctx, canvas.width, canvas.height);
+    const { startClicked, settingsClicked } = drawTitleMenu(ctx, W, H);
     if (startClicked)    { playSound("button"); return playState.levels.length > 1 ? "menu-levels" : "level-playing"; }
     if (settingsClicked) { playSound("button"); return "menu-settings"; }
     return state;
   }
 
   if (state === "menu-settings") {
-    const { backClicked } = drawSettingsMenu(ctx, canvas.width, canvas.height);
+    const { backClicked } = drawSettingsMenu(ctx, canvas.width, H);
     if (backClicked) { playSound("button"); state = "menu-title"; }
     return state;
   }
 
   if (state === "menu-levels"){
-    const { clickedIndex, backClicked } = drawLevelSelect(ctx, playState.levels, canvas.width, canvas.height);
+    const { clickedIndex, backClicked } = drawLevelSelect(ctx, playState.levels, W, H);
     if (backClicked) { playSound("button"); return "menu-title"; }
     if (clickedIndex !== null) {
       playSound("button");
@@ -64,11 +65,11 @@ export function renderFrame(
   if (state === "level-playing"
    || state === "level-paused"
    || state === "level-won"
-  ) renderPlayState(ctx, playState, canvas.width, canvas.height);
+  ) renderPlayState(ctx, playState, W, H);
 
   if (state === "level-paused") {
-    const pauseAction = updatePauseMenu(canvas.width, canvas.height);
-    drawPauseMenu(ctx, canvas.width, canvas.height, pauseAction);
+    const pauseAction = updatePauseMenu(W, H);
+    drawPauseMenu(ctx, W, H, pauseAction);
     if (pauseAction.action === "resume") { playSound("button"); return "level-playing"; }
     if (pauseAction.action === "quit")   { playSound("button"); return "menu-title";   }
     if (pauseAction.action === "restart") {
@@ -79,7 +80,7 @@ export function renderFrame(
   }
 
   if (state === "level-won") {
-    const action = drawWonMenu(ctx, canvas.width, canvas.height, playState.levelIndex < playState.levels.length - 1);
+    const action = drawWonMenu(ctx, W, H, playState.levelIndex < playState.levels.length - 1);
     if (action === "quit") { playSound("button"); return "menu-title"; }
     if (action === "next") { playSound("button"); selectLevel(playState, playState.levelIndex + 1); return "level-playing"; }
     if (action === "restart") {
