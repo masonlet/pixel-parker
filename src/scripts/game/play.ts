@@ -40,6 +40,7 @@ export function selectLevel(p: PlayState, index: number): void {
 }
 
 export function updatePlayState(p: PlayState, dt: number): boolean {
+  if (wasPressed("Digit1")) return true;
   if (wasPressed("Digit2")) p.vehicleIndex = (p.vehicleIndex + 1) % p.vehicles.length;
   if (wasPressed("Digit3")) p.debugMode = !p.debugMode;
 

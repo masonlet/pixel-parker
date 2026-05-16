@@ -78,8 +78,9 @@ export function renderFrame(
   }
 
   if (state === "level-won") {
-    const action = drawWonMenu(ctx, canvas.width, canvas.height);
+    const action = drawWonMenu(ctx, canvas.width, canvas.height, playState.levelIndex < playState.levels.length - 1);
     if (action === "quit") { playSound("button"); return "menu-title"; }
+    if (action === "next") { playSound("button"); selectLevel(playState, playState.levelIndex + 1); return "level-playing"; }
     if (action === "restart") {
       playSound("button");
       resetPlayState(playState);
