@@ -4,6 +4,12 @@ import { getLayout, drawTitle } from "./layout.ts";
 import { type Button, drawButton, isHovered, isClicked } from "./button.ts";
 import { type Slider, drawSlider, sliderValue } from "./slider.ts";
 
+  const volSlider: Slider = {
+    x: 0, y: 0,
+    w: 0, h: 0,
+    label: "Volume",
+  };
+
 export function drawSettingsMenu(
   ctx: CanvasRenderingContext2D,
   canvasW: number,
@@ -26,13 +32,10 @@ export function drawSettingsMenu(
   drawButton(ctx, muteBtn, isHovered(muteBtn));
   if (isClicked(muteBtn)) setMuted(!isMuted());
 
-  const volSlider: Slider = {
-    x: cx - btnW / 2,
-    y: cy + btnH / 2 + gap,
-    w: btnW,
-    h: btnH,
-    label: "Volume",
-  };
+  volSlider.x = cx - btnW / 2;
+  volSlider.y = cy + btnH / 2 + gap;
+  volSlider.w = btnW;
+  volSlider.h = btnH;
   drawSlider(ctx, volSlider, getVolume());
   const newVol = sliderValue(volSlider);
   if (newVol !== null) setVolume(newVol);
