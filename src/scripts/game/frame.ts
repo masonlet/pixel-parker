@@ -71,10 +71,13 @@ export function updateFrame(
     case "menu-levels": {
       const ui = updateLevelSelect(w, h, playState.levels);
       if (ui.back.state.clicked) return transition({ game: "menu-title",    ui: null });
-      if (ui.clickedIndex !== null) return transition(
-        { game: "level-playing", ui: null },
-        () => selectLevel(playState, ui.clickedIndex!)
-      );
+      if (ui.clickedIndex !== null) {
+        const index = ui.clickedIndex;
+        return transition(
+          { game: "level-playing", ui: null },
+          () => selectLevel(playState, index)
+        );
+      }
       return { game: "menu-levels", ui };
     }
     case "level-paused": {
