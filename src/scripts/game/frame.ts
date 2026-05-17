@@ -1,5 +1,6 @@
 import { playSound } from "web-engine/audio/playback.ts";
-import { wasPressed } from "web-engine/input/keyboard.ts";
+import { flushPointer } from "web-engine/input/pointer.ts";
+import { wasPressed, flushKeyboard } from "web-engine/input/keyboard.ts";
 
 import type { PlayState, FrameState } from "./types.ts";
 import { renderPlayState, selectLevel, updatePlayState, resetPlayState } from "./play.ts";
@@ -10,7 +11,15 @@ import { updateLevelSelect,  drawLevelSelect  } from "../ui/levels.ts";
 import { updatePauseMenu,    drawPauseMenu    } from "../ui/pause.ts";
 import { updateWonMenu,      drawWonMenu      } from "../ui/won.ts";
 
-function button(frame: FrameState): FrameState { playSound("button"); return frame; }
+function transition(frame: FrameState, fn?: () => void): FrameState {
+  playSound("button");
+  fn?.();
+
+  flushPointer();
+  flushKeyboard();
+
+  return frame;
+}
 
 export function updateFrame(
   canvas: HTMLCanvasElement,
@@ -20,74 +29,78 @@ export function updateFrame(
 ): FrameState {
   const { width: w, height: h } = canvas;
 
-  if (frame === null) return { game: "menu-title", ui: updateTitleMenu(w, h) };
+  if (frame === null) return { game: "menu-title", ui: null };
 
   if (wasPressed("Escape")) {
-    if (frame.game === "level-playing") return { game: "level-paused",  ui: updatePauseMenu(w, h) };
+    if (frame.game === "level-playing") return { game: "level-paused",  ui: null };
     if (frame.game === "level-paused")  return { game: "level-playing", ui: null };
   }
 
   if (frame.game === "level-playing") {
     if (updatePlayState(playState, dt)) {
       playSound("win");
-      return {
-        game: "level-won",
-        ui: updateWonMenu(w, h, playState.levelIndex < playState.levels.length - 1)
-      };
+      return { game: "level-won", ui: null };
     }
     return frame;
   }
 
+  if (frame.ui === null) {
+    switch (frame.game) {
+      case "menu-title":    return { game: "menu-title",    ui: updateTitleMenu(w, h) };
+      case "menu-settings": return { game: "menu-settings", ui: updateSettingsMenu(w, h) };
+      case "menu-levels":   return { game: "menu-levels",   ui: updateLevelSelect(w, h, playState.levels) };
+      case "level-paused":  return { game: "level-paused",  ui: updatePauseMenu(w, h) };
+      case "level-won":     return { game: "level-won",     ui: updateWonMenu(w, h, playState.levelIndex < playState.levels.length - 1) };
+    }
+  }
   switch (frame.game) {
     case "menu-title": {
       const ui = updateTitleMenu(w, h);
-      if (ui.start.state.clicked) return button(playState.levels.length > 1
-        ? { game: "menu-levels", ui: updateLevelSelect(w, h, playState.levels) }
-        : { game: "level-playing", ui: null });
-      if (ui.settings.state.clicked) return button({
-        game: "menu-settings",
-        ui: updateSettingsMenu(w, h)
-      });
+      if (ui.start.state.clicked) return transition(playState.levels.length > 1
+        ? { game: "menu-levels", ui: null }
+        : { game: "level-playing", ui: null }
+      );
+      if (ui.settings.state.clicked) return transition({ game: "menu-settings", ui: null });
       return { game: "menu-title", ui };
     }
     case "menu-settings": {
       const ui = updateSettingsMenu(w, h);
-      if (ui.back.state.clicked) return button({
-        game: "menu-title",
-        ui: updateTitleMenu(w, h)
-      });
+      if (ui.back.state.clicked) return transition({ game: "menu-title", ui: null });
       return { game: "menu-settings", ui };
     }
     case "menu-levels": {
       const ui = updateLevelSelect(w, h, playState.levels);
-      if (ui.back.state.clicked) return button({ game: "menu-title", ui: updateTitleMenu(w, h) });
+      if (ui.back.state.clicked) return transition({ game: "menu-title",    ui: null });
       if (ui.clickedIndex !== null) {
-        selectLevel(playState, ui.clickedIndex);
-        return button({ game: "level-playing", ui: null });
+        const index = ui.clickedIndex;
+        return transition(
+          { game: "level-playing", ui: null },
+          () => selectLevel(playState, index)
+        );
       }
       return { game: "menu-levels", ui };
     }
     case "level-paused": {
       const ui = updatePauseMenu(w, h);
-      if (ui.action === "resume") return button({ game: "level-playing", ui: null });
-      if (ui.action === "quit") return button({ game: "menu-title", ui: updateTitleMenu(w, h) });
-      if (ui.action === "restart") {
-        resetPlayState(playState);
-        return button({ game: "level-playing", ui: null });
-      }
+      if (ui.action === "resume")  return transition({ game: "level-playing", ui: null });
+      if (ui.action === "quit")    return transition({ game: "menu-title",    ui: null });
+      if (ui.action === "restart") return transition(
+        { game: "level-playing", ui: null },
+        () => resetPlayState(playState)
+      );
       return { game: "level-paused", ui };
     }
     case "level-won": {
       const ui = updateWonMenu(w, h, playState.levelIndex < playState.levels.length - 1);
-      if (ui.action === "quit") return button({ game: "menu-title", ui: updateTitleMenu(w, h) });
-      if (ui.action === "next") {
-        selectLevel(playState, playState.levelIndex + 1);
-        return button({ game: "level-playing", ui: null });
-      }
-      if (ui.action === "restart") {
-        resetPlayState(playState);
-        return button({ game: "level-playing", ui: null });
-      }
+      if (ui.action === "quit")    return transition({ game: "menu-title", ui: null });
+      if (ui.action === "next")    return transition(
+        { game: "level-playing", ui: null },
+        () => selectLevel(playState, playState.levelIndex + 1)
+      );
+      if (ui.action === "restart") return transition(
+        { game: "level-playing", ui: null },
+        () => resetPlayState(playState)
+      );
       return { game: "level-won", ui };
     }
   }
