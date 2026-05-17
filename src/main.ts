@@ -12,8 +12,9 @@ import { loadCampaign } from "./scripts/campaign/load.ts";
 
 const { canvas, ctx } = bootstrapGame();
 
-await registerSound("button", "audio/ui/button.wav");
-await registerSound("win", "audio/ui/win.wav");
+const BASE_URL = import.meta.env.BASE_URL;
+await registerSound("button", "audio/ui/button.wav", BASE_URL);
+await registerSound("win", "audio/ui/win.wav", BASE_URL);
 
 const campaign = await loadCampaign("test");
 const playState = createPlayState(campaign);
