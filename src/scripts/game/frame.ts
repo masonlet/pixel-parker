@@ -1,5 +1,6 @@
 import { playSound } from "web-engine/audio/playback.ts";
-import { wasPressed } from "web-engine/input/keyboard.ts";
+import { flushPointer } from "web-engine/input/pointer.ts";
+import { wasPressed, flushKeyboard } from "web-engine/input/keyboard.ts";
 
 import type { PlayState, FrameState } from "./types.ts";
 import { renderPlayState, selectLevel, updatePlayState, resetPlayState } from "./play.ts";
@@ -13,6 +14,10 @@ import { updateWonMenu,      drawWonMenu      } from "../ui/won.ts";
 function transition(frame: FrameState, fn?: () => void): FrameState {
   playSound("button");
   fn?.();
+
+  flushPointer();
+  flushKeyboard();
+
   return frame;
 }
 
