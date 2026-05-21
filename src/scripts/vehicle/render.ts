@@ -1,30 +1,5 @@
-import { tintImage                 } from "web-engine/assets.ts";
-import { createBody                } from "web-engine/physics/body.ts";
-import type { Vehicle, VehicleType } from "./types.ts";
-
-export function createVehicle(
-  type: VehicleType,
-  x: number,
-  y: number,
-  hue: number
-): Vehicle {
-  return {
-    type,
-    body: createBody({
-      x,
-      y,
-      w: type.w,
-      h: type.h,
-      mass: type.mass,
-      angle: -Math.PI / 2,
-    }),
-    throttle: 0,
-    steer: 0,
-    shiftTimer: 0,
-    hue,
-    overlappingSensors: []
-  };
-}
+import { tintImage    } from "web-engine/assets.ts";
+import type { Vehicle } from "./types.ts";
 
 export function drawVehicle(
   ctx: CanvasRenderingContext2D,
