@@ -47,12 +47,10 @@ export function renderFrame(
   frame: FrameState
 ): void {
   const { width: w, height: h } = canvas;
-  // Render menu background
-  if (frame.game.startsWith("menu-")) {
-    ctx.fillStyle = "#000";
-    ctx.fillRect(0, 0, w, h);
-  // Else, render game before UI
-  } else renderPlayState(ctx, playState, w, h);
+  ctx.fillStyle = "#000";
+  ctx.fillRect(0, 0, w, h);
+
+  if (!frame.game.startsWith("menu-")) renderPlayState(ctx, playState, w, h);
 
   switch (frame.game) {
     case "menu-title":    renderTitleFrame   (ctx, frame.ui); break;
