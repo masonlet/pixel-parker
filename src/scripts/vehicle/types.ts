@@ -1,6 +1,5 @@
 import type { PhysicsBody } from "web-engine/physics/types.ts";
-
-import type { Sensor } from "../level/types.ts";
+import type { Sensor      } from "../level/types.ts";
 
 export interface VehicleStats {
   /** Identifier for this vehicle type */

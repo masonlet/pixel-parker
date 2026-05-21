@@ -1,6 +1,6 @@
-import type { Level } from "../level/types.ts";
 import type { Vehicle, VehicleType } from "./types.ts";
-import { createVehicle } from "./render.ts";
+import type { Level                } from "../level/types.ts";
+import { createVehicle             } from "./render.ts";
 
 export function spawnVehicles(
   level: Level,
