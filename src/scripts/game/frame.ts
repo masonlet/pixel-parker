@@ -16,15 +16,13 @@ export function updateFrame(
   playState: PlayState,
   dt: number
 ): FrameState {
-  const { width: w, height: h } = canvas;
-
   if (frame === null) return { game: "menu-title", ui: null };
-
-  if (wasPressed("Escape")) {
+  if (wasPressed("Escape"))  {
     if (frame.game === "level-playing") return { game: "level-paused",  ui: null };
     if (frame.game === "level-paused")  return { game: "level-playing", ui: null };
   }
 
+  const { width: w, height: h } = canvas;
   switch (frame.game) {
     case "menu-title":    return handleTitleFrame   (w, h, playState);
     case "menu-levels":   return handleLevelFrame   (w, h, playState);
@@ -48,7 +46,6 @@ export function renderFrame(
   frame: FrameState
 ): void {
   const { width: w, height: h } = canvas;
-
   ctx.fillStyle = "#000";
   ctx.fillRect(0, 0, w, h);
 
