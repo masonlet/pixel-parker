@@ -4,7 +4,7 @@ import { wasPressed } from "web-engine/input/keyboard.ts";
 import type { PlayState, FrameState       } from "./types.ts";
 import { renderPlayState, updatePlayState } from "./play.ts";
 
-import { drawTitleMenu, handleTitleFrame       } from "../ui/title.ts";
+import { handleTitleFrame, renderTitleFrame    } from "../ui/title.ts";
 import { drawSettingsMenu, handleSettingsFrame } from "../ui/settings.ts";
 import { drawLevelSelect, handleLevelFrame     } from "../ui/levels.ts";
 import { drawPauseMenu, handlePauseFrame       } from "../ui/pause.ts";
@@ -59,7 +59,7 @@ export function renderFrame(
   ) renderPlayState(ctx, playState, w, h);
 
   switch (frame.game) {
-    case "menu-title":    if (frame.ui) drawTitleMenu   (ctx, w, h, frame.ui); break;
+    case "menu-title":    renderTitleFrame(ctx, w, h, frame.ui); break;
     case "menu-settings": if (frame.ui) drawSettingsMenu(ctx, w, h, frame.ui); break;
     case "menu-levels":   if (frame.ui) drawLevelSelect (ctx, w, h, frame.ui); break;
     case "level-paused":  if (frame.ui) drawPauseMenu   (ctx, w, h, frame.ui); break;

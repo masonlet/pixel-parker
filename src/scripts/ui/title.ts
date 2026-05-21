@@ -4,8 +4,23 @@ import type { Button, TitleMenuState } from "./types.ts";
 import { getLayout, drawTitle        } from "./layout.ts";
 import { getButtonState, drawButton  } from "./button.ts";
 
-export function handleTitleFrame(canvasW: number, canvasH: number, playState: PlayState): FrameState {
-  const ui = updateTitleMenu(canvasW, canvasH);
+export function handleTitleFrame(
+  w: number,
+  h: number,
+  playState: PlayState
+): FrameState {
+  const { scale, gap, cx, cy, btnW, btnH } = getLayout(w, h);
+  const titleY = cy - btnH * 1.5 - gap * 2;
+
+  const startBtn:    Button = { x: cx - btnW/2, y: cy - btnH/2,       w: btnW, h: btnH, label: "START"    };
+  const settingsBtn: Button = { x: cx - btnW/2, y: cy + btnH/2 + gap, w: btnW, h: btnH, label: "SETTINGS" };
+
+  const ui = {
+    cx, scale, titleY,
+    start:    { btn: startBtn,    state: getButtonState(startBtn)    },
+    settings: { btn: settingsBtn, state: getButtonState(settingsBtn) },
+  };
+
   if (ui.start.state.clicked) return transition(playState.levels.length > 1
     ? { game: "menu-levels", ui: null }
     : { game: "level-playing", ui: null }
@@ -14,29 +29,17 @@ export function handleTitleFrame(canvasW: number, canvasH: number, playState: Pl
   return { game: "menu-title", ui };
 }
 
-export function updateTitleMenu(canvasW: number, canvasH: number): TitleMenuState {
-  const { scale, gap, cx, cy, btnW, btnH } = getLayout(canvasW, canvasH);
-  const titleY = cy - btnH * 1.5 - gap * 2;
-
-  const startBtn:    Button = { x: cx - btnW/2, y: cy - btnH/2,       w: btnW, h: btnH, label: "START"    };
-  const settingsBtn: Button = { x: cx - btnW/2, y: cy + btnH/2 + gap, w: btnW, h: btnH, label: "SETTINGS" };
-
-  return {
-    cx, scale, titleY,
-    start:    { btn: startBtn,    state: getButtonState(startBtn)    },
-    settings: { btn: settingsBtn, state: getButtonState(settingsBtn) },
-  };
-}
-
-export function drawTitleMenu(
+export function renderTitleFrame(
   ctx: CanvasRenderingContext2D,
-  canvasW: number,
-  canvasH: number,
-  state: TitleMenuState,
-): void {
+  w: number,
+  h: number,
+  ui: TitleMenuState | null,
+) {
+  if (!ui) return;
+
   ctx.fillStyle = "#000";
-  ctx.fillRect(0, 0, canvasW, canvasH);
-  drawTitle(ctx, "Pixel Parker", state.cx, state.titleY, state.scale, 0.12);
-  drawButton(ctx, state.start.btn,    state.start.state);
-  drawButton(ctx, state.settings.btn, state.settings.state);
+  ctx.fillRect(0, 0, w, h);
+  drawTitle(ctx, "Pixel Parker", ui.cx, ui.titleY, ui.scale, 0.12);
+  drawButton(ctx, ui.start.btn,    ui.start.state);
+  drawButton(ctx, ui.settings.btn, ui.settings.state);
 }
