@@ -1,8 +1,7 @@
-import { obbInsideAabb } from "web-engine/physics/overlap.ts";
-
-import type { Vehicle } from "../vehicle/types.ts";
+import { obbInsideAabb      } from "web-engine/physics/overlap.ts";
 import type { Sensor, Level } from "../level/types.ts";
-import { vehicleObb } from "../physics/sensors.ts";
+import type { Vehicle       } from "../vehicle/types.ts";
+import { vehicleObb         } from "../physics/sensors.ts";
 
 export const DEFAULT_PARK_PADDING = 8;
 export const STOPPED_THRESHOLD = 5;

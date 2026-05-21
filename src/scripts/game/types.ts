@@ -1,4 +1,4 @@
-import type { Level } from "../level/types.ts";
+import type { Level                } from "../level/types.ts";
 import type { Vehicle, VehicleType } from "../vehicle/types.ts";
 import type {
   TitleMenuState,
