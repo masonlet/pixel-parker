@@ -1,4 +1,4 @@
-import type { Level } from "../level/types.ts";
+import type { Level       } from "../level/types.ts";
 import type { VehicleType } from "../vehicle/types.ts";
 
 /** Inline or file-referenced entry. */
