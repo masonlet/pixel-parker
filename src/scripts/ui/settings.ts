@@ -9,12 +9,6 @@ import { updateSlider, drawSlider   } from "./slider.ts";
 let volState: SliderState = { dragging: false, value: getVolume() };
 
 export function handleSettingsFrame(canvasW: number, canvasH: number): FrameState {
-  const ui = updateSettingsMenu(canvasW, canvasH);
-  if (ui.back.state.clicked) return transition({ game: "menu-title", ui: null });
-  return { game: "menu-settings", ui };
-}
-
-export function updateSettingsMenu(canvasW: number, canvasH: number): SettingsMenuState {
   const { scale, gap, cx, cy, btnW, btnH } = getLayout(canvasW, canvasH);
   const titleY = scale * 0.15;
 
@@ -30,19 +24,24 @@ export function updateSettingsMenu(canvasW: number, canvasH: number): SettingsMe
   if (mute.state.clicked) setMuted(!isMuted());
   setVolume(volState.value);
 
-  return { cx, scale, titleY, mute, back, vol: { slider: volSlider, state: volState }, muted: isMuted() };
+  const ui = { cx, scale, titleY, mute, back, vol: { slider: volSlider, state: volState }, muted: isMuted() };
+
+  if (ui.back.state.clicked) return transition({ game: "menu-title", ui: null });
+  return { game: "menu-settings", ui };
 }
 
-export function drawSettingsMenu(
+export function renderSettingsFrame(
   ctx: CanvasRenderingContext2D,
   canvasW: number,
   canvasH: number,
-  state: SettingsMenuState,
+  ui: SettingsMenuState | null,
 ): void {
+  if (!ui) return;
+
   ctx.fillStyle = "#000";
   ctx.fillRect(0, 0, canvasW, canvasH);
-  drawTitle(ctx, "Settings", state.cx, state.titleY, state.scale);
-  drawButton(ctx, state.mute.btn, state.mute.state);
-  drawSlider(ctx, state.vol.slider, state.vol.state.value);
-  drawButton(ctx, state.back.btn, state.back.state);
+  drawTitle(ctx, "Settings", ui.cx, ui.titleY, ui.scale);
+  drawButton(ctx, ui.mute.btn,   ui.mute.state);
+  drawSlider(ctx, ui.vol.slider, ui.vol.state.value);
+  drawButton(ctx, ui.back.btn,   ui.back.state);
 }
