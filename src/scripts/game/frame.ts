@@ -3,6 +3,7 @@ import { wasPressed } from "web-engine/input/keyboard.ts";
 
 import type { PlayState, FrameState       } from "./types.ts";
 import { renderPlayState, updatePlayState } from "./play.ts";
+import { transition                       } from "./transition.ts";
 
 import { handleTitleFrame, renderTitleFrame       } from "../ui/title.ts";
 import { renderSettingsFrame, handleSettingsFrame } from "../ui/settings.ts";
@@ -18,8 +19,8 @@ export function updateFrame(
 ): FrameState {
   if (frame === null) return { game: "menu-title", ui: null };
   if (wasPressed("Escape"))  {
-    if (frame.game === "level-playing") return { game: "level-paused",  ui: null };
-    if (frame.game === "level-paused")  return { game: "level-playing", ui: null };
+    if (frame.game === "level-playing") return transition({ game: "level-paused",  ui: null });
+    if (frame.game === "level-paused")  return transition({ game: "level-playing", ui: null });
   }
 
   const { width: w, height: h } = canvas;
