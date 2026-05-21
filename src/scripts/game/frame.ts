@@ -55,9 +55,9 @@ export function renderFrame(
   } else renderPlayState(ctx, playState, w, h);
 
   switch (frame.game) {
-    case "menu-title":    renderTitleFrame   (ctx, w, h, frame.ui); break;
-    case "menu-settings": renderSettingsFrame(ctx, w, h, frame.ui); break;
-    case "menu-levels":   renderLevelFrame   (ctx, w, h, frame.ui); break;
+    case "menu-title":    renderTitleFrame   (ctx, frame.ui); break;
+    case "menu-settings": renderSettingsFrame(ctx, frame.ui); break;
+    case "menu-levels":   renderLevelFrame   (ctx, frame.ui); break;
     case "level-paused":  renderPauseFrame   (ctx, w, h, frame.ui); break;
     case "level-won":     renderWonFrame     (ctx, w, h, frame.ui); break;
   }

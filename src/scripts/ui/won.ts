@@ -46,14 +46,14 @@ export function handleWonFrame(w: number, h: number, playState: PlayState): Fram
 
 export function renderWonFrame(
   ctx: CanvasRenderingContext2D,
-  canvasW: number,
-  canvasH: number,
+  w: number,
+  h: number,
   ui: WonMenuState | null,
 ): void {
   if (!ui) return;
 
   ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
-  ctx.fillRect(0, 0, canvasW, canvasH);
+  ctx.fillRect(0, 0, w, h);
   drawTitle(ctx, "Level Complete!", ui.cx, ui.titleY, ui.scale);
   drawButton(ctx, ui.restart.btn, ui.restart.state);
   if (ui.next) drawButton(ctx, ui.next.btn, ui.next.state);

@@ -4,11 +4,7 @@ import type { Button, TitleMenuState } from "./types.ts";
 import { getLayout, drawTitle        } from "./layout.ts";
 import { getButtonState, drawButton  } from "./button.ts";
 
-export function handleTitleFrame(
-  w: number,
-  h: number,
-  playState: PlayState
-): FrameState {
+export function handleTitleFrame(w: number, h: number, playState: PlayState): FrameState {
   const { scale, gap, cx, cy, btnW, btnH } = getLayout(w, h);
   const titleY = cy - btnH * 1.5 - gap * 2;
 
@@ -29,12 +25,7 @@ export function handleTitleFrame(
   return { game: "menu-title", ui };
 }
 
-export function renderTitleFrame(
-  ctx: CanvasRenderingContext2D,
-  w: number,
-  h: number,
-  ui: TitleMenuState | null,
-) {
+export function renderTitleFrame(ctx: CanvasRenderingContext2D, ui: TitleMenuState | null): void {
   if (!ui) return;
   drawTitle(ctx, "Pixel Parker", ui.cx, ui.titleY, ui.scale, 0.12);
   drawButton(ctx, ui.start.btn,    ui.start.state);

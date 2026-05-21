@@ -8,13 +8,13 @@ import { updateSlider, drawSlider   } from "./slider.ts";
 
 let volState: SliderState = { dragging: false, value: getVolume() };
 
-export function handleSettingsFrame(canvasW: number, canvasH: number): FrameState {
-  const { scale, gap, cx, cy, btnW, btnH } = getLayout(canvasW, canvasH);
+export function handleSettingsFrame(w: number, h: number): FrameState {
+  const { scale, gap, cx, cy, btnW, btnH } = getLayout(w, h);
   const titleY = scale * 0.15;
 
-  const muteBtn:   Button = { x: cx - btnW/2, y: cy - btnH/2,            w: btnW, h: btnH, label: isMuted() ? "Unmute" : "Mute" };
-  const backBtn:   Button = { x: cx - btnW/2, y: canvasH - btnH - gap*2, w: btnW, h: btnH, label: "Back" };
-  const volSlider: Slider = { x: cx - btnW/2, y: cy + btnH/2 + gap,      w: btnW, h: btnH, label: "Volume" };
+  const muteBtn:   Button = { x: cx - btnW/2, y: cy - btnH/2,       w: btnW, h: btnH, label: isMuted() ? "Unmute" : "Mute" };
+  const backBtn:   Button = { x: cx - btnW/2, y: h - btnH - gap*2,  w: btnW, h: btnH, label: "Back" };
+  const volSlider: Slider = { x: cx - btnW/2, y: cy + btnH/2 + gap, w: btnW, h: btnH, label: "Volume" };
 
   const mute = { btn: muteBtn, state: getButtonState(muteBtn) };
   const back = { btn: backBtn, state: getButtonState(backBtn) };
@@ -30,12 +30,7 @@ export function handleSettingsFrame(canvasW: number, canvasH: number): FrameStat
   return { game: "menu-settings", ui };
 }
 
-export function renderSettingsFrame(
-  ctx: CanvasRenderingContext2D,
-  canvasW: number,
-  canvasH: number,
-  ui: SettingsMenuState | null,
-): void {
+export function renderSettingsFrame(ctx: CanvasRenderingContext2D, ui: SettingsMenuState | null): void {
   if (!ui) return;
   drawTitle(ctx, "Settings", ui.cx, ui.titleY, ui.scale);
   drawButton(ctx, ui.mute.btn,   ui.mute.state);

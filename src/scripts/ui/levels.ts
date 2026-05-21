@@ -47,12 +47,7 @@ export function handleLevelFrame(w: number, h: number, playState: PlayState): Fr
   return { game: "menu-levels", ui };
 }
 
-export function renderLevelFrame(
-  ctx: CanvasRenderingContext2D,
-  canvasW: number,
-  canvasH: number,
-  ui: LevelSelectState | null,
-): void {
+export function renderLevelFrame(ctx: CanvasRenderingContext2D, ui: LevelSelectState | null): void {
   if (!ui) return;
   drawTitle(ctx, "Select Level", ui.cx, ui.titleY, ui.scale);
   for (const entry of ui.levels) drawButton(ctx, entry.btn, entry.state);

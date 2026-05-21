@@ -7,8 +7,8 @@ export function getButtonState(b: Button): ButtonState {
   return { hovered, clicked: hovered && wasPointerClicked() };
 }
 
-export function drawButton(ctx: CanvasRenderingContext2D, b: Button, state: ButtonState): void {
-  ctx.fillStyle = state.hovered ? "#444" : "#222";
+export function drawButton(ctx: CanvasRenderingContext2D, b: Button, ui: ButtonState): void {
+  ctx.fillStyle = ui.hovered ? "#444" : "#222";
   ctx.fillRect(b.x, b.y, b.w, b.h);
   ctx.strokeStyle = "#fff";
   ctx.lineWidth = 2;
