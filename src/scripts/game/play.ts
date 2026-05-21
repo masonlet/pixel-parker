@@ -1,23 +1,17 @@
 import { isDown, wasPressed } from "web-engine/input/keyboard.ts";
-
 import type { PlayState } from "./types.ts";
-
-import { checkLevelWon } from "./win.ts";
-
-import { drawLevel } from "../level/render.ts";
-
-import type { Campaign } from "../campaign/types.ts";
-
-import { spawnVehicles } from "../vehicle/spawn.ts";
+import { checkLevelWon  } from "./win.ts";
+import { drawLevel      } from "../level/render.ts";
+import type { Campaign  } from "../campaign/types.ts";
+import { spawnVehicles  } from "../vehicle/spawn.ts";
+import { drawVehicle    } from "../vehicle/render.ts";
 import {
   applyInput,
   moveVehicle,
   stepVehiclePhysics,
   resolveVehiclePairs
 } from "../vehicle/physics.ts";
-import { drawVehicle } from "../vehicle/render.ts";
-
-import { sensorsOverlapping } from "../physics/sensors.ts";
+import { sensorsOverlapping                  } from "../physics/sensors.ts";
 import { drawWallAabbs, drawOBB, drawSensors } from "../physics/debug.ts";
 
 export function createPlayState(campaign: Campaign): PlayState {

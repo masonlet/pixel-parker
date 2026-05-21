@@ -1,12 +1,10 @@
-import type { OBB } from "web-engine/physics/types.ts";
-import { obbVsAabb } from "web-engine/physics/collision.ts";
+import type { OBB      } from "web-engine/physics/types.ts";
+import { obbVsAabb     } from "web-engine/physics/collision.ts";
 import { obbInsideAabb } from "web-engine/physics/overlap.ts";
-
-import { TILE, TILE_SIZE, type Level } from "../level/types.ts";
-import { getTile } from "../level/query.ts";
-
-import type { Vehicle } from "../vehicle/types.ts";
-import { vehicleObb } from "./sensors.ts";
+import { vehicleObb    } from "./sensors.ts";
+import type { Vehicle  } from "../vehicle/types.ts";
+import { TILE, TILE_SIZE, type Level      } from "../level/types.ts";
+import { getTile                          } from "../level/query.ts";
 import { isParkedIn, DEFAULT_PARK_PADDING } from "../game/win.ts";
 
 export function drawOBB(
@@ -66,7 +64,7 @@ export function drawSensors(
     if (s.vehicle && s.vehicle === activeVehicle?.type.name) color = "white";
 
     if (subject) {
-       if (s.kind === "parking_spot") {
+      if (s.kind === "parking_spot") {
         const obb = vehicleObb(subject);
         const aabb = { x: s.x, y: s.y, w: s.w, h: s.h };
         if (isParkedIn(subject, s))

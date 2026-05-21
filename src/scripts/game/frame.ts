@@ -21,11 +21,10 @@ function handlePlayingFrame(frame: FrameState, playState: PlayState, dt: number)
 
 export function updateFrame(
   canvas: HTMLCanvasElement,
-  frame: FrameState | null,
+  frame: FrameState,
   playState: PlayState,
   dt: number
 ): FrameState {
-  if (frame === null) return { game: "menu-title", ui: null };
   if (wasPressed("Escape"))  {
     if (frame.game === "level-playing") return transition({ game: "level-paused",  ui: null });
     if (frame.game === "level-paused")  return transition({ game: "level-playing", ui: null });
