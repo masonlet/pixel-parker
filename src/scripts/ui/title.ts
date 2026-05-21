@@ -1,6 +1,18 @@
-import { getLayout, drawTitle } from "./layout.ts";
-import { getButtonState, drawButton } from "./button.ts";
+import type { FrameState, PlayState  } from "../game/types.ts";
+import { transition                  } from "../game/transition.ts";
 import type { Button, TitleMenuState } from "./types.ts";
+import { getLayout, drawTitle        } from "./layout.ts";
+import { getButtonState, drawButton  } from "./button.ts";
+
+export function handleTitleFrame(canvasW: number, canvasH: number, playState: PlayState): FrameState {
+  const ui = updateTitleMenu(canvasW, canvasH);
+  if (ui.start.state.clicked) return transition(playState.levels.length > 1
+    ? { game: "menu-levels", ui: null }
+    : { game: "level-playing", ui: null }
+  );
+  if (ui.settings.state.clicked) return transition({ game: "menu-settings", ui: null });
+  return { game: "menu-title", ui };
+}
 
 export function updateTitleMenu(canvasW: number, canvasH: number): TitleMenuState {
   const { scale, gap, cx, cy, btnW, btnH } = getLayout(canvasW, canvasH);

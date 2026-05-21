@@ -1,25 +1,16 @@
 import { playSound } from "web-engine/audio/playback.ts";
-import { flushPointer } from "web-engine/input/pointer.ts";
-import { wasPressed, flushKeyboard } from "web-engine/input/keyboard.ts";
+import { wasPressed } from "web-engine/input/keyboard.ts";
 
 import type { PlayState, FrameState } from "./types.ts";
 import { renderPlayState, selectLevel, updatePlayState, resetPlayState } from "./play.ts";
 
-import { updateTitleMenu,    drawTitleMenu    } from "../ui/title.ts";
+import { updateTitleMenu, drawTitleMenu, handleTitleFrame } from "../ui/title.ts";
 import { updateSettingsMenu, drawSettingsMenu } from "../ui/settings.ts";
 import { updateLevelSelect,  drawLevelSelect  } from "../ui/levels.ts";
 import { updatePauseMenu,    drawPauseMenu    } from "../ui/pause.ts";
 import { updateWonMenu,      drawWonMenu      } from "../ui/won.ts";
 
-function transition(frame: FrameState, fn?: () => void): FrameState {
-  playSound("button");
-  fn?.();
-
-  flushPointer();
-  flushKeyboard();
-
-  return frame;
-}
+import { transition } from "./transition.ts";
 
 export function updateFrame(
   canvas: HTMLCanvasElement,
@@ -54,15 +45,7 @@ export function updateFrame(
     }
   }
   switch (frame.game) {
-    case "menu-title": {
-      const ui = updateTitleMenu(w, h);
-      if (ui.start.state.clicked) return transition(playState.levels.length > 1
-        ? { game: "menu-levels", ui: null }
-        : { game: "level-playing", ui: null }
-      );
-      if (ui.settings.state.clicked) return transition({ game: "menu-settings", ui: null });
-      return { game: "menu-title", ui };
-    }
+    case "menu-title": return handleTitleFrame(w, h, playState);
     case "menu-settings": {
       const ui = updateSettingsMenu(w, h);
       if (ui.back.state.clicked) return transition({ game: "menu-title", ui: null });
