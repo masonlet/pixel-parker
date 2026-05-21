@@ -1,10 +1,18 @@
 import { isMuted, setMuted, getVolume, setVolume } from "web-engine/audio/mixer.ts";
-import { getLayout, drawTitle } from "./layout.ts";
-import { getButtonState, drawButton } from "./button.ts";
-import { updateSlider, drawSlider } from "./slider.ts";
 import type { Button, Slider, SliderState, SettingsMenuState } from "./types.ts";
+import type { FrameState            } from "../game/types.ts";
+import { transition                 } from "../game/transition.ts";
+import { getLayout, drawTitle       } from "./layout.ts";
+import { getButtonState, drawButton } from "./button.ts";
+import { updateSlider, drawSlider   } from "./slider.ts";
 
 let volState: SliderState = { dragging: false, value: getVolume() };
+
+export function handleSettingsFrame(canvasW: number, canvasH: number): FrameState {
+  const ui = updateSettingsMenu(canvasW, canvasH);
+  if (ui.back.state.clicked) return transition({ game: "menu-title", ui: null });
+  return { game: "menu-settings", ui };
+}
 
 export function updateSettingsMenu(canvasW: number, canvasH: number): SettingsMenuState {
   const { scale, gap, cx, cy, btnW, btnH } = getLayout(canvasW, canvasH);

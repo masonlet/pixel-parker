@@ -5,7 +5,7 @@ import type { PlayState, FrameState } from "./types.ts";
 import { renderPlayState, selectLevel, updatePlayState, resetPlayState } from "./play.ts";
 
 import { updateTitleMenu, drawTitleMenu, handleTitleFrame } from "../ui/title.ts";
-import { updateSettingsMenu, drawSettingsMenu } from "../ui/settings.ts";
+import { updateSettingsMenu, drawSettingsMenu, handleSettingsFrame } from "../ui/settings.ts";
 import { updateLevelSelect,  drawLevelSelect  } from "../ui/levels.ts";
 import { updatePauseMenu,    drawPauseMenu    } from "../ui/pause.ts";
 import { updateWonMenu,      drawWonMenu      } from "../ui/won.ts";
@@ -45,12 +45,8 @@ export function updateFrame(
     }
   }
   switch (frame.game) {
-    case "menu-title": return handleTitleFrame(w, h, playState);
-    case "menu-settings": {
-      const ui = updateSettingsMenu(w, h);
-      if (ui.back.state.clicked) return transition({ game: "menu-title", ui: null });
-      return { game: "menu-settings", ui };
-    }
+    case "menu-title":    return handleTitleFrame(w, h, playState);
+    case "menu-settings": return handleSettingsFrame(w, h);
     case "menu-levels": {
       const ui = updateLevelSelect(w, h, playState.levels);
       if (ui.back.state.clicked) return transition({ game: "menu-title",    ui: null });
