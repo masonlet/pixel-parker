@@ -6,7 +6,7 @@ import { renderPlayState, updatePlayState } from "./play.ts";
 
 import { handleTitleFrame, renderTitleFrame       } from "../ui/title.ts";
 import { renderSettingsFrame, handleSettingsFrame } from "../ui/settings.ts";
-import { drawLevelSelect, handleLevelFrame        } from "../ui/levels.ts";
+import { renderLevelFrame,    handleLevelFrame    } from "../ui/levels.ts";
 import { drawPauseMenu, handlePauseFrame          } from "../ui/pause.ts";
 import { drawWonMenu, handleWonFrame              } from "../ui/won.ts";
 
@@ -50,13 +50,11 @@ export function renderFrame(
   ctx.fillRect(0, 0, w, h);
 
   switch (frame.game) {
-    case "level-playing":
-    case "level-paused":
-    case "level-won":     renderPlayState(ctx, playState, w, h); break;
-    case "menu-title":    renderTitleFrame(ctx, w, h, frame.ui); break;
+    case "menu-title":    renderTitleFrame(ctx, w, h, frame.ui);    break;
     case "menu-settings": renderSettingsFrame(ctx, w, h, frame.ui); break;
-    case "menu-levels":   if (frame.ui) drawLevelSelect (ctx, w, h, frame.ui); break;
-    case "level-paused":  if (frame.ui) drawPauseMenu   (ctx, w, h, frame.ui); break;
-    case "level-won":     if (frame.ui) drawWonMenu     (ctx, w, h, frame.ui); break;
+    case "menu-levels":   renderLevelFrame(ctx, w, h, frame.ui);    break;
+    case "level-playing": renderPlayState(ctx, playState, w, h);    break;
+    case "level-paused":  renderPlayState(ctx, playState, w, h); if (frame.ui) drawPauseMenu   (ctx, w, h, frame.ui); break;
+    case "level-won":     renderPlayState(ctx, playState, w, h); if (frame.ui) drawWonMenu     (ctx, w, h, frame.ui); break;
   }
 }
