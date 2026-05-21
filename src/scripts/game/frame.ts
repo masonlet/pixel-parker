@@ -1,14 +1,14 @@
-import { playSound } from "web-engine/audio/playback.ts";
+import { playSound  } from "web-engine/audio/playback.ts";
 import { wasPressed } from "web-engine/input/keyboard.ts";
 
-import type { PlayState, FrameState } from "./types.ts";
+import type { PlayState, FrameState       } from "./types.ts";
 import { renderPlayState, updatePlayState } from "./play.ts";
 
-import { updateTitleMenu, drawTitleMenu, handleTitleFrame } from "../ui/title.ts";
-import { updateSettingsMenu, drawSettingsMenu, handleSettingsFrame } from "../ui/settings.ts";
-import { updateLevelSelect,  drawLevelSelect, handleLevelFrame  } from "../ui/levels.ts";
-import { updatePauseMenu,    drawPauseMenu, handlePauseFrame    } from "../ui/pause.ts";
-import { updateWonMenu,      drawWonMenu, handleWonFrame      } from "../ui/won.ts";
+import { drawTitleMenu, handleTitleFrame       } from "../ui/title.ts";
+import { drawSettingsMenu, handleSettingsFrame } from "../ui/settings.ts";
+import { drawLevelSelect, handleLevelFrame     } from "../ui/levels.ts";
+import { drawPauseMenu, handlePauseFrame       } from "../ui/pause.ts";
+import { drawWonMenu, handleWonFrame           } from "../ui/won.ts";
 
 export function updateFrame(
   canvas: HTMLCanvasElement,
@@ -33,15 +33,6 @@ export function updateFrame(
     return frame;
   }
 
-  if (frame.ui === null) {
-    switch (frame.game) {
-      case "menu-title":    return { game: "menu-title",    ui: updateTitleMenu(w, h) };
-      case "menu-settings": return { game: "menu-settings", ui: updateSettingsMenu(w, h) };
-      case "menu-levels":   return { game: "menu-levels",   ui: updateLevelSelect(w, h, playState.levels) };
-      case "level-paused":  return { game: "level-paused",  ui: updatePauseMenu(w, h) };
-      case "level-won":     return { game: "level-won",     ui: updateWonMenu(w, h, playState.levelIndex < playState.levels.length - 1) };
-    }
-  }
   switch (frame.game) {
     case "menu-title":    return handleTitleFrame   (w, h, playState);
     case "menu-levels":   return handleLevelFrame   (w, h, playState);
