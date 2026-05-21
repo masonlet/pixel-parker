@@ -25,18 +25,17 @@ export function updateFrame(
     if (frame.game === "level-paused")  return { game: "level-playing", ui: null };
   }
 
-  if (frame.game === "level-playing") {
-    if (updatePlayState(playState, dt)) {
-      playSound("win");
-      return { game: "level-won", ui: null };
-    }
-    return frame;
-  }
-
   switch (frame.game) {
     case "menu-title":    return handleTitleFrame   (w, h, playState);
     case "menu-levels":   return handleLevelFrame   (w, h, playState);
     case "menu-settings": return handleSettingsFrame(w, h);
+    case "level-playing": {
+      if (updatePlayState(playState, dt)) {
+        playSound("win");
+        return { game: "level-won", ui: null };
+      }
+      return frame;
+    }
     case "level-paused":  return handlePauseFrame   (w, h, playState);
     case "level-won":     return handleWonFrame     (w, h, playState)
   }
