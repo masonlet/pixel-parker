@@ -11,6 +11,14 @@ import { renderLevelFrame,    handleLevelFrame    } from "../ui/levels.ts";
 import { renderPauseFrame, handlePauseFrame       } from "../ui/pause.ts";
 import { renderWonFrame, handleWonFrame           } from "../ui/won.ts";
 
+function handlePlayingFrame(frame: FrameState, playState: PlayState, dt: number): FrameState {
+  if (updatePlayState(playState, dt)) {
+    playSound("win");
+    return { game: "level-won", ui: null };
+  }
+  return frame;
+}
+
 export function updateFrame(
   canvas: HTMLCanvasElement,
   frame: FrameState | null,
@@ -28,13 +36,7 @@ export function updateFrame(
     case "menu-title":    return handleTitleFrame   (w, h, playState);
     case "menu-levels":   return handleLevelFrame   (w, h, playState);
     case "menu-settings": return handleSettingsFrame(w, h);
-    case "level-playing": {
-      if (updatePlayState(playState, dt)) {
-        playSound("win");
-        return { game: "level-won", ui: null };
-      }
-      return frame;
-    }
+    case "level-playing": return handlePlayingFrame (frame, playState, dt);
     case "level-paused":  return handlePauseFrame   (w, h, playState);
     case "level-won":     return handleWonFrame     (w, h, playState)
   }
