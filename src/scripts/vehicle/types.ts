@@ -4,14 +4,20 @@ import type { Sensor      } from "../level/types.ts";
 export interface VehicleStats {
   /** Identifier for this vehicle type */
   name: string;
+
   /** Base vehicle sprite path */
   spritePath: string;
   /** Tintable overlay sprite path */
   bodySpritePath: string;
+
   /** Hitbox width in pixels. */
   w: number;
   /** Hitbox height in pixels. */
   h: number;
+
+  /** Mass in arbitrary units. Higher = harder to push. */
+  mass: number;
+
   /** Maximum turn rate in radians per second. */
   turnSpeed: number;
   /** Maximum forward speed in pixels per second. */
@@ -24,10 +30,9 @@ export interface VehicleStats {
   friction: number;
   /** Braking force in pixels per second^2. */
   brakeForce: number;
+
   /** Delay in seconds before gear engages after braking to a stop. */
   gearShiftDelay: number;
-  /** Mass in arbitrary units. Higher = harder to push. */
-  mass: number;
 }
 
 export interface VehicleType extends VehicleStats {
@@ -42,14 +47,21 @@ export interface Vehicle {
   type: VehicleType;
   /** Vehicle body. */
   body: PhysicsBody;
+
   /** Driver throttle: -1 (reverse), 0, 1 (forward). */
-  throttle: number;
+  throttle:  number;
   /** Driver steer: -1 (left), 0, 1 (right). */
-  steer: number;
+  steer:     number;
   /** Seconds remaining on the gear-shift wait. */
   shiftTimer: number;
+
   /** Body colour hue in degrees, 0-360. */
-  hue: number;
+  hue:      number;
+  /** Body colour cached. */
+  cachedHue: number;
+  /** Body tint cached. */
+  cachedTint: HTMLCanvasElement;
+
   /** Sensors this vehicle is touching */
   overlappingSensors: Sensor[];
 }
