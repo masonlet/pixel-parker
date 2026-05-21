@@ -1,6 +1,23 @@
-import { getLayout, drawTitle } from "./layout.ts";
-import { getButtonState, drawButton } from "./button.ts";
+import type { FrameState, PlayState           } from "../game/types.ts";
+import { transition                           } from "../game/transition.ts";
+import { selectLevel, resetPlayState          } from "../game/play.ts";
 import type { Button, WonMenuState, WonAction } from "./types.ts";
+import { getLayout, drawTitle                 } from "./layout.ts";
+import { getButtonState, drawButton           } from "./button.ts";
+
+export function handleWonFrame(canvasW: number, canvasH: number, playState: PlayState): FrameState {
+  const ui = updateWonMenu(canvasW, canvasH, playState.levelIndex < playState.levels.length - 1);
+  if (ui.action === "quit")    return transition({ game: "menu-title", ui: null });
+  if (ui.action === "next")    return transition(
+    { game: "level-playing", ui: null },
+    () => selectLevel(playState, playState.levelIndex + 1)
+  );
+  if (ui.action === "restart") return transition(
+    { game: "level-playing", ui: null },
+    () => resetPlayState(playState)
+  );
+  return { game: "level-won", ui };
+}
 
 export function updateWonMenu(canvasW: number, canvasH: number, hasNext: boolean): WonMenuState {
   const { scale, gap, cx, cy, btnW, btnH } = getLayout(canvasW, canvasH);

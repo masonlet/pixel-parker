@@ -2,15 +2,13 @@ import { playSound } from "web-engine/audio/playback.ts";
 import { wasPressed } from "web-engine/input/keyboard.ts";
 
 import type { PlayState, FrameState } from "./types.ts";
-import { renderPlayState, selectLevel, updatePlayState, resetPlayState } from "./play.ts";
+import { renderPlayState, updatePlayState } from "./play.ts";
 
 import { updateTitleMenu, drawTitleMenu, handleTitleFrame } from "../ui/title.ts";
 import { updateSettingsMenu, drawSettingsMenu, handleSettingsFrame } from "../ui/settings.ts";
 import { updateLevelSelect,  drawLevelSelect, handleLevelFrame  } from "../ui/levels.ts";
 import { updatePauseMenu,    drawPauseMenu, handlePauseFrame    } from "../ui/pause.ts";
-import { updateWonMenu,      drawWonMenu      } from "../ui/won.ts";
-
-import { transition } from "./transition.ts";
+import { updateWonMenu,      drawWonMenu, handleWonFrame      } from "../ui/won.ts";
 
 export function updateFrame(
   canvas: HTMLCanvasElement,
@@ -45,23 +43,11 @@ export function updateFrame(
     }
   }
   switch (frame.game) {
-    case "menu-title":    return handleTitleFrame(w, h, playState);
+    case "menu-title":    return handleTitleFrame   (w, h, playState);
+    case "menu-levels":   return handleLevelFrame   (w, h, playState);
     case "menu-settings": return handleSettingsFrame(w, h);
-    case "menu-levels":   return handleLevelFrame(w, h, playState);
-    case "level-paused":  return handlePauseFrame(w, h, playState);
-    case "level-won": {
-      const ui = updateWonMenu(w, h, playState.levelIndex < playState.levels.length - 1);
-      if (ui.action === "quit")    return transition({ game: "menu-title", ui: null });
-      if (ui.action === "next")    return transition(
-        { game: "level-playing", ui: null },
-        () => selectLevel(playState, playState.levelIndex + 1)
-      );
-      if (ui.action === "restart") return transition(
-        { game: "level-playing", ui: null },
-        () => resetPlayState(playState)
-      );
-      return { game: "level-won", ui };
-    }
+    case "level-paused":  return handlePauseFrame   (w, h, playState);
+    case "level-won":     return handleWonFrame     (w, h, playState)
   }
 }
 
