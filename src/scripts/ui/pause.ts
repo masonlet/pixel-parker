@@ -5,19 +5,8 @@ import type { PauseMenuState, PauseAction } from "./types.ts";
 import { getLayout, drawTitle             } from "./layout.ts";
 import { getButtonState, drawButton       } from "./button.ts";
 
-export function handlePauseFrame(canvasW: number, canvasH: number, playState: PlayState): FrameState {
-  const ui = updatePauseMenu(canvasW, canvasH);
-  if (ui.action === "resume")  return transition({ game: "level-playing", ui: null });
-  if (ui.action === "quit")    return transition({ game: "menu-title",    ui: null });
-  if (ui.action === "restart") return transition(
-    { game: "level-playing", ui: null },
-    () => resetPlayState(playState)
-  );
-  return { game: "level-paused", ui };
-}
-
-export function updatePauseMenu(canvasW: number, canvasH: number): PauseMenuState {
-  const { scale, gap, cx, cy, btnW, btnH } = getLayout(canvasW, canvasH);
+export function handlePauseFrame(w: number, h: number, playState: PlayState): FrameState {
+  const { scale, gap, cx, cy, btnW, btnH } = getLayout(w, h);
   const totalH = btnH * 3 + gap * 2;
   const firstY = cy - totalH / 2;
   const titleY = firstY - btnH * 0.5 - gap * 2;
@@ -35,19 +24,28 @@ export function updatePauseMenu(canvasW: number, canvasH: number): PauseMenuStat
   if (restart.state.clicked) action = "restart";
   if (quit.state.clicked)    action = "quit";
 
-  return { cx, scale, titleY, resume, restart, quit, action };
+  const ui = { cx, scale, titleY, resume, restart, quit, action };
+
+  if (ui.action === "resume")  return transition({ game: "level-playing", ui: null });
+  if (ui.action === "quit")    return transition({ game: "menu-title",    ui: null });
+  if (ui.action === "restart") return transition(
+    { game: "level-playing", ui: null },
+    () => resetPlayState(playState)
+  );
+  return { game: "level-paused", ui };
 }
 
-export function drawPauseMenu(
+export function renderPauseFrame(
   ctx: CanvasRenderingContext2D,
-  canvasW: number,
-  canvasH: number,
-  state: PauseMenuState,
+  w: number,
+  h: number,
+  ui: PauseMenuState | null,
 ): void {
+  if (!ui) return;
   ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
-  ctx.fillRect(0, 0, canvasW, canvasH);
-  drawTitle(ctx, "Paused", state.cx, state.titleY, state.scale);
-  drawButton(ctx, state.resume.btn,  state.resume.state);
-  drawButton(ctx, state.restart.btn, state.restart.state);
-  drawButton(ctx, state.quit.btn,    state.quit.state);
+  ctx.fillRect(0, 0, w, h);
+  drawTitle(ctx, "Paused", ui.cx, ui.titleY, ui.scale);
+  drawButton(ctx, ui.resume.btn,  ui.resume.state);
+  drawButton(ctx, ui.restart.btn, ui.restart.state);
+  drawButton(ctx, ui.quit.btn,    ui.quit.state);
 }

@@ -7,7 +7,7 @@ import { renderPlayState, updatePlayState } from "./play.ts";
 import { handleTitleFrame, renderTitleFrame       } from "../ui/title.ts";
 import { renderSettingsFrame, handleSettingsFrame } from "../ui/settings.ts";
 import { renderLevelFrame,    handleLevelFrame    } from "../ui/levels.ts";
-import { drawPauseMenu, handlePauseFrame          } from "../ui/pause.ts";
+import { renderPauseFrame, handlePauseFrame       } from "../ui/pause.ts";
 import { drawWonMenu, handleWonFrame              } from "../ui/won.ts";
 
 export function updateFrame(
@@ -54,7 +54,7 @@ export function renderFrame(
     case "menu-settings": renderSettingsFrame(ctx, w, h, frame.ui); break;
     case "menu-levels":   renderLevelFrame(ctx, w, h, frame.ui);    break;
     case "level-playing": renderPlayState(ctx, playState, w, h);    break;
-    case "level-paused":  renderPlayState(ctx, playState, w, h); if (frame.ui) drawPauseMenu   (ctx, w, h, frame.ui); break;
+    case "level-paused":  renderPlayState(ctx, playState, w, h); renderPauseFrame(ctx, w, h, frame.ui); break;
     case "level-won":     renderPlayState(ctx, playState, w, h); if (frame.ui) drawWonMenu     (ctx, w, h, frame.ui); break;
   }
 }
