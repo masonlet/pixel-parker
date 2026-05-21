@@ -54,9 +54,6 @@ export function renderLevelFrame(
   ui: LevelSelectState | null,
 ): void {
   if (!ui) return;
-
-  ctx.fillStyle = "#000";
-  ctx.fillRect(0, 0, canvasW, canvasH);
   drawTitle(ctx, "Select Level", ui.cx, ui.titleY, ui.scale);
   for (const entry of ui.levels) drawButton(ctx, entry.btn, entry.state);
   drawButton(ctx, ui.back.btn, ui.back.state);

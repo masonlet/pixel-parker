@@ -37,9 +37,6 @@ export function renderSettingsFrame(
   ui: SettingsMenuState | null,
 ): void {
   if (!ui) return;
-
-  ctx.fillStyle = "#000";
-  ctx.fillRect(0, 0, canvasW, canvasH);
   drawTitle(ctx, "Settings", ui.cx, ui.titleY, ui.scale);
   drawButton(ctx, ui.mute.btn,   ui.mute.state);
   drawSlider(ctx, ui.vol.slider, ui.vol.state.value);

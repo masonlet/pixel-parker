@@ -36,9 +36,6 @@ export function renderTitleFrame(
   ui: TitleMenuState | null,
 ) {
   if (!ui) return;
-
-  ctx.fillStyle = "#000";
-  ctx.fillRect(0, 0, w, h);
   drawTitle(ctx, "Pixel Parker", ui.cx, ui.titleY, ui.scale, 0.12);
   drawButton(ctx, ui.start.btn,    ui.start.state);
   drawButton(ctx, ui.settings.btn, ui.settings.state);
