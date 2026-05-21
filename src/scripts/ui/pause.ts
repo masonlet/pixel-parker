@@ -1,6 +1,20 @@
-import { getLayout, drawTitle } from "./layout.ts";
-import { getButtonState, drawButton } from "./button.ts";
+import type { FrameState, PlayState       } from "../game/types.ts";
+import { transition                       } from "../game/transition.ts";
+import { resetPlayState                   } from "../game/play.ts";
 import type { PauseMenuState, PauseAction } from "./types.ts";
+import { getLayout, drawTitle             } from "./layout.ts";
+import { getButtonState, drawButton       } from "./button.ts";
+
+export function handlePauseFrame(canvasW: number, canvasH: number, playState: PlayState): FrameState {
+  const ui = updatePauseMenu(canvasW, canvasH);
+  if (ui.action === "resume")  return transition({ game: "level-playing", ui: null });
+  if (ui.action === "quit")    return transition({ game: "menu-title",    ui: null });
+  if (ui.action === "restart") return transition(
+    { game: "level-playing", ui: null },
+    () => resetPlayState(playState)
+  );
+  return { game: "level-paused", ui };
+}
 
 export function updatePauseMenu(canvasW: number, canvasH: number): PauseMenuState {
   const { scale, gap, cx, cy, btnW, btnH } = getLayout(canvasW, canvasH);

@@ -7,7 +7,7 @@ import { renderPlayState, selectLevel, updatePlayState, resetPlayState } from ".
 import { updateTitleMenu, drawTitleMenu, handleTitleFrame } from "../ui/title.ts";
 import { updateSettingsMenu, drawSettingsMenu, handleSettingsFrame } from "../ui/settings.ts";
 import { updateLevelSelect,  drawLevelSelect, handleLevelFrame  } from "../ui/levels.ts";
-import { updatePauseMenu,    drawPauseMenu    } from "../ui/pause.ts";
+import { updatePauseMenu,    drawPauseMenu, handlePauseFrame    } from "../ui/pause.ts";
 import { updateWonMenu,      drawWonMenu      } from "../ui/won.ts";
 
 import { transition } from "./transition.ts";
@@ -48,16 +48,7 @@ export function updateFrame(
     case "menu-title":    return handleTitleFrame(w, h, playState);
     case "menu-settings": return handleSettingsFrame(w, h);
     case "menu-levels":   return handleLevelFrame(w, h, playState);
-    case "level-paused": {
-      const ui = updatePauseMenu(w, h);
-      if (ui.action === "resume")  return transition({ game: "level-playing", ui: null });
-      if (ui.action === "quit")    return transition({ game: "menu-title",    ui: null });
-      if (ui.action === "restart") return transition(
-        { game: "level-playing", ui: null },
-        () => resetPlayState(playState)
-      );
-      return { game: "level-paused", ui };
-    }
+    case "level-paused":  return handlePauseFrame(w, h, playState);
     case "level-won": {
       const ui = updateWonMenu(w, h, playState.levelIndex < playState.levels.length - 1);
       if (ui.action === "quit")    return transition({ game: "menu-title", ui: null });
