@@ -1,7 +1,23 @@
-import { getLayout, drawTitle } from "./layout.ts";
-import { getButtonState, drawButton } from "./button.ts";
+import type { FrameState, PlayState    } from "../game/types.ts";
+import { transition                    } from "../game/transition.ts";
+import { selectLevel                   } from "../game/play.ts";
+import type { Level                    } from "../level/types.ts";
 import type { Button, LevelSelectState } from "./types.ts";
-import type { Level } from "../level/types.ts";
+import { getLayout, drawTitle          } from "./layout.ts";
+import { getButtonState, drawButton    } from "./button.ts";
+
+export function handleLevelFrame(canvasW: number, canvasH: number, playState: PlayState): FrameState {
+  const ui = updateLevelSelect(canvasW, canvasH, playState.levels);
+  if (ui.back.state.clicked) return transition({ game: "menu-title",    ui: null });
+  if (ui.clickedIndex !== null) {
+    const index = ui.clickedIndex;
+    return transition(
+      { game: "level-playing", ui: null },
+      () => selectLevel(playState, index)
+    );
+  }
+  return { game: "menu-levels", ui };
+}
 
 export function updateLevelSelect(canvasW: number, canvasH: number, levels: Level[]): LevelSelectState {
   const { scale, gap, cx, cy, btnW, btnH } = getLayout(canvasW, canvasH);
