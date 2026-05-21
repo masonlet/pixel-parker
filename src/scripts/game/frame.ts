@@ -47,15 +47,18 @@ export function renderFrame(
   frame: FrameState
 ): void {
   const { width: w, height: h } = canvas;
-  ctx.fillStyle = "#000";
-  ctx.fillRect(0, 0, w, h);
+  // Render menu background
+  if (frame.game.startsWith("menu-")) {
+    ctx.fillStyle = "#000";
+    ctx.fillRect(0, 0, w, h);
+  // Else, render game before UI
+  } else renderPlayState(ctx, playState, w, h);
 
   switch (frame.game) {
-    case "menu-title":    renderTitleFrame(ctx, w, h, frame.ui);    break;
+    case "menu-title":    renderTitleFrame   (ctx, w, h, frame.ui); break;
     case "menu-settings": renderSettingsFrame(ctx, w, h, frame.ui); break;
-    case "menu-levels":   renderLevelFrame(ctx, w, h, frame.ui);    break;
-    case "level-playing": renderPlayState(ctx, playState, w, h);    break;
-    case "level-paused":  renderPlayState(ctx, playState, w, h); renderPauseFrame(ctx, w, h, frame.ui); break;
-    case "level-won":     renderPlayState(ctx, playState, w, h); renderWonFrame  (ctx, w, h, frame.ui); break;
+    case "menu-levels":   renderLevelFrame   (ctx, w, h, frame.ui); break;
+    case "level-paused":  renderPauseFrame   (ctx, w, h, frame.ui); break;
+    case "level-won":     renderWonFrame     (ctx, w, h, frame.ui); break;
   }
 }
