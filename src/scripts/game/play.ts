@@ -1,3 +1,6 @@
+import { createTweenManager } from "web-engine/tween/manager.ts";
+import type { TweenTarget   } from "web-engine/tween/types.ts";
+import type { Sensor        } from "../level/types.ts";
 import { isDown, wasPressed } from "web-engine/input/keyboard.ts";
 import type { PlayState } from "./types.ts";
 import { checkLevelWon  } from "./win.ts";
@@ -14,29 +17,60 @@ import {
 import { sensorsOverlapping                  } from "../physics/sensors.ts";
 import { drawWallAabbs, drawOBB, drawSensors } from "../physics/debug.ts";
 
+function initSensorTweens(p: PlayState): void {
+  p.tweenManager.stopAll();
+  p.sensorAlphas.clear();
+  for (const s of p.level.sensors) {
+    if (!s.colour) continue;
+    const target: TweenTarget = { alpha: 0.05 };
+    p.sensorAlphas.set(s, target);
+    p.tweenManager.add({
+      targets: target,
+      props: { alpha: { from: 0.05, to: 0.25 } },
+      duration: 1200,
+      ease: "sine.inOut",
+      yoyo: true,
+      repeat: -1,
+    });
+  }
+}
+
 export function createPlayState(campaign: Campaign): PlayState {
-  return {
+  const level = campaign.levels[0];
+  if (!level) throw new Error("Campaign has no levels");
+  const tweenManager = createTweenManager();
+  const sensorAlphas = new Map<Sensor, TweenTarget>();
+  const state: PlayState = {
     levels: campaign.levels,
     levelIndex: 0,
-    level: campaign.levels[0]!,
+    level,
     vehicleTypes: campaign.vehicleTypes,
-    vehicles: spawnVehicles(campaign.levels[0]!, campaign.vehicleTypes),
+    vehicles: spawnVehicles(level, campaign.vehicleTypes),
     vehicleIndex: 0,
     debugMode: false,
-  };
+    tweenManager,
+    sensorAlphas,
+  }
+  initSensorTweens(state);
+  return state;
 }
 
 export function selectLevel(p: PlayState, index: number): void {
+  const level = p.levels[index];
+  if (!level) throw new Error(`Campaign has no level at index ${index}`);
+  p.level = level;
   p.levelIndex = index;
-  p.level = p.levels[index]!;
   p.vehicles = spawnVehicles(p.level, p.vehicleTypes);
   p.vehicleIndex = 0;
+  initSensorTweens(p);
 }
 
 export function updatePlayState(p: PlayState, dt: number): boolean {
   if (wasPressed("Digit1")) return true;
   if (wasPressed("Digit2")) p.vehicleIndex = (p.vehicleIndex + 1) % p.vehicles.length;
   if (wasPressed("Digit3")) p.debugMode = !p.debugMode;
+
+  p.tweenManager.update(dt);
 
   const active = p.vehicles[p.vehicleIndex];
   if (!active) return false;

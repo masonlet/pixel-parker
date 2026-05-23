@@ -1,4 +1,5 @@
-import type { Level                } from "../level/types.ts";
+import type { TweenManager, TweenTarget } from "web-engine/tween/types.ts";
+import type { Level, Sensor        } from "../level/types.ts";
 import type { Vehicle, VehicleType } from "../vehicle/types.ts";
 import type {
   TitleMenuState,
@@ -16,6 +17,8 @@ export interface PlayState {
   vehicles: Vehicle[];
   vehicleIndex: number;
   debugMode: boolean;
+  tweenManager: TweenManager;
+  sensorAlphas: Map<Sensor,TweenTarget>;
 }
 
 export type FrameState = | { game: "menu-title";    ui: TitleMenuState    | null }
