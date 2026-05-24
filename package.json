@@ -13,6 +13,6 @@
     "vite": "^8.0.10"
   },
   "dependencies": {
-    "web-engine": "masonlet/web-engine"
+    "web-engine": "masonlet/web-engine#09a1e51a460964a33568bbbdc84a32fb26d8275b"
   }
 }
