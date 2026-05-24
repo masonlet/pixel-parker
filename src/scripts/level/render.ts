@@ -1,6 +1,7 @@
 import type { TweenTarget } from "web-engine/tween/types.ts";
 import { type Level, type Sensor, TILE, TILE_SIZE } from "./types.ts";
-import { getTile } from "./query.ts";
+import type { Vehicle } from "../vehicle/types.ts";
+import { getTile      } from "./query.ts";
 
 export function drawLevel(
   ctx: CanvasRenderingContext2D,
@@ -29,11 +30,18 @@ export function drawSensorOverlays(
   level: Level,
   sensorAlphas: Map<Sensor, TweenTarget>,
   parkedSensors: Set<Sensor>,
+  vehicles: Vehicle[],
   camX: number,
   camY: number,
 ): void {
   for (const s of level.sensors) {
-    if (!s.colour) continue;
+    const vehicle = s.vehicle
+      ? vehicles.find(v => v.type.name === s.vehicle)
+      : undefined;
+
+    const colour = s.colour ?? vehicle?.colour;
+    if (!colour) continue;
+
     const target = sensorAlphas.get(s);
     if (!target) continue;
 
@@ -44,11 +52,11 @@ export function drawSensorOverlays(
     ctx.save();
 
     ctx.globalAlpha = parked ? 0.35 : (target.alpha ?? 0.05);
-    ctx.fillStyle = parked ? "#00ff66" : s.colour;
+    ctx.fillStyle = parked ? "#00ff66" : colour;
     ctx.fillRect(x, y, s.w, s.h);
 
     ctx.globalAlpha = 0.5;
-    ctx.strokeStyle = parked ? "#00ff66" : s.colour;
+    ctx.strokeStyle = parked ? "#00ff66" : colour;
     ctx.lineWidth = 2;
     ctx.strokeRect(x, y, s.w, s.h);
 

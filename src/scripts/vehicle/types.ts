@@ -57,12 +57,10 @@ export interface Vehicle {
   /** Seconds remaining on the gear-shift wait. */
   shiftTimer: number;
 
-  /** Body colour hue in degrees, 0-360. */
-  hue:      number;
-  /** Body colour cached. */
-  cachedHue: number;
-  /** Body tint cached. */
-  cachedTint: HTMLCanvasElement;
+  /** Body colour as hex string. */
+  colour: string;
+  /** Body tint canvas. */
+  tint: HTMLCanvasElement;
 
   /** Sensors this vehicle is touching */
   overlappingSensors: Sensor[];

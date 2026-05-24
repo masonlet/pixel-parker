@@ -21,7 +21,11 @@ function initSensorTweens(p: PlayState): void {
   p.tweenManager.stopAll();
   p.sensorAlphas.clear();
   for (const s of p.level.sensors) {
-    if (!s.colour) continue;
+    const vehicle = s.vehicle
+      ? p.vehicles.find(v => v.type.name === s.vehicle)
+      : undefined;
+    const colour = s.colour ?? vehicle?.colour;
+    if (!colour) continue;
     const target: TweenTarget = { alpha: 0.05 };
     p.sensorAlphas.set(s, target);
     p.tweenManager.add({
@@ -97,13 +101,13 @@ export function updatePlayState(p: PlayState, dt: number): boolean {
   p.parkedSensors.clear();
   for (const s of p.level.sensors) {
     if (s.kind !== "parking_spot") continue;
-    const vehicle = s.vehicle
-      ? p.vehicles.find(v => v.type.name === s.vehicle)
-      : p.vehicles[p.vehicleIndex];
-    if (vehicle && isParkedIn(vehicle, s)) p.parkedSensors.add(s);
+    if (s.vehicle) {
+      const vehicle = p.vehicles.find(v => v.type.name === s.vehicle);
+      if (vehicle && isParkedIn(vehicle, s)) p.parkedSensors.add(s);
+    } else {
+      if (p.vehicles.some(v => isParkedIn(v, s))) p.parkedSensors.add(s);
+    }
   }
-
-  active.hue = (active.hue + 0.06 * dt) % 360;
 
   return checkLevelWon(p.level, p.vehicles);
 }
@@ -132,12 +136,12 @@ export function renderPlayState(
         hw: v.body.w / 2,
         hh: v.body.h / 2,
         angle: v.body.angle,
-      }, camX, camY, `hsl(${v.hue}, 100%, 50%)`);
+      }, camX, camY, v.colour);
     }
     drawSensors(ctx, p.level, camX, camY, p.vehicles, active);
   }
 
-  drawSensorOverlays(ctx, p.level, p.sensorAlphas, p.parkedSensors, camX, camY);
+  drawSensorOverlays(ctx, p.level, p.sensorAlphas, p.parkedSensors, p.vehicles, camX, camY);
 }
 
 export function resetPlayState(p: PlayState): void {

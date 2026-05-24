@@ -3,11 +3,15 @@ import type { Level                } from "../level/types.ts";
 import { createBody                } from "web-engine/physics/body.ts";
 import { tintImage } from "web-engine/assets.ts";
 
+function randomColour(): string {
+  return `#${Math.floor(Math.random() * 0xffffff).toString(16).padStart(6, "0")}`;
+}
+
 function createVehicle(
   type: VehicleType,
   x: number,
   y: number,
-  hue: number
+  colour: string
 ): Vehicle {
   return {
     type,
@@ -22,9 +26,8 @@ function createVehicle(
     throttle: 0,
     steer: 0,
     shiftTimer: 0,
-    hue,
-    cachedHue: hue,
-    cachedTint: tintImage(type.bodySprite, `hsl(${hue}, 100%, 50%)`),
+    colour,
+    tint: tintImage(type.bodySprite, colour),
     overlappingSensors: []
   };
 }
@@ -36,6 +39,6 @@ export function spawnVehicles(
   return level.vehicles.map((lv, i) => {
     const type = vehicleTypes[lv.type];
     if (!type) throw new Error(`Level: unknown vehicle type "${lv.type}"`);
-    return createVehicle(type, lv.x, lv.y, i * 60);
+    return createVehicle(type, lv.x, lv.y, type.colour ?? randomColour());
   });
 }

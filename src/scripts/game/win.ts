@@ -18,14 +18,12 @@ export function isParkedIn(v: Vehicle, spot: Sensor): boolean {
 }
 
 export function checkLevelWon(level: Level, vehicles: Vehicle[]): boolean {
-  const targetedSpots = level.sensors.filter(
-    s => s.kind === "parking_spot" && s.vehicle,
-  );
-  if (targetedSpots.length === 0) return false;
+  const spots = level.sensors.filter(s => s.kind === "parking_spot");
+  if (spots.length === 0) return false;
 
-  for (const s of targetedSpots) {
-    const target = vehicles.find(v => v.type.name === s.vehicle);
-    if (!target || !isParkedIn(target, s)) return false;
+  for (const v of vehicles) {
+    const validSpots = spots.filter(s => !s.vehicle || s.vehicle === v.type.name);
+    if (!validSpots.some(s => isParkedIn(v, s))) return false;
   }
   return true;
 }
