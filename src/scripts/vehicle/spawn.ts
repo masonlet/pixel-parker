@@ -36,7 +36,7 @@ export function spawnVehicles(
   level: Level,
   vehicleTypes: Record<string, VehicleType>,
 ): Vehicle[] {
-  return level.vehicles.map((lv, i) => {
+  return level.vehicles.map((lv) => {
     const type = vehicleTypes[lv.type];
     if (!type) throw new Error(`Level: unknown vehicle type "${lv.type}"`);
     return createVehicle(type, lv.x, lv.y, type.colour ?? randomColour());
