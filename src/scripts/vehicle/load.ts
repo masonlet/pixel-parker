@@ -1,6 +1,6 @@
-import { loadImage                      } from "web-engine/assets.ts";
-import type { VehicleType, VehicleStats } from "./types.ts";
-import { isObj, num, str, makeCollector } from "../utils/validate.ts";
+import { loadImage } from "web-engine/assets.ts";
+import type { VehicleType, VehicleStats         } from "./types.ts";
+import { isObj, num, str, optStr, makeCollector } from "../utils/validate.ts";
 
 export function parseVehicleStats(data: unknown): VehicleStats {
   if (!isObj(data)) throw new Error("vehicle stats must be an object");
@@ -11,6 +11,7 @@ export function parseVehicleStats(data: unknown): VehicleStats {
 
   const stats = {
     name,
+    colour:          tryGet(() => optStr(data, "colour",       ctx)),
     spritePath:      tryGet(() => str(data, "spritePath",      ctx)),
     bodySpritePath:  tryGet(() => str(data, "bodySpritePath",  ctx)),
     w:               tryGet(() => num(data, "w",               ctx)),

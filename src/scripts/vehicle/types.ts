@@ -4,6 +4,8 @@ import type { Sensor      } from "../level/types.ts";
 export interface VehicleStats {
   /** Identifier for this vehicle type */
   name: string;
+  /** Optional fixed colour. If omitted, a random colour is assigned on spawn. */
+  colour?: string;
 
   /** Base vehicle sprite path */
   spritePath: string;
