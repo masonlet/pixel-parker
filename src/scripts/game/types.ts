@@ -19,6 +19,7 @@ export interface PlayState {
   debugMode: boolean;
   tweenManager: TweenManager;
   sensorAlphas: Map<Sensor,TweenTarget>;
+  parkedSensors: Set<Sensor>;
 }
 
 export type FrameState = | { game: "menu-title";    ui: TitleMenuState    | null }

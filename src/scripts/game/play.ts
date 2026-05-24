@@ -1,10 +1,8 @@
 import { createTweenManager } from "web-engine/tween/manager.ts";
 import type { TweenTarget   } from "web-engine/tween/types.ts";
-import type { Sensor        } from "../level/types.ts";
 import { isDown, wasPressed } from "web-engine/input/keyboard.ts";
+import type { Sensor        } from "../level/types.ts";
 import type { PlayState } from "./types.ts";
-import { checkLevelWon  } from "./win.ts";
-import { drawLevel      } from "../level/render.ts";
 import type { Campaign  } from "../campaign/types.ts";
 import { spawnVehicles  } from "../vehicle/spawn.ts";
 import { drawVehicle    } from "../vehicle/render.ts";
@@ -16,6 +14,8 @@ import {
 } from "../vehicle/physics.ts";
 import { sensorsOverlapping                  } from "../physics/sensors.ts";
 import { drawWallAabbs, drawOBB, drawSensors } from "../physics/debug.ts";
+import { drawLevel, drawSensorOverlays       } from "../level/render.ts";
+import { checkLevelWon, isParkedIn           } from "./win.ts";
 
 function initSensorTweens(p: PlayState): void {
   p.tweenManager.stopAll();
@@ -50,6 +50,7 @@ export function createPlayState(campaign: Campaign): PlayState {
     debugMode: false,
     tweenManager,
     sensorAlphas,
+    parkedSensors: new Set<Sensor>()
   }
   initSensorTweens(state);
   return state;
@@ -62,6 +63,7 @@ export function selectLevel(p: PlayState, index: number): void {
   p.levelIndex = index;
   p.vehicles = spawnVehicles(p.level, p.vehicleTypes);
   p.vehicleIndex = 0;
+  p.parkedSensors.clear();
   initSensorTweens(p);
 }
 
@@ -91,6 +93,16 @@ export function updatePlayState(p: PlayState, dt: number): boolean {
   }
   resolveVehiclePairs(p.vehicles);
   for (const v of p.vehicles) v.overlappingSensors = sensorsOverlapping(v, p.level);
+
+  p.parkedSensors.clear();
+  for (const s of p.level.sensors) {
+    if (s.kind !== "parking_spot") continue;
+    const vehicle = s.vehicle
+      ? p.vehicles.find(v => v.type.name === s.vehicle)
+      : p.vehicles[p.vehicleIndex];
+    if (vehicle && isParkedIn(vehicle, s)) p.parkedSensors.add(s);
+  }
+
   active.hue = (active.hue + 0.06 * dt) % 360;
 
   return checkLevelWon(p.level, p.vehicles);
@@ -124,9 +136,12 @@ export function renderPlayState(
     }
     drawSensors(ctx, p.level, camX, camY, p.vehicles, active);
   }
+
+  drawSensorOverlays(ctx, p.level, p.sensorAlphas, p.parkedSensors, camX, camY);
 }
 
 export function resetPlayState(p: PlayState): void {
   p.vehicles = spawnVehicles(p.level, p.vehicleTypes);
   p.vehicleIndex = 0;
+  p.parkedSensors.clear();
 }
