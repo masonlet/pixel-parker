@@ -20,9 +20,11 @@ export function parseVehicleStats(data: unknown): VehicleStats {
     // px/s -> px/ms
     maxSpeed:        tryGet(() => num(data, "maxSpeed",        ctx) / 1000),
     maxReverseSpeed: tryGet(() => num(data, "maxReverseSpeed", ctx) / 1000),
-    accel:           tryGet(() => num(data, "accel",           ctx) / 1000),
-    friction:        tryGet(() => num(data, "friction",        ctx) / 1000),
-    brakeForce:      tryGet(() => num(data, "brakeForce",      ctx) / 1000),
+
+    // px/s^2 -> px/ms^2
+    accel:           tryGet(() => num(data, "accel",           ctx) / 1_000_000),
+    friction:        tryGet(() => num(data, "friction",        ctx) / 1_000_000),
+    brakeForce:      tryGet(() => num(data, "brakeForce",      ctx) / 1_000_000),
 
     // rad/s -> rad/ms
     turnSpeed:       tryGet(() => num(data, "turnSpeed",       ctx) / 1000),
