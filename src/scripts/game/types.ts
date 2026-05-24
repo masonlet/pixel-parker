@@ -1,6 +1,6 @@
 import type { TweenManager, TweenTarget } from "web-engine/tween/types.ts";
-import type { Level, Sensor        } from "../level/types.ts";
-import type { Vehicle, VehicleType } from "../vehicle/types.ts";
+import type { Level, Sensor             } from "../level/types.ts";
+import type { Vehicle, VehicleType      } from "../vehicle/types.ts";
 import type {
   TitleMenuState,
   SettingsMenuState,
@@ -10,16 +10,17 @@ import type {
 } from "../ui/types.ts";
 
 export interface PlayState {
-  levels: Level[];
-  levelIndex: number;
-  level: Level;
-  vehicleTypes: Record<string, VehicleType>;
-  vehicles: Vehicle[];
-  vehicleIndex: number;
-  debugMode: boolean;
-  tweenManager: TweenManager;
-  sensorAlphas: Map<Sensor,TweenTarget>;
-  parkedSensors: Set<Sensor>;
+  levels:           Level[];
+  levelIndex:       number;
+  level:            Level;
+  vehicleTypes:     Record<string, VehicleType>;
+  vehicles:         Vehicle[];
+  vehicleIndex:     number;
+  debugMode:        boolean;
+  tweenManager:     TweenManager;
+  sensorAlphas:     Map<Sensor,TweenTarget>;
+  parkedSensors:    Set<Sensor>;
+  parkConfirmTimer: number;
 }
 
 export type FrameState = | { game: "menu-title";    ui: TitleMenuState    | null }
