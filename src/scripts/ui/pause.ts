@@ -1,3 +1,4 @@
+import type { Audio                       } from "web-engine/audio.ts";
 import type { FrameState, PlayState       } from "../game/types.ts";
 import { transition                       } from "../game/transition.ts";
 import { resetPlayState                   } from "../game/play.ts";
@@ -5,7 +6,7 @@ import type { PauseMenuState, PauseAction } from "./types.ts";
 import { getLayout, drawTitle             } from "./layout.ts";
 import { getButtonState, drawButton       } from "./button.ts";
 
-export function handlePauseFrame(w: number, h: number, playState: PlayState): FrameState {
+export function handlePauseFrame(w: number, h: number, playState: PlayState, audio: Audio): FrameState {
   const { scale, gap, cx, cy, btnW, btnH } = getLayout(w, h);
   const totalH = btnH * 3 + gap * 2;
   const firstY = cy - totalH / 2;
@@ -26,10 +27,11 @@ export function handlePauseFrame(w: number, h: number, playState: PlayState): Fr
 
   const ui = { cx, scale, titleY, resume, restart, quit, action };
 
-  if (ui.action === "resume")  return transition({ game: "level-playing", ui: null });
-  if (ui.action === "quit")    return transition({ game: "menu-title",    ui: null });
+  if (ui.action === "resume")  return transition({ game: "level-playing", ui: null }, audio);
+  if (ui.action === "quit")    return transition({ game: "menu-title",    ui: null }, audio);
   if (ui.action === "restart") return transition(
     { game: "level-playing", ui: null },
+    audio,
     () => resetPlayState(playState)
   );
   return { game: "level-paused", ui };

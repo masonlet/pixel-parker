@@ -1,3 +1,4 @@
+import type { Audio                    } from "web-engine/audio.ts";
 import type { FrameState, PlayState    } from "../game/types.ts";
 import { transition                    } from "../game/transition.ts";
 import { selectLevel                   } from "../game/play.ts";
@@ -5,7 +6,11 @@ import type { Button, LevelSelectState } from "./types.ts";
 import { getLayout, drawTitle          } from "./layout.ts";
 import { getButtonState, drawButton    } from "./button.ts";
 
-export function handleLevelFrame(w: number, h: number, playState: PlayState): FrameState {
+export function handleLevelFrame(
+  w: number, h: number,
+  playState: PlayState,
+  audio: Audio
+): FrameState {
   const { scale, gap, cx, cy, btnW, btnH } = getLayout(w, h);
   const titleY = scale * 0.15;
 
@@ -36,11 +41,12 @@ export function handleLevelFrame(w: number, h: number, playState: PlayState): Fr
 
   const ui = { cx, scale, titleY, levels: levelEntries, back, clickedIndex };
 
-  if (ui.back.state.clicked) return transition({ game: "menu-title",    ui: null });
+  if (ui.back.state.clicked) return transition({ game: "menu-title", ui: null }, audio);
   if (ui.clickedIndex !== null) {
     const index = ui.clickedIndex;
     return transition(
       { game: "level-playing", ui: null },
+      audio,
       () => selectLevel(playState, index)
     );
   }

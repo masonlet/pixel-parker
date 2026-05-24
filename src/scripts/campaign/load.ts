@@ -1,4 +1,4 @@
-import { registerSound } from "web-engine/audio/registry.ts";
+import type { Audio } from "web-engine/audio.ts";
 import type { Campaign, CampaignData, CampaignAudio, CampaignEntry } from "./types.ts";
 import type { Level } from "../level/types.ts";
 import { loadLevel  } from "../level/load.ts";
@@ -17,7 +17,7 @@ function resolveEntry(entry: unknown, basePath: string, ctx: string): unknown {
 
   const hasData = "data" in entry;
   const hasPath = "path" in entry;
-  if (hasData && hasPath) throw new Error(`${ctx}: entry has both "data" and "path"`);
+  if ( hasData &&  hasPath) throw new Error(`${ctx}: entry has both "data" and "path"`);
   if (!hasData && !hasPath) throw new Error(`${ctx}: entry has neither "data" nor "path"`);
   if (hasData) return entry["data"];
 
@@ -40,7 +40,7 @@ function parseCampaign(data: unknown): CampaignData {
   };
 }
 
-export async function loadCampaign(folder: string): Promise<Campaign> {
+export async function loadCampaign(folder: string, audio: Audio): Promise<Campaign> {
   const basePath = `${BASE_PATH}${folder}`;
   const campaignKey = `${basePath}/campaign.json`;
   const raw = campaignFiles[campaignKey];
@@ -92,18 +92,18 @@ export async function loadCampaign(folder: string): Promise<Campaign> {
     }
   }
 
-  const audio: CampaignAudio = {};
+  const campaignAudio: CampaignAudio = {};
   if (isObj(campaign.audio)) {
     const a = campaign.audio;
     const button = optStr(a, "button", `${ctx}: audio`);
     const win = optStr(a, "win", `${ctx}: audio`);
-    if (button) audio.button = button;
-    if (win) audio.win = win;
+    if (button) campaignAudio.button = button;
+    if (win)    campaignAudio.win = win;
   }
 
   if (errors.length) throw new Error(`${ctx} failed validation:\n  ${errors.join("\n  ")}`);
 
-  if (audio.button) await registerSound("button", audio.button);
-  if (audio.win)    await registerSound("win", audio.win);
-  return { name: campaign.name, vehicleTypes, levels, audio };
+  if (campaignAudio.button) await audio.registerSound("button", campaignAudio.button);
+  if (campaignAudio.win)    await audio.registerSound("win", campaignAudio.win);
+  return { name: campaign.name, vehicleTypes, levels, audio: campaignAudio };
 }

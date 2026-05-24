@@ -57,7 +57,7 @@ export function updatePlayState(p: PlayState, dt: number): boolean {
   }
   resolveVehiclePairs(p.vehicles);
   for (const v of p.vehicles) v.overlappingSensors = sensorsOverlapping(v, p.level);
-  active.hue = (active.hue + 60 * dt) % 360;
+  active.hue = (active.hue + 0.06 * dt) % 360;
 
   return checkLevelWon(p.level, p.vehicles);
 }
