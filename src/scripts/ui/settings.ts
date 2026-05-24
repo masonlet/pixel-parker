@@ -6,7 +6,7 @@ import { getLayout, drawTitle       } from "./layout.ts";
 import { getButtonState, drawButton } from "./button.ts";
 import { updateSlider, drawSlider   } from "./slider.ts";
 
-let volState: SliderState = { dragging: false, value: 0 };
+let volState: SliderState | null = null;
 
 export function handleSettingsFrame(w: number, h: number, audio: Audio): FrameState {
   const { scale, gap, cx, cy, btnW, btnH } = getLayout(w, h);
@@ -19,6 +19,7 @@ export function handleSettingsFrame(w: number, h: number, audio: Audio): FrameSt
   const mute = { btn: muteBtn, state: getButtonState(muteBtn) };
   const back = { btn: backBtn, state: getButtonState(backBtn) };
 
+  if (!volState) volState = { dragging: false, value: audio.volume };
   volState = updateSlider(volSlider, volState);
 
   if (mute.state.clicked) audio.setMuted(!audio.muted);
