@@ -4,6 +4,8 @@ import type { Sensor      } from "../level/types.ts";
 export interface VehicleStats {
   /** Identifier for this vehicle type */
   name: string;
+  /** Optional fixed colour. If omitted, a random colour is assigned on spawn. */
+  colour?: string;
 
   /** Base vehicle sprite path */
   spritePath: string;
@@ -55,12 +57,10 @@ export interface Vehicle {
   /** Seconds remaining on the gear-shift wait. */
   shiftTimer: number;
 
-  /** Body colour hue in degrees, 0-360. */
-  hue:      number;
-  /** Body colour cached. */
-  cachedHue: number;
-  /** Body tint cached. */
-  cachedTint: HTMLCanvasElement;
+  /** Body colour as hex string. */
+  colour: string;
+  /** Body tint canvas. */
+  tint: HTMLCanvasElement;
 
   /** Sensors this vehicle is touching */
   overlappingSensors: Sensor[];

@@ -3,6 +3,7 @@
   "vehicleTypes": [
     { "data": {
         "name": "car",
+        "colour": "#ff0000",
         "spritePath": "img/vehicles/car.png",
         "bodySpritePath": "img/vehicles/car-body.png",
         "w": 128,

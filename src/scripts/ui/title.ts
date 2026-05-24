@@ -1,10 +1,11 @@
+import type { Audio                  } from "web-engine/audio.ts";
 import type { FrameState, PlayState  } from "../game/types.ts";
 import { transition                  } from "../game/transition.ts";
 import type { Button, TitleMenuState } from "./types.ts";
 import { getLayout, drawTitle        } from "./layout.ts";
 import { getButtonState, drawButton  } from "./button.ts";
 
-export function handleTitleFrame(w: number, h: number, playState: PlayState): FrameState {
+export function handleTitleFrame(w: number, h: number, playState: PlayState, audio: Audio): FrameState {
   const { scale, gap, cx, cy, btnW, btnH } = getLayout(w, h);
   const titleY = cy - btnH * 1.5 - gap * 2;
 
@@ -17,11 +18,12 @@ export function handleTitleFrame(w: number, h: number, playState: PlayState): Fr
     settings: { btn: settingsBtn, state: getButtonState(settingsBtn) },
   };
 
-  if (ui.start.state.clicked) return transition(playState.levels.length > 1
-    ? { game: "menu-levels", ui: null }
-    : { game: "level-playing", ui: null }
+  if (ui.start.state.clicked) return transition(
+    playState.levels.length > 1 ? { game: "menu-levels", ui: null }
+                                : { game: "level-playing", ui: null },
+    audio
   );
-  if (ui.settings.state.clicked) return transition({ game: "menu-settings", ui: null });
+  if (ui.settings.state.clicked) return transition({ game: "menu-settings", ui: null }, audio);
   return { game: "menu-title", ui };
 }
 

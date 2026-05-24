@@ -35,9 +35,10 @@ export interface Sensor {
   w: number;
   /** Height in world pixels. */
   h: number;
-
   /** Optional: restrict this sensor to a specific vehicle name. */
   vehicle?: string;
-  /** Optional: require vehicle to be a certain distance from sides of sensor */
+  /** Optional: require vehicle to be a certain distance from sides of sensor. */
   padding?: number;
+  /** Optional: colour of the sensors overlay. Omit to render no overlay. */
+  colour?: string;
 }

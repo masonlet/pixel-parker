@@ -73,16 +73,26 @@ export function loadLevel(rawLevel: unknown): Level {
   const sensors: Sensor[] = [];
   for (const [i, s] of sensorsRaw.entries()) {
     const ctx = `Level: sensor ${i}`;
-    if (!isObj(s)) { errors.push(`${ctx} not an object`); continue; }
+    if (!isObj(s)) {
+      errors.push(`${ctx} not an object`);
+      continue;
+    }
+
     const kindRaw = s["kind"];
-    if (!isSensorKind(kindRaw)) { errors.push(`${ctx}: invalid kind "${kindRaw}"`); continue; }
+    if (!isSensorKind(kindRaw)) {
+      errors.push(`${ctx}: invalid kind "${kindRaw}"`);
+      continue;
+    }
+
     const x = tryGet(() => num(s, "x", ctx));
     const y = tryGet(() => num(s, "y", ctx));
     const w = tryGet(() => num(s, "w", ctx));
     const h = tryGet(() => num(s, "h", ctx));
+    if (x === undefined || y === undefined || w === undefined || h === undefined) continue;
+
     const vehicle = tryGet(() => optStr(s, "vehicle", ctx));
     const padding = tryGet(() => optNum(s, "padding", ctx));
-    if (x === undefined || y === undefined || w === undefined || h === undefined) continue;
+    const colour  = tryGet(() => optStr(s, "colour",  ctx));
 
     const sensor: Sensor = {
       kind: kindRaw,
@@ -90,6 +100,7 @@ export function loadLevel(rawLevel: unknown): Level {
     };
     if (vehicle !== undefined) sensor.vehicle = vehicle;
     if (padding !== undefined) sensor.padding = padding * TILE_SIZE;
+    if (colour  !== undefined) sensor.colour = colour;
     sensors.push(sensor);
   }
 
