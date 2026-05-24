@@ -49,16 +49,15 @@ export function updatePlayState(p: PlayState, dt: number): boolean {
   if (isDown("KeyA")) steer -= 1;
   if (isDown("KeyD")) steer += 1;
 
-  const dtSec = dt / 1000;
   for (const v of p.vehicles) {
     if (v === active) applyInput(v, throttle, steer);
     else applyInput(v, 0, 0);
-    stepVehiclePhysics(v, dtSec);
-    moveVehicle(v, p.level, dtSec);
+    stepVehiclePhysics(v, dt);
+    moveVehicle(v, p.level, dt);
   }
   resolveVehiclePairs(p.vehicles);
   for (const v of p.vehicles) v.overlappingSensors = sensorsOverlapping(v, p.level);
-  active.hue = (active.hue + 60 * dtSec) % 360;
+  active.hue = (active.hue + 0.06 * dt) % 360;
 
   return checkLevelWon(p.level, p.vehicles);
 }
