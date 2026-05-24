@@ -54,7 +54,8 @@ export function createPlayState(campaign: Campaign): PlayState {
     debugMode: false,
     tweenManager,
     sensorAlphas,
-    parkedSensors: new Set<Sensor>()
+    parkedSensors: new Set<Sensor>(),
+    parkConfirmTimer: 0
   }
   initSensorTweens(state);
   return state;
@@ -68,6 +69,7 @@ export function selectLevel(p: PlayState, index: number): void {
   p.vehicles = spawnVehicles(p.level, p.vehicleTypes);
   p.vehicleIndex = 0;
   p.parkedSensors.clear();
+  p.parkConfirmTimer = 0;
   initSensorTweens(p);
 }
 
@@ -109,7 +111,13 @@ export function updatePlayState(p: PlayState, dt: number): boolean {
     }
   }
 
-  return checkLevelWon(p.level, p.vehicles);
+  if (checkLevelWon(p.level, p.vehicles)) {
+    p.parkConfirmTimer += dt;
+    if (p.parkConfirmTimer >= 850) return true;
+  } else {
+    p.parkConfirmTimer = 0;
+  }
+  return false;
 }
 
 export function renderPlayState(
@@ -148,4 +156,5 @@ export function resetPlayState(p: PlayState): void {
   p.vehicles = spawnVehicles(p.level, p.vehicleTypes);
   p.vehicleIndex = 0;
   p.parkedSensors.clear();
+  p.parkConfirmTimer = 0;
 }
