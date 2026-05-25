@@ -12,7 +12,6 @@ import type {
 export interface PlayState {
   levels:           Level[];
   levelIndex:       number;
-  level:            Level;
   vehicleTypes:     Record<string, VehicleType>;
   vehicles:         Vehicle[];
   vehicleIndex:     number;

@@ -20,7 +20,9 @@ import { checkLevelWon, isParkedIn           } from "./win.ts";
 function initSensorTweens(p: PlayState): void {
   p.tweenManager.stopAll();
   p.sensorAlphas.clear();
-  for (const s of p.level.sensors) {
+
+  // Validated by createPlayState; add guard if exporting.
+  for (const s of p.levels[p.levelIndex]!.sensors) {
     const vehicle = s.vehicle
       ? p.vehicles.find(v => v.type.name === s.vehicle)
       : undefined;
@@ -41,13 +43,13 @@ function initSensorTweens(p: PlayState): void {
 
 export function createPlayState(campaign: Campaign): PlayState {
   const level = campaign.levels[0];
-  if (!level) throw new Error("Campaign has no levels");
+  if (!level) throw new Error("createPlayState: Campaign has no levels");
+
   const tweenManager = createTweenManager();
   const sensorAlphas = new Map<Sensor, TweenTarget>();
   const state: PlayState = {
     levels: campaign.levels,
     levelIndex: 0,
-    level,
     vehicleTypes: campaign.vehicleTypes,
     vehicles: spawnVehicles(level, campaign.vehicleTypes),
     vehicleIndex: 0,
@@ -63,10 +65,10 @@ export function createPlayState(campaign: Campaign): PlayState {
 
 export function selectLevel(p: PlayState, index: number): void {
   const level = p.levels[index];
-  if (!level) throw new Error(`Campaign has no level at index ${index}`);
-  p.level = level;
+  if (!level) throw new Error(`selectLevel: no level at index ${index}`);
+
   p.levelIndex = index;
-  p.vehicles = spawnVehicles(p.level, p.vehicleTypes);
+  p.vehicles = spawnVehicles(level, p.vehicleTypes);
   p.vehicleIndex = 0;
   p.parkedSensors.clear();
   p.parkConfirmTimer = 0;
@@ -83,6 +85,9 @@ export function updatePlayState(p: PlayState, dt: number): boolean {
   const active = p.vehicles[p.vehicleIndex];
   if (!active) return false;
 
+  const level = p.levels[p.levelIndex];
+  if (!level) throw new Error(`updatePlayState: no level at index ${p.levelIndex}`);
+
   let throttle = 0;
   if (isDown("KeyW")) throttle += 1;
   if (isDown("KeyS")) throttle -= 1;
@@ -95,13 +100,13 @@ export function updatePlayState(p: PlayState, dt: number): boolean {
     if (v === active) applyInput(v, throttle, steer);
     else applyInput(v, 0, 0);
     stepVehiclePhysics(v, dt);
-    moveVehicle(v, p.level, dt);
+    moveVehicle(v, level, dt);
   }
   resolveVehiclePairs(p.vehicles);
-  for (const v of p.vehicles) v.overlappingSensors = sensorsOverlapping(v, p.level);
+  for (const v of p.vehicles) v.overlappingSensors = sensorsOverlapping(v, level);
 
   p.parkedSensors.clear();
-  for (const s of p.level.sensors) {
+  for (const s of level.sensors) {
     if (s.kind !== "parking_spot") continue;
     if (s.vehicle) {
       const vehicle = p.vehicles.find(v => v.type.name === s.vehicle);
@@ -111,7 +116,7 @@ export function updatePlayState(p: PlayState, dt: number): boolean {
     }
   }
 
-  if (checkLevelWon(p.level, p.vehicles)) {
+  if (checkLevelWon(level, p.vehicles)) {
     p.parkConfirmTimer += dt;
     if (p.parkConfirmTimer >= 850) return true;
   } else {
@@ -132,11 +137,14 @@ export function renderPlayState(
   const camX = active.body.position.x - canvasW / 2;
   const camY = active.body.position.y - canvasH / 2;
 
-  drawLevel(ctx, p.level, camX, camY);
+  const level = p.levels[p.levelIndex];
+  if (!level) throw new Error(`renderPlayState: no level at index ${p.levelIndex}`);
+
+  drawLevel(ctx, level, camX, camY);
   for (const v of p.vehicles) drawVehicle(ctx, v, camX, camY);
 
   if (p.debugMode) {
-    drawWallAabbs(ctx, p.level, camX, camY, canvasW, canvasH);
+    drawWallAabbs(ctx, level, camX, camY, canvasW, canvasH);
     for (const v of p.vehicles) {
       drawOBB(ctx, {
         cx: v.body.position.x,
@@ -146,14 +154,16 @@ export function renderPlayState(
         angle: v.body.angle,
       }, camX, camY, v.colour);
     }
-    drawSensors(ctx, p.level, camX, camY, p.vehicles, active);
+    drawSensors(ctx, level, camX, camY, p.vehicles, active);
   }
 
-  drawSensorOverlays(ctx, p.level, p.sensorAlphas, p.parkedSensors, p.vehicles, camX, camY);
+  drawSensorOverlays(ctx, level, p.sensorAlphas, p.parkedSensors, p.vehicles, camX, camY);
 }
 
 export function resetPlayState(p: PlayState): void {
-  p.vehicles = spawnVehicles(p.level, p.vehicleTypes);
+  const level = p.levels[p.levelIndex];
+  if (!level) throw new Error(`resetPlayState: no level at index ${p.levelIndex}`);
+  p.vehicles = spawnVehicles(level, p.vehicleTypes);
   p.vehicleIndex = 0;
   p.parkedSensors.clear();
   p.parkConfirmTimer = 0;
