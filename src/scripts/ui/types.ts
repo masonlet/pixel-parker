@@ -51,11 +51,11 @@ export interface TitleMenuState extends MenuLayout {
   settings: ButtonEntry;
 }
 
-export interface WonMenuState extends MenuLayout {
+export interface CompleteMenuState extends MenuLayout {
   restart: ButtonEntry;
   next:    ButtonEntry | null;
   quit:    ButtonEntry;
-  action:  WonAction;
+  action:  CompleteAction;
 }
 
 export interface SettingsMenuState extends MenuLayout {
@@ -71,5 +71,5 @@ export interface LevelSelectState extends MenuLayout {
   clickedIndex: number | null;
 }
 
-export type PauseAction = "resume" | "restart" | "quit" | null;
-export type WonAction   = "next"   | "restart" | "quit" | null;
+export type PauseAction    = "resume" | "restart" | "quit" | null;
+export type CompleteAction = "next"   | "restart" | "quit" | null;

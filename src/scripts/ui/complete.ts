@@ -2,11 +2,15 @@ import type { Audio                           } from "web-engine/audio.ts";
 import type { FrameState, PlayState           } from "../game/types.ts";
 import { transition                           } from "../game/transition.ts";
 import { selectLevel, resetPlayState          } from "../game/play.ts";
-import type { Button, WonMenuState, WonAction } from "./types.ts";
+import type { Button, CompleteMenuState, CompleteAction } from "./types.ts";
 import { getLayout, drawTitle                 } from "./layout.ts";
 import { getButtonState, drawButton           } from "./button.ts";
 
-export function handleWonFrame(w: number, h: number, playState: PlayState, audio: Audio): FrameState {
+export function handleCompleteFrame(
+  w: number, h: number, 
+  playState: PlayState,
+  audio: Audio
+): FrameState {
   const { scale, gap, cx, cy, btnW, btnH } = getLayout(w, h);
   const hasNext = playState.levelIndex < playState.levels.length - 1
   const btnCount = hasNext ? 3 : 2;
@@ -20,13 +24,13 @@ export function handleWonFrame(w: number, h: number, playState: PlayState, audio
   const restart = { btn: restartBtn, state: getButtonState(restartBtn) };
   const quit    = { btn: quitBtn,    state: getButtonState(quitBtn)    };
 
-  let next: WonMenuState["next"] = null;
+  let next: CompleteMenuState["next"] = null;
   if (hasNext) {
     const nextBtn: Button = { x: cx - btnW/2, y: firstY + (btnH + gap), w: btnW, h: btnH, label: "Next" };
     next = { btn: nextBtn, state: getButtonState(nextBtn) };
   }
 
-  let action: WonAction = null;
+  let action: CompleteAction = null;
   if (next?.state.clicked)   action = "next";
   if (restart.state.clicked) action = "restart";
   if (quit.state.clicked)    action = "quit";
@@ -44,14 +48,14 @@ export function handleWonFrame(w: number, h: number, playState: PlayState, audio
     audio,
     () => resetPlayState(playState)
   );
-  return { game: "level-won", ui };
+  return { game: "level-complete", ui };
 }
 
-export function renderWonFrame(
+export function renderCompleteFrame(
   ctx: CanvasRenderingContext2D,
   w: number,
   h: number,
-  ui: WonMenuState | null,
+  ui: CompleteMenuState | null,
 ): void {
   if (!ui) return;
 

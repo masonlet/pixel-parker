@@ -6,7 +6,7 @@ import type {
   SettingsMenuState,
   LevelSelectState,
   PauseMenuState,
-  WonMenuState
+  CompleteMenuState
 } from "../ui/types.ts";
 
 export interface PlayState {
@@ -22,9 +22,9 @@ export interface PlayState {
   parkConfirmTimer: number;
 }
 
-export type FrameState = | { game: "menu-title";    ui: TitleMenuState    | null }
-                         | { game: "menu-settings"; ui: SettingsMenuState | null }
-                         | { game: "menu-levels";   ui: LevelSelectState  | null }
-                         | { game: "level-playing"; ui: null                     }
-                         | { game: "level-paused";  ui: PauseMenuState    | null }
-                         | { game: "level-won";     ui: WonMenuState      | null }
+export type FrameState = | { game: "menu-title";     ui: TitleMenuState    | null }
+                         | { game: "menu-settings";  ui: SettingsMenuState | null }
+                         | { game: "menu-levels";    ui: LevelSelectState  | null }
+                         | { game: "level-playing";  ui: null                     }
+                         | { game: "level-paused";   ui: PauseMenuState    | null }
+                         | { game: "level-complete"; ui: CompleteMenuState      | null }
