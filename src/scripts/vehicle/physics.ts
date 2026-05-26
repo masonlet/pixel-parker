@@ -83,7 +83,10 @@ function allWallHits(v: Vehicle, level: Level): MTV[] {
   for (let ty = minTY; ty <= maxTY; ty++) {
     for (let tx = minTX; tx <= maxTX; tx++) {
       if (getTile(level, tx, ty) !== TILE.WALL) continue;
-      const aabb: AABB = { x: tx * TILE_SIZE, y: ty * TILE_SIZE, w: TILE_SIZE, h: TILE_SIZE };
+      const aabb: AABB = {
+        cx: tx * TILE_SIZE + TILE_SIZE / 2, cy: ty * TILE_SIZE + TILE_SIZE / 2,
+        hw: TILE_SIZE / 2, hh: TILE_SIZE / 2
+      };
       const hit = obbVsAabb({ cx, cy, hw, hh, angle: v.body.angle }, aabb);
       if (hit) hits.push(hit);
     }

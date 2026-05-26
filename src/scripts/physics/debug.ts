@@ -66,7 +66,7 @@ export function drawSensors(
     if (subject) {
       if (s.kind === "parking_spot") {
         const obb = vehicleObb(subject);
-        const aabb = { x: s.x, y: s.y, w: s.w, h: s.h };
+        const aabb = { cx: s.x + s.w / 2, cy: s.y + s.h / 2, hw: s.w / 2, hh: s.h / 2 };
         if (isParkedIn(subject, s))
           color = "lime";
         else if (obbInsideAabb(obb, aabb, s.padding ?? DEFAULT_PARK_PADDING))
