@@ -10,7 +10,7 @@ export function isParkedIn(v: Vehicle, spot: Sensor): boolean {
   if (spot.kind !== "parking_spot") return false;
 
   const padding = spot.padding ?? DEFAULT_PARK_PADDING;
-  const aabb = { x: spot.x, y: spot.y, w: spot.w, h: spot.h };
+  const aabb = { cx: spot.x + spot.w / 2, cy: spot.y + spot.h / 2, hw: spot.w / 2, hh: spot.h / 2 };
   if (!obbInsideAabb(vehicleObb(v), aabb, padding)) return false;
 
   const speed = Math.hypot(v.body.velocity.x, v.body.velocity.y);

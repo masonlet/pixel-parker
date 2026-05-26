@@ -15,7 +15,9 @@ export function vehicleObb(v: Vehicle): OBB {
 
 export function sensorsOverlapping(v: Vehicle, level: Level): Sensor[] {
   const obb = vehicleObb(v);
-  const aabbs: AABB[] = level.sensors.map(s => ({ x: s.x, y: s.y, w: s.w, h: s.h }));
+  const aabbs: AABB[] = level.sensors.map(s => ({
+    cx: s.x + s.w / 2, cy: s.y + s.h / 2, hw: s.w / 2, hh: s.h / 2
+  }));
   const hits = new Set(overlappingRegions(obb, aabbs));
   return level.sensors.filter((_, i) => hits.has(aabbs[i]!));
 }
