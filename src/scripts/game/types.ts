@@ -1,3 +1,4 @@
+import type { CircleBody                } from "web-engine/physics/types.ts";
 import type { TweenManager, TweenTarget } from "web-engine/tween/types.ts";
 import type { Level, Sensor             } from "../level/types.ts";
 import type { Vehicle, VehicleType      } from "../vehicle/types.ts";
@@ -15,6 +16,7 @@ export interface PlayState {
   vehicleTypes:     Record<string, VehicleType>;
   vehicles:         Vehicle[];
   vehicleIndex:     number;
+  cones:            CircleBody[];
   debugMode:        boolean;
   tweenManager:     TweenManager;
   sensorAlphas:     Map<Sensor,TweenTarget>;

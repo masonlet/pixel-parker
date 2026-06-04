@@ -2,20 +2,21 @@ import { createTweenManager } from "web-engine/tween/manager.ts";
 import type { TweenTarget   } from "web-engine/tween/types.ts";
 import { isDown, wasPressed } from "web-engine/input/keyboard.ts";
 import type { Sensor        } from "../level/types.ts";
-import type { PlayState } from "./types.ts";
-import type { Campaign  } from "../campaign/types.ts";
-import { spawnVehicles  } from "../vehicle/spawn.ts";
-import { drawVehicle    } from "../vehicle/render.ts";
+import type { PlayState     } from "./types.ts";
+import type { Campaign      } from "../campaign/types.ts";
+import { spawnVehicles      } from "../vehicle/spawn.ts";
+import { drawVehicle        } from "../vehicle/render.ts";
 import {
   applyInput,
   moveVehicle,
   stepVehiclePhysics,
   resolveVehiclePairs
 } from "../vehicle/physics.ts";
-import { sensorsOverlapping                  } from "../physics/sensors.ts";
-import { drawWallAabbs, drawOBB, drawSensors } from "../physics/debug.ts";
-import { drawLevel, drawSensorOverlays       } from "../level/render.ts";
-import { checkLevelWon, isParkedIn           } from "./win.ts";
+import { sensorsOverlapping                   } from "../physics/sensors.ts";
+import { drawWallAabbs, drawOBB, drawSensors  } from "../physics/debug.ts";
+import { spawnCones, updateCones, renderCones } from "../physics/cones.ts";
+import { drawLevel, drawSensorOverlays        } from "../level/render.ts";
+import { checkLevelWon, isParkedIn            } from "./win.ts";
 
 function initSensorTweens(p: PlayState): void {
   p.tweenManager.stopAll();
@@ -48,15 +49,16 @@ export function createPlayState(campaign: Campaign): PlayState {
   const tweenManager = createTweenManager();
   const sensorAlphas = new Map<Sensor, TweenTarget>();
   const state: PlayState = {
-    levels: campaign.levels,
-    levelIndex: 0,
+    levels:       campaign.levels,
+    levelIndex:   0,
     vehicleTypes: campaign.vehicleTypes,
-    vehicles: spawnVehicles(level, campaign.vehicleTypes),
+    vehicles:     spawnVehicles(level, campaign.vehicleTypes),
     vehicleIndex: 0,
-    debugMode: false,
+    cones:        spawnCones(level.cones),
+    debugMode:    false,
     tweenManager,
     sensorAlphas,
-    parkedSensors: new Set<Sensor>(),
+    parkedSensors:    new Set<Sensor>(),
     parkConfirmTimer: 0
   }
   initSensorTweens(state);
@@ -70,6 +72,7 @@ export function selectLevel(p: PlayState, index: number): void {
   p.levelIndex = index;
   p.vehicles = spawnVehicles(level, p.vehicleTypes);
   p.vehicleIndex = 0;
+  p.cones = spawnCones(level.cones);
   p.parkedSensors.clear();
   p.parkConfirmTimer = 0;
   initSensorTweens(p);
@@ -103,6 +106,7 @@ export function updatePlayState(p: PlayState, dt: number): boolean {
     moveVehicle(v, level, dt);
   }
   resolveVehiclePairs(p.vehicles);
+  updateCones(p.cones, p.vehicles, level, dt);
   for (const v of p.vehicles) v.overlappingSensors = sensorsOverlapping(v, level);
 
   p.parkedSensors.clear();
@@ -141,6 +145,7 @@ export function renderPlayState(
   if (!level) throw new Error(`renderPlayState: no level at index ${p.levelIndex}`);
 
   drawLevel(ctx, level, camX, camY);
+  renderCones(ctx, p.cones, camX, camY);
   for (const v of p.vehicles) drawVehicle(ctx, v, camX, camY);
 
   if (p.debugMode) {
@@ -165,6 +170,7 @@ export function resetPlayState(p: PlayState): void {
   if (!level) throw new Error(`resetPlayState: no level at index ${p.levelIndex}`);
   p.vehicles = spawnVehicles(level, p.vehicleTypes);
   p.vehicleIndex = 0;
+  p.cones = spawnCones(level.cones);
   p.parkedSensors.clear();
   p.parkConfirmTimer = 0;
 }
