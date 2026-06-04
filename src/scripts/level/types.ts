@@ -1,16 +1,26 @@
 export interface LevelVehicle {
   type: string;
+  /** Center x in world pixels. */
+  x:    number;
+  /** Center y in world pixels. */
+  y:    number;
+}
+
+export interface LevelCone {
+  /** Center x in world pixels. */
   x: number;
+  /** Center y in world pixels. */
   y: number;
 }
 
 export interface Level {
-  name?: string;
-  width: number;
-  height: number;
-  tiles: TileId[];
+  name?:    string;
+  width:    number;
+  height:   number;
+  tiles:    TileId[];
   vehicles: LevelVehicle[];
-  sensors: Sensor[];
+  sensors:  Sensor[];
+  cones:    LevelCone[];
 }
 
 export const TILE_SIZE = 32;
@@ -28,17 +38,17 @@ export type SensorKind = (typeof SENSOR_KINDS)[number];
 export interface Sensor {
   kind: SensorKind;
   /** Top-left x in world pixels. */
-  x: number;
+  x:    number;
   /** Top-left y in world pixels. */
-  y: number;
+  y:    number;
   /** Width in world pixels. */
-  w: number;
+  w:    number;
   /** Height in world pixels. */
-  h: number;
+  h:    number;
   /** Optional: restrict this sensor to a specific vehicle name. */
   vehicle?: string;
   /** Optional: require vehicle to be a certain distance from sides of sensor. */
   padding?: number;
   /** Optional: colour of the sensors overlay. Omit to render no overlay. */
-  colour?: string;
+  colour?:  string;
 }

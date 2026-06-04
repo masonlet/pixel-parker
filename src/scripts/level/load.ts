@@ -1,5 +1,5 @@
 import {
-  type Level, type LevelVehicle,
+  type Level, type LevelVehicle, type LevelCone,
   type TileId, TILE, TILE_SIZE,
   type SensorKind, type Sensor, SENSOR_KINDS
 } from "./types.ts";
@@ -104,11 +104,24 @@ export function loadLevel(rawLevel: unknown): Level {
     sensors.push(sensor);
   }
 
+  const cones: LevelCone[] = [];
+  const conesRaw = rawLevel["cones"];
+  if (Array.isArray(conesRaw)) {
+    for (const [i, c] of conesRaw.entries()) {
+      const ctx = `Level: cone ${i}`;
+      if (!isObj(c)) { errors.push(`${ctx} not an object`); continue; }
+      const x = tryGet(() => num(c, "x", ctx));
+      const y = tryGet(() => num(c, "y", ctx));
+      if (x === undefined || y === undefined) continue;
+      cones.push({ x: x * TILE_SIZE, y: y * TILE_SIZE });
+    }
+  }
+
   if (errors.length) throw new Error(
     `Level failed validation:\n  ${errors.join("\n  ")}`
   );
 
-  const level: Level = { width, height, tiles, vehicles, sensors };
+  const level: Level = { width, height, tiles, vehicles, sensors, cones };
   if (name !== undefined) level.name = name;
   return level;
 }

@@ -1,5 +1,5 @@
-import type { PhysicsBody } from "web-engine/physics/types.ts";
-import type { Sensor      } from "../level/types.ts";
+import type { RectBody } from "web-engine/physics/types.ts";
+import type { Sensor   } from "../level/types.ts";
 
 export interface VehicleStats {
   /** Identifier for this vehicle type */
@@ -48,7 +48,7 @@ export interface Vehicle {
   /** Vehicle config. */
   type: VehicleType;
   /** Vehicle body. */
-  body: PhysicsBody;
+  body: RectBody;
 
   /** Driver throttle: -1 (reverse), 0, 1 (forward). */
   throttle:  number;
