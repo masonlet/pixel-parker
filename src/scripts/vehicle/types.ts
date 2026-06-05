@@ -1,4 +1,4 @@
-import type { RectBody } from "web-engine/physics/types.ts";
+import type { RectBody } from "starweb-physics/types.js";
 import type { Sensor   } from "../level/types.ts";
 
 export interface VehicleStats {

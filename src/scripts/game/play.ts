@@ -1,6 +1,6 @@
-import { createTweenManager } from "web-engine/tween/manager.ts";
-import type { TweenTarget   } from "web-engine/tween/types.ts";
-import { isDown, wasPressed } from "web-engine/input/keyboard.ts";
+import { isDown, wasPressed } from "starweb-engine/input/keyboard.js";
+import { createTweenManager } from "starweb-tween/manager.js";
+import type { TweenTarget   } from "starweb-tween/types.js";
 import type { Sensor        } from "../level/types.ts";
 import type { PlayState     } from "./types.ts";
 import type { Campaign      } from "../campaign/types.ts";

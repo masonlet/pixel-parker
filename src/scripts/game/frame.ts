@@ -1,5 +1,5 @@
-import { wasPressed                               } from "web-engine/input/keyboard.ts";
-import type { Audio                               } from "web-engine/audio.ts";
+import { wasPressed                               } from "starweb-engine/input/keyboard.js";
+import type { Audio                               } from "starweb-audio/audio.js";
 import type { PlayState, FrameState               } from "./types.ts";
 import { updatePlayState, renderPlayState         } from "./play.ts";
 import { transition                               } from "./transition.ts";

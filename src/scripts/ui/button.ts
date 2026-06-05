@@ -1,4 +1,4 @@
-import { pointerX, pointerY, wasPointerClicked } from "web-engine/input/pointer.ts";
+import { pointerX, pointerY, wasPointerClicked } from "starweb-engine/input/pointer.js";
 import type { Button, ButtonState } from "./types.ts";
 
 export function getButtonState(b: Button): ButtonState {

@@ -1,4 +1,4 @@
-import { isPointerDown, wasPointerClicked, pointerX, pointerY } from "web-engine/input/pointer.ts";
+import { isPointerDown, wasPointerClicked, pointerX, pointerY } from "starweb-engine/input/pointer.js";
 import type { Slider, SliderState } from "./types.ts";
 
 export function updateSlider(s: Slider, state: SliderState): SliderState {

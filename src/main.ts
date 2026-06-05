@@ -1,13 +1,10 @@
 import "./style.css";
-
-import { startLoop } from "web-engine/update.ts";
-
-import { bootstrapGame   } from "./scripts/game/game.ts";
-import type { FrameState } from "./scripts/game/types.ts";
-import { createPlayState } from "./scripts/game/play.ts";
+import { startLoop                } from "starweb-engine/update.js";
+import { bootstrapGame            } from "./scripts/game/game.ts";
+import type { FrameState          } from "./scripts/game/types.ts";
+import { createPlayState          } from "./scripts/game/play.ts";
 import { updateFrame, renderFrame } from "./scripts/game/frame.ts";
-
-import { loadCampaign } from "./scripts/campaign/load.ts";
+import { loadCampaign             } from "./scripts/campaign/load.ts";
 
 const { canvas, ctx, audio } = bootstrapGame();
 

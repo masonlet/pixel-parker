@@ -1,4 +1,4 @@
-import { loadImage } from "web-engine/assets.ts";
+import { loadImage } from "starweb-engine/assets.js";
 import type { VehicleType, VehicleStats         } from "./types.ts";
 import { isObj, num, str, optStr, makeCollector } from "../utils/validate.ts";
 

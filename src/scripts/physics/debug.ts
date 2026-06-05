@@ -1,6 +1,6 @@
-import type { OBB      } from "web-engine/physics/types.ts";
-import { obbVsAabb     } from "web-engine/physics/collision.ts";
-import { obbInsideAabb } from "web-engine/physics/overlap.ts";
+import type { OBB      } from "starweb-physics/types.js";
+import { obbVsAabb     } from "starweb-physics/collision.js";
+import { obbInsideAabb } from "starweb-physics/overlap.js";
 import { vehicleObb    } from "./sensors.ts";
 import type { Vehicle  } from "../vehicle/types.ts";
 import { TILE, TILE_SIZE, type Level      } from "../level/types.ts";
