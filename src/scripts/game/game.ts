@@ -1,7 +1,7 @@
-import { createGameCanvas } from "web-engine/canvas.ts";
-import { initKeyboard     } from "web-engine/input/keyboard.ts";
-import { initPointer      } from "web-engine/input/pointer.ts";
-import { Audio            } from "web-engine/audio.ts";
+import { createGameCanvas } from "starweb-engine/canvas.js";
+import { initKeyboard     } from "starweb-engine/input/keyboard.js";
+import { initPointer      } from "starweb-engine/input/pointer.js";
+import { Audio            } from "starweb-audio/audio.js";
 
 export function bootstrapGame() {
   const { canvas, ctx } = createGameCanvas();

@@ -13,6 +13,9 @@
     "vite": "^8.0.10"
   },
   "dependencies": {
-    "web-engine": "github:masonlet/web-engine"
+    "starweb-engine": "git+https://github.com/starlet-web-engine/starweb-engine.git",
+    "starweb-audio":  "git+https://github.com/starlet-web-engine/starweb-audio.git",
+    "starweb-physics": "git+https://github.com/starlet-web-engine/starweb-physics.git",
+    "starweb-tween": "git+https://github.com/starlet-web-engine/starweb-tween.git"
   }
 }

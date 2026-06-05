@@ -1,4 +1,4 @@
-import type { Audio                 } from "web-engine/audio.ts";
+import type { Audio                 } from "starweb-audio/audio.js";
 import type { Button, Slider, SliderState, SettingsMenuState } from "./types.ts";
 import type { FrameState            } from "../game/types.ts";
 import { transition                 } from "../game/transition.ts";

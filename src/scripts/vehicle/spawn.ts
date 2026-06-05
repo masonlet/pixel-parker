@@ -1,7 +1,7 @@
+import { tintImage                 } from "starweb-engine/assets.js";
+import { createBody                } from "starweb-physics/body.js";
 import type { Vehicle, VehicleType } from "./types.ts";
 import type { Level                } from "../level/types.ts";
-import { createBody                } from "web-engine/physics/body.ts";
-import { tintImage } from "web-engine/assets.ts";
 
 function randomColour(): string {
   return `#${Math.floor(Math.random() * 0xffffff).toString(16).padStart(6, "0")}`;

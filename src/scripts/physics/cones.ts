@@ -1,5 +1,5 @@
-import type { CircleBody, AABB, OBB                  } from "web-engine/physics/types.ts";
-import { circleVsAabb, circleVsCircle, circleVsObb   } from "web-engine/physics/collision.ts";
+import type { CircleBody, AABB, OBB                  } from "starweb-physics/types.js";
+import { circleVsAabb, circleVsCircle, circleVsObb   } from "starweb-physics/collision.js";
 import { TILE, TILE_SIZE, type Level, type LevelCone } from "../level/types.ts";
 import { getTile                                     } from "../level/query.ts";
 import type { Vehicle                                } from "../vehicle/types.ts";

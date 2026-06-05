@@ -1,7 +1,7 @@
-import type { Audio } from "web-engine/audio.ts";
+import type { Audio } from "starweb-audio/audio.js";
 import type { Campaign, CampaignData, CampaignAudio, CampaignEntry } from "./types.ts";
-import type { Level } from "../level/types.ts";
-import { loadLevel  } from "../level/load.ts";
+import type { Level                             } from "../level/types.ts";
+import { loadLevel                              } from "../level/load.ts";
 import type { VehicleType                       } from "../vehicle/types.ts";
 import { loadVehicleType, parseVehicleStats     } from "../vehicle/load.ts";
 import { isObj, str, optStr, arr, makeCollector } from "../utils/validate.ts";

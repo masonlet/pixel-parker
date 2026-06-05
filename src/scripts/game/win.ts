@@ -1,4 +1,4 @@
-import { obbInsideAabb      } from "web-engine/physics/overlap.ts";
+import { obbInsideAabb      } from "starweb-physics/overlap.js";
 import type { Sensor, Level } from "../level/types.ts";
 import type { Vehicle       } from "../vehicle/types.ts";
 import { vehicleObb         } from "../physics/sensors.ts";
