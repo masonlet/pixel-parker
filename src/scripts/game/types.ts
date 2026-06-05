@@ -17,6 +17,7 @@ export interface PlayState {
   vehicles:         Vehicle[];
   vehicleIndex:     number;
   cones:            CircleBody[];
+  health:           number;
   debugMode:        boolean;
   tweenManager:     TweenManager;
   sensorAlphas:     Map<Sensor,TweenTarget>;

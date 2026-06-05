@@ -1,22 +1,23 @@
-import { isDown, wasPressed } from "starweb-engine/input/keyboard.js";
-import { createTweenManager } from "starweb-tween/manager.js";
-import type { TweenTarget   } from "starweb-tween/types.js";
-import type { Sensor        } from "../level/types.ts";
-import type { PlayState     } from "./types.ts";
-import type { Campaign      } from "../campaign/types.ts";
-import { spawnVehicles      } from "../vehicle/spawn.ts";
-import { drawVehicle        } from "../vehicle/render.ts";
+import { isDown, wasPressed                   } from "starweb-engine/input/keyboard.js";
+import { createTweenManager                   } from "starweb-tween/manager.js";
+import type { TweenTarget                     } from "starweb-tween/types.js";
+import { MAX_HEALTH                           } from "./constants.ts";
+import type { PlayState                       } from "./types.ts";
+import { checkLevelWon, isParkedIn            } from "./win.ts";
+import type { Sensor                          } from "../level/types.ts";
+import type { Campaign                        } from "../campaign/types.ts";
+import { sensorsOverlapping                   } from "../physics/sensors.ts";
+import { drawWallAabbs, drawOBB, drawSensors  } from "../physics/debug.ts";
+import { spawnCones, updateCones, renderCones } from "../physics/cones.ts";
+import { drawLevel, drawSensorOverlays        } from "../level/render.ts";
+import { spawnVehicles                        } from "../vehicle/spawn.ts";
+import { drawVehicle                          } from "../vehicle/render.ts";
 import {
   applyInput,
   moveVehicle,
   stepVehiclePhysics,
   resolveVehiclePairs
 } from "../vehicle/physics.ts";
-import { sensorsOverlapping                   } from "../physics/sensors.ts";
-import { drawWallAabbs, drawOBB, drawSensors  } from "../physics/debug.ts";
-import { spawnCones, updateCones, renderCones } from "../physics/cones.ts";
-import { drawLevel, drawSensorOverlays        } from "../level/render.ts";
-import { checkLevelWon, isParkedIn            } from "./win.ts";
 
 function initSensorTweens(p: PlayState): void {
   p.tweenManager.stopAll();
@@ -55,6 +56,7 @@ export function createPlayState(campaign: Campaign): PlayState {
     vehicles:     spawnVehicles(level, campaign.vehicleTypes),
     vehicleIndex: 0,
     cones:        spawnCones(level.cones),
+    health:       MAX_HEALTH,
     debugMode:    false,
     tweenManager,
     sensorAlphas,
@@ -73,6 +75,7 @@ export function selectLevel(p: PlayState, index: number): void {
   p.vehicles = spawnVehicles(level, p.vehicleTypes);
   p.vehicleIndex = 0;
   p.cones = spawnCones(level.cones);
+  p.health = MAX_HEALTH;
   p.parkedSensors.clear();
   p.parkConfirmTimer = 0;
   initSensorTweens(p);
@@ -171,6 +174,7 @@ export function resetPlayState(p: PlayState): void {
   p.vehicles = spawnVehicles(level, p.vehicleTypes);
   p.vehicleIndex = 0;
   p.cones = spawnCones(level.cones);
+  p.health = MAX_HEALTH;
   p.parkedSensors.clear();
   p.parkConfirmTimer = 0;
 }
