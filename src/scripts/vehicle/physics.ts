@@ -1,5 +1,6 @@
 import { obbVsAabb, obbVsObb         } from "starweb-physics/collision.js";
 import type { AABB, MTV, OBB         } from "starweb-physics/types.js";
+import { WALL_DAMAGE_SCALE, WALL_DAMAGE_THRESHOLD } from "../game/constants.ts";
 import type { Vehicle                } from "./types.ts";
 import { TILE, TILE_SIZE, type Level } from "../level/types.ts";
 import { getTile                     } from "../level/query.ts";
@@ -104,7 +105,8 @@ function toObb(v: Vehicle): OBB {
   };
 }
 
-function resolveWalls(v: Vehicle, level: Level): void {
+function resolveWalls(v: Vehicle, level: Level): number {
+  let damage = 0;
   for (let pass = 0; pass < 4; pass++) {
     const hits = allWallHits(v, level);
     if (hits.length === 0) break;
@@ -115,11 +117,14 @@ function resolveWalls(v: Vehicle, level: Level): void {
     for (const h of hits) {
       const vn = v.body.velocity.x * h.axis.x + v.body.velocity.y * h.axis.y;
       if (vn < 0) {
+        const impact = -vn;
+        if (impact > WALL_DAMAGE_THRESHOLD) damage += (impact - WALL_DAMAGE_THRESHOLD) * WALL_DAMAGE_SCALE;
         v.body.velocity.x -= h.axis.x * vn;
         v.body.velocity.y -= h.axis.y * vn;
       }
     }
   }
+  return damage;
 }
 
 function resolvePair(a: Vehicle, b: Vehicle, mtv: MTV): void {
@@ -144,10 +149,10 @@ function resolvePair(a: Vehicle, b: Vehicle, mtv: MTV): void {
   }
 }
 
-export function moveVehicle(v: Vehicle, level: Level, dt: number): void {
+export function moveVehicle(v: Vehicle, level: Level, dt: number): number {
   v.body.position.x += v.body.velocity.x * dt;
   v.body.position.y += v.body.velocity.y * dt;
-  resolveWalls(v, level);
+  return resolveWalls(v, level);
 }
 
 export function resolveVehiclePairs(vehicles: Vehicle[]): void {

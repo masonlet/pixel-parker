@@ -106,7 +106,11 @@ export function updatePlayState(p: PlayState, dt: number): boolean {
     if (v === active) applyInput(v, throttle, steer);
     else applyInput(v, 0, 0);
     stepVehiclePhysics(v, dt);
-    moveVehicle(v, level, dt);
+    const damage = moveVehicle(v, level, dt);
+    if (damage > 0) {
+      p.health = Math.max(0, p.health - damage);
+      console.log(`[damage] dmg: ${damage.toFixed(2)} hp: ${p.health.toFixed(1)}`);
+    }
   }
   resolveVehiclePairs(p.vehicles);
   updateCones(p.cones, p.vehicles, level, dt);
