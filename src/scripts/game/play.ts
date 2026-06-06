@@ -114,7 +114,12 @@ export function updatePlayState(p: PlayState, dt: number): PlayResult {
     }
   }
   resolveVehiclePairs(p.vehicles);
-  updateCones(p.cones, p.vehicles, level, dt);
+  const coneDamage = updateCones(p.cones, p.vehicles, level, dt);
+  if (coneDamage > 0) {
+    p.health = Math.max(0, p.health - coneDamage);
+    console.log(`[damage] cone dmg: ${coneDamage.toFixed(2)} hp: ${p.health.toFixed(1)}`);
+    if (p.health <= 0) return "failed";
+  }
   for (const v of p.vehicles) v.overlappingSensors = sensorsOverlapping(v, level);
 
   p.parkedSensors.clear();

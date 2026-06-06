@@ -3,6 +3,7 @@ import { circleVsAabb, circleVsCircle, circleVsObb   } from "starweb-physics/col
 import { TILE, TILE_SIZE, type Level, type LevelCone } from "../level/types.ts";
 import { getTile                                     } from "../level/query.ts";
 import type { Vehicle                                } from "../vehicle/types.ts";
+import { CONE_DAMAGE_SCALE, CONE_DAMAGE_THRESHOLD    } from "../game/constants.ts";
 
 export const CONE_RADIUS   = 8;    // px
 export const CONE_FRICTION = 120;  // px/s²
@@ -60,7 +61,7 @@ export function updateCones(
   vehicles: Vehicle[],
   level:    Level,
   dt:       number,
-): void {
+): number {
   // Move + friction + wall resolution
   for (const cone of cones) {
     cone.cx += cone.vx * dt;
@@ -73,6 +74,8 @@ export function updateCones(
     }
     resolveConeWalls(cone, level);
   }
+
+  let damage = 0;
 
   // Vehicle vs cone
   for (const v of vehicles) {
@@ -89,6 +92,8 @@ export function updateCones(
       const bn  = v.body.velocity.x * mtv.axis.x + v.body.velocity.y * mtv.axis.y;
       const rel = an - bn;
       if (rel < 0) {
+        const impact = -rel;
+        if (impact > CONE_DAMAGE_THRESHOLD) damage += (impact - CONE_DAMAGE_THRESHOLD) * CONE_DAMAGE_SCALE;
         const j = -rel / (1 / cone.mass + 1 / v.body.mass);
         cone.vx           += mtv.axis.x * j / cone.mass;
         cone.vy           += mtv.axis.y * j / cone.mass;
@@ -123,6 +128,8 @@ export function updateCones(
 
   // Final wall re-correction
   for (const cone of cones) resolveConeWalls(cone, level);
+
+  return damage;
 }
 
 export function renderCones(
