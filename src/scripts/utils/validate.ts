@@ -56,3 +56,5 @@ export function makeCollector() {
     },
   };
 }
+
+export type Collector = ReturnType<typeof makeCollector>;
