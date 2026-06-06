@@ -4,37 +4,36 @@ import type { Sensor   } from "../level/types.ts";
 export interface VehicleStats {
   /** Identifier for this vehicle type */
   name: string;
-  /** Optional fixed colour. If omitted, a random colour is assigned on spawn. */
-  colour?: string;
 
   /** Base vehicle sprite path */
-  spritePath: string;
+  spritePath:     string;
   /** Tintable overlay sprite path */
   bodySpritePath: string;
-
-  /** Hitbox width in pixels. */
-  w: number;
-  /** Hitbox height in pixels. */
-  h: number;
+  /** Optional fixed colour. If omitted, a random colour is assigned on spawn. */
+  colour?:        string;
 
   /** Mass in arbitrary units. Higher = harder to push. */
   mass: number;
-
-  /** Maximum turn rate in radians per second. */
-  turnSpeed: number;
-  /** Maximum forward speed in pixels per second. */
-  maxSpeed: number;
-  /** Maximum reverse speed in pixels per second. */
-  maxReverseSpeed: number;
-  /** Acceleration in pixels per second^2. */
-  accel: number;
-  /** Passive deceleration when no throttle in pixels per second^2. */
-  friction: number;
-  /** Braking force in pixels per second^2. */
-  brakeForce: number;
+  /** Hitbox width in pixels. */
+  w:    number;
+  /** Hitbox height in pixels. */
+  h:    number;
 
   /** Delay in seconds before gear engages after braking to a stop. */
-  gearShiftDelay: number;
+  gearShiftDelay:  number;
+
+  /** Acceleration in pixels per second^2. */
+  accel:           number;
+  /** Passive deceleration when no throttle in pixels per second^2. */
+  friction:        number;
+  /** Braking force in pixels per second^2. */
+  brakeForce:      number;
+  /** Maximum forward speed in pixels per second. */
+  maxSpeed:        number;
+  /** Maximum reverse speed in pixels per second. */
+  maxReverseSpeed: number;
+  /** Maximum turn rate in radians per second. */
+  turnSpeed:       number;
 }
 
 export interface VehicleType extends VehicleStats {
@@ -65,6 +64,7 @@ export interface Vehicle {
   /** Sensors this vehicle is touching */
   overlappingSensors: Sensor[];
 
-  damageable: boolean;
-  moveable:   boolean;
+  damageable:   boolean;
+  moveable:     boolean;
+  controllable: boolean;
 }
