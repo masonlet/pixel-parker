@@ -2,7 +2,7 @@ import { isDown, wasPressed                   } from "starweb-engine/input/keybo
 import { createTweenManager                   } from "starweb-tween/manager.js";
 import type { TweenTarget                     } from "starweb-tween/types.js";
 import { MAX_HEALTH                           } from "./constants.ts";
-import type { PlayState                       } from "./types.ts";
+import type { PlayResult, PlayState           } from "./types.ts";
 import { checkLevelWon, isParkedIn            } from "./win.ts";
 import type { Sensor                          } from "../level/types.ts";
 import type { Campaign                        } from "../campaign/types.ts";
@@ -81,15 +81,15 @@ export function selectLevel(p: PlayState, index: number): void {
   initSensorTweens(p);
 }
 
-export function updatePlayState(p: PlayState, dt: number): boolean {
-  if (wasPressed("Digit1")) return true;
+export function updatePlayState(p: PlayState, dt: number): PlayResult {
+  if (wasPressed("Digit1")) return "won";
   if (wasPressed("Digit2")) p.vehicleIndex = (p.vehicleIndex + 1) % p.vehicles.length;
   if (wasPressed("Digit3")) p.debugMode = !p.debugMode;
 
   p.tweenManager.update(dt);
 
   const active = p.vehicles[p.vehicleIndex];
-  if (!active) return false;
+  if (!active) return "failed";
 
   const level = p.levels[p.levelIndex];
   if (!level) throw new Error(`updatePlayState: no level at index ${p.levelIndex}`);
@@ -110,6 +110,7 @@ export function updatePlayState(p: PlayState, dt: number): boolean {
     if (damage > 0) {
       p.health = Math.max(0, p.health - damage);
       console.log(`[damage] dmg: ${damage.toFixed(2)} hp: ${p.health.toFixed(1)}`);
+      if (p.health <= 0) return "failed";
     }
   }
   resolveVehiclePairs(p.vehicles);
@@ -129,11 +130,10 @@ export function updatePlayState(p: PlayState, dt: number): boolean {
 
   if (checkLevelWon(level, p.vehicles)) {
     p.parkConfirmTimer += dt;
-    if (p.parkConfirmTimer >= 850) return true;
-  } else {
-    p.parkConfirmTimer = 0;
-  }
-  return false;
+    if (p.parkConfirmTimer >= 850) return "won";
+  } else p.parkConfirmTimer = 0;
+
+  return "playing";
 }
 
 export function renderPlayState(
