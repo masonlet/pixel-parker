@@ -26,7 +26,7 @@ function handlePlayingFrame(
 }
 
 export function updateFrame(
-  canvas: HTMLCanvasElement,
+  size: { width: number; height: number },
   frame: FrameState,
   playState: PlayState,
   audio: Audio,
@@ -37,7 +37,7 @@ export function updateFrame(
     if (frame.game === "level-paused")  return transition({ game: "level-playing", ui: null }, audio);
   }
 
-  const { width: w, height: h } = canvas;
+  const { width: w, height: h } = size;
   switch (frame.game) {
     case "menu-title":     return handleTitleFrame   (w, h, playState, audio);
     case "menu-levels":    return handleLevelFrame   (w, h, playState, audio);
@@ -45,17 +45,17 @@ export function updateFrame(
     case "level-playing":  return handlePlayingFrame (frame, playState, audio, dt);
     case "level-paused":   return handlePauseFrame   (w, h, playState, audio);
     case "level-complete": return handleCompleteFrame(w, h, playState, audio);
-    case "level-failed": return handleFailedFrame(w, h, playState, audio);
+    case "level-failed":   return handleFailedFrame  (w, h, playState, audio);
   }
 }
 
 export function renderFrame(
   ctx: CanvasRenderingContext2D,
-  canvas: HTMLCanvasElement,
+  size: { width: number; height: number },
   playState: PlayState,
   frame: FrameState
 ): void {
-  const { width: w, height: h } = canvas;
+  const { width: w, height: h } = size;
   ctx.fillStyle = "#000";
   ctx.fillRect(0, 0, w, h);
 

@@ -4,7 +4,7 @@ import { initPointer      } from "starweb-engine/input/pointer.js";
 import { Audio            } from "starweb-audio/audio.js";
 
 export function bootstrapGame() {
-  const { canvas, ctx } = createGameCanvas();
+  const { canvas, ctx, size } = createGameCanvas();
 
   initKeyboard();
   initPointer(canvas);
@@ -12,5 +12,5 @@ export function bootstrapGame() {
   const audio = new Audio();
   audio.init();
 
-  return { canvas, ctx, audio };
+  return { canvas, ctx, size, audio };
 }
