@@ -1,10 +1,12 @@
-import type { Audio                 } from "starweb-audio/audio.js";
-import type { Button, Slider, SliderState, SettingsMenuState } from "./types.ts";
-import type { FrameState            } from "../game/types.ts";
-import { transition                 } from "../game/transition.ts";
-import { getLayout, drawTitle       } from "./layout.ts";
-import { getButtonState, drawButton } from "./button.ts";
-import { updateSlider, drawSlider   } from "./slider.ts";
+import type { Audio                       } from "starweb-audio/audio.js";
+import type { Button, Slider, SliderState } from "starweb-ui/types.js";
+import { getLayout, drawTitle             } from "starweb-ui/layout.js";
+import { getButtonState, drawButton       } from "starweb-ui/button.js";
+import { updateSlider, drawSlider         } from "starweb-ui/slider.js";
+import type { SettingsMenuState           } from "./types.ts";
+import { getPointer                       } from "./pointer.ts";
+import type { FrameState                  } from "../game/types.ts";
+import { transition                       } from "../game/transition.ts";
 
 let volState: SliderState | null = null;
 
@@ -16,11 +18,11 @@ export function handleSettingsFrame(w: number, h: number, audio: Audio): FrameSt
   const backBtn:   Button = { x: cx - btnW/2, y: h - btnH - gap*2,  w: btnW, h: btnH, label: "Back" };
   const volSlider: Slider = { x: cx - btnW/2, y: cy + btnH/2 + gap, w: btnW, h: btnH, label: "Volume" };
 
-  const mute = { btn: muteBtn, state: getButtonState(muteBtn) };
-  const back = { btn: backBtn, state: getButtonState(backBtn) };
+  const mute = { btn: muteBtn, state: getButtonState(muteBtn, getPointer()) };
+  const back = { btn: backBtn, state: getButtonState(backBtn, getPointer()) };
 
   if (!volState) volState = { dragging: false, value: audio.volume };
-  volState = updateSlider(volSlider, volState);
+  volState = updateSlider(volSlider, volState, getPointer());
 
   if (mute.state.clicked) audio.setMuted(!audio.muted);
   audio.setVolume(volState.value);

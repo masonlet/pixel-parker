@@ -1,10 +1,12 @@
-import type { Audio                    } from "starweb-audio/audio.js";
-import type { FrameState, PlayState    } from "../game/types.ts";
-import { transition                    } from "../game/transition.ts";
-import { selectLevel                   } from "../game/play.ts";
-import type { Button, LevelSelectState } from "./types.ts";
-import { getLayout, drawTitle          } from "./layout.ts";
-import { getButtonState, drawButton    } from "./button.ts";
+import type { Audio                 } from "starweb-audio/audio.js";
+import type { Button                } from "starweb-ui/types.js";
+import { getLayout, drawTitle       } from "starweb-ui/layout.js";
+import { getButtonState, drawButton } from "starweb-ui/button.js";
+import type { LevelSelectState      } from "./types.ts";
+import { getPointer                 } from "./pointer.ts";
+import type { FrameState, PlayState } from "../game/types.ts";
+import { transition                 } from "../game/transition.ts";
+import { selectLevel                } from "../game/play.ts";
 
 export function handleLevelFrame(
   w: number, h: number,
@@ -31,13 +33,13 @@ export function handleLevelFrame(
       w: cellW, h: btnH,
       label: playState.levels[i]?.name ?? `Level ${i + 1}`,
     };
-    const state = getButtonState(btn);
+    const state = getButtonState(btn, getPointer());
     if (state.clicked) clickedIndex = i;
     return { btn, state };
   });
 
   const backBtn: Button = { x: cx - btnW/2, y: h - btnH - gap*2, w: btnW, h: btnH, label: "Back" };
-  const back = { btn: backBtn, state: getButtonState(backBtn) };
+  const back = { btn: backBtn, state: getButtonState(backBtn, getPointer()) };
 
   const ui = { cx, scale, titleY, levels: levelEntries, back, clickedIndex };
 

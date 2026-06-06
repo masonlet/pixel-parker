@@ -1,9 +1,11 @@
-import type { Audio                  } from "starweb-audio/audio.js";
-import type { FrameState, PlayState  } from "../game/types.ts";
-import { transition                  } from "../game/transition.ts";
-import type { Button, TitleMenuState } from "./types.ts";
-import { getLayout, drawTitle        } from "./layout.ts";
-import { getButtonState, drawButton  } from "./button.ts";
+import type { Audio                 } from "starweb-audio/audio.js";
+import type { Button                } from "starweb-ui/types.js";
+import { getLayout, drawTitle       } from "starweb-ui/layout.js";
+import { getButtonState, drawButton } from "starweb-ui/button.js";
+import type { TitleMenuState        } from "./types.ts";
+import { getPointer                 } from "./pointer.ts";
+import type { FrameState, PlayState } from "../game/types.ts";
+import { transition                 } from "../game/transition.ts";
 
 export function handleTitleFrame(w: number, h: number, playState: PlayState, audio: Audio): FrameState {
   const { scale, gap, cx, cy, btnW, btnH } = getLayout(w, h);
@@ -14,8 +16,8 @@ export function handleTitleFrame(w: number, h: number, playState: PlayState, aud
 
   const ui = {
     cx, scale, titleY,
-    start:    { btn: startBtn,    state: getButtonState(startBtn)    },
-    settings: { btn: settingsBtn, state: getButtonState(settingsBtn) },
+    start:    { btn: startBtn,    state: getButtonState(startBtn, getPointer())    },
+    settings: { btn: settingsBtn, state: getButtonState(settingsBtn, getPointer()) },
   };
 
   if (ui.start.state.clicked) return transition(
