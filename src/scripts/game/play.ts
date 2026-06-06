@@ -85,7 +85,7 @@ export function updatePlayState(p: PlayState, dt: number): PlayResult {
   if (wasPressed("Digit1")) return "won";
   if (wasPressed("Digit2")) {
     let next = (p.vehicleIndex + 1) % p.vehicles.length;
-    while (!p.vehicles[next]!.moveable && next !== p.vehicleIndex) next = (next + 1) % p.vehicles.length;
+    while (!p.vehicles[next]!.controllable && next !== p.vehicleIndex) next = (next + 1) % p.vehicles.length;
     p.vehicleIndex = next;
   }
   if (wasPressed("Digit3")) p.debugMode = !p.debugMode;

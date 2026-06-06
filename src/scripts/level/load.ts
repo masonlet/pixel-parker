@@ -67,9 +67,10 @@ export function loadLevel(rawLevel: unknown): Level {
     const x = tryGet(() => num(v, "x", ctx));
     const y = tryGet(() => num(v, "y", ctx));
     if (type === undefined || x === undefined || y === undefined) continue;
-    const damageable = tryGet(() => optBool(v, "damageable", ctx)) ?? true;
-    const moveable   = tryGet(() => optBool(v, "moveable",   ctx)) ?? true;
-    vehicles.push({ type, x: x * TILE_SIZE, y: y * TILE_SIZE, damageable, moveable });
+    const damageable   = tryGet(() => optBool(v, "damageable",   ctx)) ?? true;
+    const moveable     = tryGet(() => optBool(v, "moveable",     ctx)) ?? true;
+    const controllable = tryGet(() => optBool(v, "controllable", ctx)) ?? true;
+    vehicles.push({ type, x: x * TILE_SIZE, y: y * TILE_SIZE, damageable, moveable, controllable });
   }
 
   const sensors: Sensor[] = [];

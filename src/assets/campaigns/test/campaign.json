@@ -32,7 +32,8 @@
       ],
       "vehicles": [
         { "type": "car",   "x": 17, "y": 15 },
-        { "type": "truck", "x": 25, "y": 15, "moveable": false }
+        { "type": "truck", "x": 25, "y": 15, "moveable": false, "controllable": false },
+        { "type": "truck", "x": 30, "y": 15, "moveable": false, "controllable": true  }
       ],
       "sensors": []
     } },

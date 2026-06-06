@@ -13,7 +13,8 @@ function createVehicle(
   y: number,
   colour: string,
   damageable: boolean,
-  moveable: boolean
+  moveable: boolean,
+  controllable: boolean
 ): Vehicle {
   return {
     type,
@@ -32,7 +33,8 @@ function createVehicle(
     tint: tintImage(type.bodySprite, colour),
     overlappingSensors: [],
     damageable,
-    moveable
+    moveable,
+    controllable
   };
 }
 
@@ -43,6 +45,10 @@ export function spawnVehicles(
   return level.vehicles.map((lv) => {
     const type = vehicleTypes[lv.type];
     if (!type) throw new Error(`Level: unknown vehicle type "${lv.type}"`);
-    return createVehicle(type, lv.x, lv.y, type.colour ?? randomColour(), lv.damageable, lv.moveable);
+    return createVehicle(
+      type, lv.x, lv.y,
+      type.colour ?? randomColour(),
+      lv.damageable, lv.moveable, lv.controllable
+    );
   });
 }
