@@ -1,9 +1,14 @@
 import { obbVsAabb, obbVsObb         } from "starweb-physics/collision.js";
 import type { AABB, MTV, OBB         } from "starweb-physics/types.js";
-import { WALL_DAMAGE_SCALE, WALL_DAMAGE_THRESHOLD } from "../game/constants.ts";
 import type { Vehicle                } from "./types.ts";
 import { TILE, TILE_SIZE, type Level } from "../level/types.ts";
 import { getTile                     } from "../level/query.ts";
+import {
+  VEHICLE_DAMAGE_SCALE,
+  VEHICLE_DAMAGE_THRESHOLD,
+  WALL_DAMAGE_SCALE,
+  WALL_DAMAGE_THRESHOLD
+} from "../game/constants.ts";
 
 function signedForwardSpeed(v: Vehicle): number {
   return v.body.velocity.x * Math.cos(v.body.angle)
@@ -127,7 +132,37 @@ function resolveWalls(v: Vehicle, level: Level): number {
   return damage;
 }
 
-function resolvePair(a: Vehicle, b: Vehicle, mtv: MTV): void {
+function resolvePair(a: Vehicle, b: Vehicle, mtv: MTV): number {
+  if (!a.moveable && !b.moveable) return 0;
+
+   if (!b.moveable) {
+    a.body.position.x += mtv.axis.x * mtv.depth;
+    a.body.position.y += mtv.axis.y * mtv.depth;
+    const an = a.body.velocity.x * mtv.axis.x + a.body.velocity.y * mtv.axis.y;
+    if (an < 0) {
+      const impact = -an;
+      a.body.velocity.x -= mtv.axis.x * an;
+      a.body.velocity.y -= mtv.axis.y * an;
+      if ((a.damageable || b.damageable) && impact > VEHICLE_DAMAGE_THRESHOLD)
+        return (impact - VEHICLE_DAMAGE_THRESHOLD) * VEHICLE_DAMAGE_SCALE;
+    }
+    return 0;
+  }
+
+  if (!a.moveable) {
+    b.body.position.x -= mtv.axis.x * mtv.depth;
+    b.body.position.y -= mtv.axis.y * mtv.depth;
+    const bn = b.body.velocity.x * mtv.axis.x + b.body.velocity.y * mtv.axis.y;
+    if (bn > 0) {
+      const impact = bn;
+      b.body.velocity.x -= mtv.axis.x * bn;
+      b.body.velocity.y -= mtv.axis.y * bn;
+      if ((a.damageable || b.damageable) && impact > VEHICLE_DAMAGE_THRESHOLD)
+        return (impact - VEHICLE_DAMAGE_THRESHOLD) * VEHICLE_DAMAGE_SCALE;
+    }
+    return 0;
+  }
+
   const totalInv = 1 / a.body.mass + 1 / b.body.mass;
   const aShare = (1 / a.body.mass) / totalInv;
   const bShare = (1 / b.body.mass) / totalInv;
@@ -137,16 +172,23 @@ function resolvePair(a: Vehicle, b: Vehicle, mtv: MTV): void {
   b.body.position.x -= mtv.axis.x * mtv.depth * bShare;
   b.body.position.y -= mtv.axis.y * mtv.depth * bShare;
 
+  let damage = 0;
+
   const an = a.body.velocity.x * mtv.axis.x + a.body.velocity.y * mtv.axis.y;
   const bn = b.body.velocity.x * mtv.axis.x + b.body.velocity.y * mtv.axis.y;
   const rel = an - bn;
   if (rel < 0) {
+    const impact = -rel;
+    if ((a.damageable || b.damageable) && impact > VEHICLE_DAMAGE_THRESHOLD)
+      damage = (impact - VEHICLE_DAMAGE_THRESHOLD) * VEHICLE_DAMAGE_SCALE;
     const j = -rel / totalInv;
     a.body.velocity.x += mtv.axis.x * j / a.body.mass;
     a.body.velocity.y += mtv.axis.y * j / a.body.mass;
     b.body.velocity.x -= mtv.axis.x * j / b.body.mass;
     b.body.velocity.y -= mtv.axis.y * j / b.body.mass;
   }
+
+  return damage;
 }
 
 export function moveVehicle(v: Vehicle, level: Level, dt: number): number {
@@ -155,7 +197,8 @@ export function moveVehicle(v: Vehicle, level: Level, dt: number): number {
   return resolveWalls(v, level);
 }
 
-export function resolveVehiclePairs(vehicles: Vehicle[]): void {
+export function resolveVehiclePairs(vehicles: Vehicle[]): number {
+  let damage = 0;
   for (let pass = 0; pass < 4; pass++) {
     let anyHit = false;
     for (let i = 0; i < vehicles.length; i++) {
@@ -165,9 +208,10 @@ export function resolveVehiclePairs(vehicles: Vehicle[]): void {
         const mtv = obbVsObb(toObb(a), toObb(b));
         if (!mtv) continue;
         anyHit = true;
-        resolvePair(a, b, mtv);
+        damage += resolvePair(vehicles[i]!, vehicles[j]!, mtv);
       }
     }
     if (!anyHit) break;
   }
+  return damage;
 }

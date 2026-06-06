@@ -4,6 +4,8 @@ export interface LevelVehicle {
   x:    number;
   /** Center y in world pixels. */
   y:    number;
+  damageable: boolean;
+  moveable:   boolean;
 }
 
 export interface LevelCone {

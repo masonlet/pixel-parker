@@ -3,7 +3,7 @@ import {
   type TileId, TILE, TILE_SIZE,
   type SensorKind, type Sensor, SENSOR_KINDS
 } from "./types.ts";
-import { isObj, num, optNum, str, optStr, arr, makeCollector } from "../utils/validate.ts";
+import { isObj, optBool, num, optNum, str, optStr, arr, makeCollector } from "../utils/validate.ts";
 
 function isTileName(x: unknown): x is keyof typeof TILE {
   return typeof x === "string" && x in TILE;
@@ -67,7 +67,9 @@ export function loadLevel(rawLevel: unknown): Level {
     const x = tryGet(() => num(v, "x", ctx));
     const y = tryGet(() => num(v, "y", ctx));
     if (type === undefined || x === undefined || y === undefined) continue;
-    vehicles.push({ type, x: x * TILE_SIZE, y: y * TILE_SIZE });
+    const damageable = tryGet(() => optBool(v, "damageable", ctx)) ?? true;
+    const moveable   = tryGet(() => optBool(v, "moveable",   ctx)) ?? true;
+    vehicles.push({ type, x: x * TILE_SIZE, y: y * TILE_SIZE, damageable, moveable });
   }
 
   const sensors: Sensor[] = [];

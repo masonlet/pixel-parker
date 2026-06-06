@@ -83,7 +83,11 @@ export function selectLevel(p: PlayState, index: number): void {
 
 export function updatePlayState(p: PlayState, dt: number): PlayResult {
   if (wasPressed("Digit1")) return "won";
-  if (wasPressed("Digit2")) p.vehicleIndex = (p.vehicleIndex + 1) % p.vehicles.length;
+  if (wasPressed("Digit2")) {
+    let next = (p.vehicleIndex + 1) % p.vehicles.length;
+    while (!p.vehicles[next]!.moveable && next !== p.vehicleIndex) next = (next + 1) % p.vehicles.length;
+    p.vehicleIndex = next;
+  }
   if (wasPressed("Digit3")) p.debugMode = !p.debugMode;
 
   p.tweenManager.update(dt);
@@ -103,17 +107,25 @@ export function updatePlayState(p: PlayState, dt: number): PlayResult {
   if (isDown("KeyD")) steer += 1;
 
   for (const v of p.vehicles) {
+    if (!v.moveable) continue;
     if (v === active) applyInput(v, throttle, steer);
     else applyInput(v, 0, 0);
     stepVehiclePhysics(v, dt);
     const damage = moveVehicle(v, level, dt);
     if (damage > 0) {
       p.health = Math.max(0, p.health - damage);
-      console.log(`[damage] dmg: ${damage.toFixed(2)} hp: ${p.health.toFixed(1)}`);
+      console.log(`[damage] wall dmg: ${damage.toFixed(2)} hp: ${p.health.toFixed(1)}`);
       if (p.health <= 0) return "failed";
     }
   }
-  resolveVehiclePairs(p.vehicles);
+
+  const vvDamage = resolveVehiclePairs(p.vehicles);
+  if (vvDamage > 0) {
+    p.health = Math.max(0, p.health - vvDamage);
+    console.log(`[damage] vehicle dmg: ${vvDamage.toFixed(2)} hp: ${p.health.toFixed(1)}`);
+    if (p.health <= 0) return "failed";
+  }
+
   const coneDamage = updateCones(p.cones, p.vehicles, level, dt);
   if (coneDamage > 0) {
     p.health = Math.max(0, p.health - coneDamage);

@@ -2,6 +2,13 @@ export function isObj(x: unknown): x is Record<string, unknown> {
   return typeof x === "object" && x !== null;
 }
 
+export function optBool(obj: Record<string, unknown>, key: string, ctx: string): boolean | undefined {
+  const v = obj[key];
+  if (v === undefined) return undefined;
+  if (typeof v !== "boolean") throw new Error(`${ctx}: ${key} must be a boolean if present`);
+  return v;
+}
+
 export function num(obj: Record<string, unknown>, key: string, ctx: string): number {
   const v = obj[key];
   if (typeof v !== "number" || !Number.isFinite(v)) throw new Error(
