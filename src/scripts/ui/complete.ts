@@ -1,10 +1,12 @@
-import type { Audio                           } from "starweb-audio/audio.js";
-import type { FrameState, PlayState           } from "../game/types.ts";
-import { transition                           } from "../game/transition.ts";
-import { selectLevel, resetPlayState          } from "../game/play.ts";
-import type { Button, CompleteMenuState, CompleteAction } from "./types.ts";
-import { getLayout, drawTitle                 } from "./layout.ts";
-import { getButtonState, drawButton           } from "./button.ts";
+import type { Button                            } from "starweb-ui/types.js";
+import { getLayout, drawTitle                   } from "starweb-ui/layout.js";
+import { getButtonState, drawButton             } from "starweb-ui/button.js";
+import type { Audio                             } from "starweb-audio/audio.js";
+import type { CompleteMenuState, CompleteAction } from "./types.ts";
+import { getPointer                             } from "./pointer.ts"
+import type { FrameState, PlayState             } from "../game/types.ts";
+import { transition                             } from "../game/transition.ts";
+import { selectLevel, resetPlayState            } from "../game/play.ts";
 
 export function handleCompleteFrame(
   w: number, h: number,
@@ -21,13 +23,13 @@ export function handleCompleteFrame(
   const restartBtn: Button = { x: cx - btnW/2, y: firstY,                                 w: btnW, h: btnH, label: "Restart" };
   const quitBtn:    Button = { x: cx - btnW/2, y: firstY + (btnH + gap) * (btnCount - 1), w: btnW, h: btnH, label: "Quit"    };
 
-  const restart = { btn: restartBtn, state: getButtonState(restartBtn) };
-  const quit    = { btn: quitBtn,    state: getButtonState(quitBtn)    };
+  const restart = { btn: restartBtn, state: getButtonState(restartBtn, getPointer()) };
+  const quit    = { btn: quitBtn,    state: getButtonState(quitBtn, getPointer())    };
 
   let next: CompleteMenuState["next"] = null;
   if (hasNext) {
     const nextBtn: Button = { x: cx - btnW/2, y: firstY + (btnH + gap), w: btnW, h: btnH, label: "Next" };
-    next = { btn: nextBtn, state: getButtonState(nextBtn) };
+    next = { btn: nextBtn, state: getButtonState(nextBtn, getPointer()) };
   }
 
   let action: CompleteAction = null;

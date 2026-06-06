@@ -1,10 +1,11 @@
 import type { Audio                       } from "starweb-audio/audio.js";
+import { getLayout, drawTitle             } from "starweb-ui/layout.js";
+import { getButtonState, drawButton       } from "starweb-ui/button.js";
+import type { PauseMenuState, PauseAction } from "./types.ts";
+import { getPointer                       } from "./pointer.ts";
 import type { FrameState, PlayState       } from "../game/types.ts";
 import { transition                       } from "../game/transition.ts";
 import { resetPlayState                   } from "../game/play.ts";
-import type { PauseMenuState, PauseAction } from "./types.ts";
-import { getLayout, drawTitle             } from "./layout.ts";
-import { getButtonState, drawButton       } from "./button.ts";
 
 export function handlePauseFrame(w: number, h: number, playState: PlayState, audio: Audio): FrameState {
   const { scale, gap, cx, cy, btnW, btnH } = getLayout(w, h);
@@ -16,9 +17,9 @@ export function handlePauseFrame(w: number, h: number, playState: PlayState, aud
   const restartBtn = { x: cx - btnW/2, y: firstY + (btnH + gap),     w: btnW, h: btnH, label: "Restart" };
   const quitBtn    = { x: cx - btnW/2, y: firstY + (btnH + gap) * 2, w: btnW, h: btnH, label: "Quit"    };
 
-  const resume  = { btn: resumeBtn,  state: getButtonState(resumeBtn)  };
-  const restart = { btn: restartBtn, state: getButtonState(restartBtn) };
-  const quit    = { btn: quitBtn,    state: getButtonState(quitBtn)    };
+  const resume  = { btn: resumeBtn,  state: getButtonState(resumeBtn, getPointer())  };
+  const restart = { btn: restartBtn, state: getButtonState(restartBtn, getPointer()) };
+  const quit    = { btn: quitBtn,    state: getButtonState(quitBtn, getPointer())    };
 
   let action: PauseAction = null;
   if (resume.state.clicked)  action = "resume";

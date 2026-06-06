@@ -16,6 +16,7 @@
     "starweb-engine": "git+https://github.com/starlet-web-engine/starweb-engine.git",
     "starweb-audio":  "git+https://github.com/starlet-web-engine/starweb-audio.git",
     "starweb-physics": "git+https://github.com/starlet-web-engine/starweb-physics.git",
-    "starweb-tween": "git+https://github.com/starlet-web-engine/starweb-tween.git"
+    "starweb-tween": "git+https://github.com/starlet-web-engine/starweb-tween.git",
+    "starweb-ui": "git+https://github.com/starlet-web-engine/starweb-ui.git"
   }
 }
