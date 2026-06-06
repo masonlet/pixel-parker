@@ -7,7 +7,8 @@ import type {
   SettingsMenuState,
   LevelSelectState,
   PauseMenuState,
-  CompleteMenuState
+  CompleteMenuState,
+  FailedMenuState
 } from "../ui/types.ts";
 
 export interface PlayState {
@@ -17,6 +18,7 @@ export interface PlayState {
   vehicles:         Vehicle[];
   vehicleIndex:     number;
   cones:            CircleBody[];
+  health:           number;
   debugMode:        boolean;
   tweenManager:     TweenManager;
   sensorAlphas:     Map<Sensor,TweenTarget>;
@@ -24,9 +26,12 @@ export interface PlayState {
   parkConfirmTimer: number;
 }
 
+export type PlayResult = "playing" | "won" | "failed";
+
 export type FrameState = | { game: "menu-title";     ui: TitleMenuState    | null }
                          | { game: "menu-settings";  ui: SettingsMenuState | null }
                          | { game: "menu-levels";    ui: LevelSelectState  | null }
                          | { game: "level-playing";  ui: null                     }
                          | { game: "level-paused";   ui: PauseMenuState    | null }
-                         | { game: "level-complete"; ui: CompleteMenuState      | null }
+                         | { game: "level-complete"; ui: CompleteMenuState | null }
+                         | { game: "level-failed";   ui: FailedMenuState   | null }

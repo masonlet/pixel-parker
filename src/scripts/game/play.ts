@@ -1,22 +1,23 @@
-import { isDown, wasPressed } from "starweb-engine/input/keyboard.js";
-import { createTweenManager } from "starweb-tween/manager.js";
-import type { TweenTarget   } from "starweb-tween/types.js";
-import type { Sensor        } from "../level/types.ts";
-import type { PlayState     } from "./types.ts";
-import type { Campaign      } from "../campaign/types.ts";
-import { spawnVehicles      } from "../vehicle/spawn.ts";
-import { drawVehicle        } from "../vehicle/render.ts";
+import { isDown, wasPressed                   } from "starweb-engine/input/keyboard.js";
+import { createTweenManager                   } from "starweb-tween/manager.js";
+import type { TweenTarget                     } from "starweb-tween/types.js";
+import { MAX_HEALTH                           } from "./constants.ts";
+import type { PlayResult, PlayState           } from "./types.ts";
+import { checkLevelWon, isParkedIn            } from "./win.ts";
+import type { Sensor                          } from "../level/types.ts";
+import type { Campaign                        } from "../campaign/types.ts";
+import { sensorsOverlapping                   } from "../physics/sensors.ts";
+import { drawWallAabbs, drawOBB, drawSensors  } from "../physics/debug.ts";
+import { spawnCones, updateCones, renderCones } from "../physics/cones.ts";
+import { drawLevel, drawSensorOverlays        } from "../level/render.ts";
+import { spawnVehicles                        } from "../vehicle/spawn.ts";
+import { drawVehicle                          } from "../vehicle/render.ts";
 import {
   applyInput,
   moveVehicle,
   stepVehiclePhysics,
   resolveVehiclePairs
 } from "../vehicle/physics.ts";
-import { sensorsOverlapping                   } from "../physics/sensors.ts";
-import { drawWallAabbs, drawOBB, drawSensors  } from "../physics/debug.ts";
-import { spawnCones, updateCones, renderCones } from "../physics/cones.ts";
-import { drawLevel, drawSensorOverlays        } from "../level/render.ts";
-import { checkLevelWon, isParkedIn            } from "./win.ts";
 
 function initSensorTweens(p: PlayState): void {
   p.tweenManager.stopAll();
@@ -55,6 +56,7 @@ export function createPlayState(campaign: Campaign): PlayState {
     vehicles:     spawnVehicles(level, campaign.vehicleTypes),
     vehicleIndex: 0,
     cones:        spawnCones(level.cones),
+    health:       MAX_HEALTH,
     debugMode:    false,
     tweenManager,
     sensorAlphas,
@@ -73,20 +75,25 @@ export function selectLevel(p: PlayState, index: number): void {
   p.vehicles = spawnVehicles(level, p.vehicleTypes);
   p.vehicleIndex = 0;
   p.cones = spawnCones(level.cones);
+  p.health = MAX_HEALTH;
   p.parkedSensors.clear();
   p.parkConfirmTimer = 0;
   initSensorTweens(p);
 }
 
-export function updatePlayState(p: PlayState, dt: number): boolean {
-  if (wasPressed("Digit1")) return true;
-  if (wasPressed("Digit2")) p.vehicleIndex = (p.vehicleIndex + 1) % p.vehicles.length;
+export function updatePlayState(p: PlayState, dt: number): PlayResult {
+  if (wasPressed("Digit1")) return "won";
+  if (wasPressed("Digit2")) {
+    let next = (p.vehicleIndex + 1) % p.vehicles.length;
+    while (!p.vehicles[next]!.moveable && next !== p.vehicleIndex) next = (next + 1) % p.vehicles.length;
+    p.vehicleIndex = next;
+  }
   if (wasPressed("Digit3")) p.debugMode = !p.debugMode;
 
   p.tweenManager.update(dt);
 
   const active = p.vehicles[p.vehicleIndex];
-  if (!active) return false;
+  if (!active) return "failed";
 
   const level = p.levels[p.levelIndex];
   if (!level) throw new Error(`updatePlayState: no level at index ${p.levelIndex}`);
@@ -100,13 +107,31 @@ export function updatePlayState(p: PlayState, dt: number): boolean {
   if (isDown("KeyD")) steer += 1;
 
   for (const v of p.vehicles) {
+    if (!v.moveable) continue;
     if (v === active) applyInput(v, throttle, steer);
     else applyInput(v, 0, 0);
     stepVehiclePhysics(v, dt);
-    moveVehicle(v, level, dt);
+    const damage = moveVehicle(v, level, dt);
+    if (damage > 0) {
+      p.health = Math.max(0, p.health - damage);
+      console.log(`[damage] wall dmg: ${damage.toFixed(2)} hp: ${p.health.toFixed(1)}`);
+      if (p.health <= 0) return "failed";
+    }
   }
-  resolveVehiclePairs(p.vehicles);
-  updateCones(p.cones, p.vehicles, level, dt);
+
+  const vvDamage = resolveVehiclePairs(p.vehicles);
+  if (vvDamage > 0) {
+    p.health = Math.max(0, p.health - vvDamage);
+    console.log(`[damage] vehicle dmg: ${vvDamage.toFixed(2)} hp: ${p.health.toFixed(1)}`);
+    if (p.health <= 0) return "failed";
+  }
+
+  const coneDamage = updateCones(p.cones, p.vehicles, level, dt);
+  if (coneDamage > 0) {
+    p.health = Math.max(0, p.health - coneDamage);
+    console.log(`[damage] cone dmg: ${coneDamage.toFixed(2)} hp: ${p.health.toFixed(1)}`);
+    if (p.health <= 0) return "failed";
+  }
   for (const v of p.vehicles) v.overlappingSensors = sensorsOverlapping(v, level);
 
   p.parkedSensors.clear();
@@ -122,11 +147,10 @@ export function updatePlayState(p: PlayState, dt: number): boolean {
 
   if (checkLevelWon(level, p.vehicles)) {
     p.parkConfirmTimer += dt;
-    if (p.parkConfirmTimer >= 850) return true;
-  } else {
-    p.parkConfirmTimer = 0;
-  }
-  return false;
+    if (p.parkConfirmTimer >= 850) return "won";
+  } else p.parkConfirmTimer = 0;
+
+  return "playing";
 }
 
 export function renderPlayState(
@@ -163,6 +187,17 @@ export function renderPlayState(
   }
 
   drawSensorOverlays(ctx, level, p.sensorAlphas, p.parkedSensors, p.vehicles, camX, camY);
+
+  const barW  = 60;
+  const barH  = 8;
+  const barX  = Math.floor(active.body.position.x - camX - barW / 2);
+  const barY  = Math.floor(active.body.position.y - camY + active.type.sprite.height / 2 + 6);
+  const ratio = p.health / MAX_HEALTH;
+
+  ctx.fillStyle = "#333";
+  ctx.fillRect(barX, barY, barW, barH);
+  ctx.fillStyle = ratio > 0.5 ? "#0f0" : ratio > 0.25 ? "#ff0" : "#f00";
+  ctx.fillRect(barX, barY, Math.floor(barW * ratio), barH);
 }
 
 export function resetPlayState(p: PlayState): void {
@@ -171,6 +206,7 @@ export function resetPlayState(p: PlayState): void {
   p.vehicles = spawnVehicles(level, p.vehicleTypes);
   p.vehicleIndex = 0;
   p.cones = spawnCones(level.cones);
+  p.health = MAX_HEALTH;
   p.parkedSensors.clear();
   p.parkConfirmTimer = 0;
 }

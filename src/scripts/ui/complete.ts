@@ -7,7 +7,7 @@ import { getLayout, drawTitle                 } from "./layout.ts";
 import { getButtonState, drawButton           } from "./button.ts";
 
 export function handleCompleteFrame(
-  w: number, h: number, 
+  w: number, h: number,
   playState: PlayState,
   audio: Audio
 ): FrameState {

@@ -64,4 +64,7 @@ export interface Vehicle {
 
   /** Sensors this vehicle is touching */
   overlappingSensors: Sensor[];
+
+  damageable: boolean;
+  moveable:   boolean;
 }

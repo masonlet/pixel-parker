@@ -19,8 +19,8 @@
     { "x": 27, "y": 29, "w": 1,  "h": 1,  "tile": "WALL" }
   ],
   "vehicles": [
-    { "type": "car",   "x": 20, "y": 30 },
-    { "type": "truck", "x": 23, "y": 30 }
+    { "type": "car",   "x": 20, "y": 30, "damageable": false },
+    { "type": "truck", "x": 23, "y": 30, "damageable": false }
   ],
   "cones": [
     { "x": 5, "y": 21 }, { "x": 10, "y": 21 },

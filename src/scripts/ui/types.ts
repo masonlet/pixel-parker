@@ -46,6 +46,12 @@ export interface PauseMenuState extends MenuLayout {
   action:  PauseAction;
 }
 
+export interface FailedMenuState extends MenuLayout {
+  restart: ButtonEntry;
+  quit:    ButtonEntry;
+  action:  FailedAction;
+}
+
 export interface TitleMenuState extends MenuLayout {
   start:    ButtonEntry;
   settings: ButtonEntry;
@@ -73,3 +79,4 @@ export interface LevelSelectState extends MenuLayout {
 
 export type PauseAction    = "resume" | "restart" | "quit" | null;
 export type CompleteAction = "next"   | "restart" | "quit" | null;
+export type FailedAction   =            "restart" | "quit" | null;
