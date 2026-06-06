@@ -6,7 +6,7 @@ import { createPlayState          } from "./scripts/game/play.ts";
 import { updateFrame, renderFrame } from "./scripts/game/frame.ts";
 import { loadCampaign             } from "./scripts/campaign/load.ts";
 
-const { canvas, ctx, size, audio } = bootstrapGame();
+const { ctx, size, audio } = bootstrapGame();
 
 const BASE_URL = import.meta.env.BASE_URL;
 await audio.registerSound("button", "audio/ui/button.wav", BASE_URL);
