@@ -170,6 +170,17 @@ export function renderPlayState(
   }
 
   drawSensorOverlays(ctx, level, p.sensorAlphas, p.parkedSensors, p.vehicles, camX, camY);
+
+  const barW  = 60;
+  const barH  = 8;
+  const barX  = Math.floor(active.body.position.x - camX - barW / 2);
+  const barY  = Math.floor(active.body.position.y - camY + active.type.sprite.height / 2 + 6);
+  const ratio = p.health / MAX_HEALTH;
+
+  ctx.fillStyle = "#333";
+  ctx.fillRect(barX, barY, barW, barH);
+  ctx.fillStyle = ratio > 0.5 ? "#0f0" : ratio > 0.25 ? "#ff0" : "#f00";
+  ctx.fillRect(barX, barY, Math.floor(barW * ratio), barH);
 }
 
 export function resetPlayState(p: PlayState): void {
