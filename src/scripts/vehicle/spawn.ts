@@ -13,8 +13,9 @@ function createVehicle(
   y: number,
   colour: string,
   damageable: boolean,
-  driveable: boolean,
-  selectable: boolean
+  driveable:  boolean,
+  selectable: boolean,
+  pushable:   boolean
 ): Vehicle {
   return {
     type,
@@ -34,7 +35,8 @@ function createVehicle(
     overlappingSensors: [],
     damageable,
     driveable,
-    selectable
+    selectable,
+    pushable
   };
 }
 
@@ -48,7 +50,7 @@ export function spawnVehicles(
     return createVehicle(
       type, lv.x, lv.y,
       type.colour ?? randomColour(),
-      lv.damageable, lv.driveable, lv.selectable
+      lv.damageable, lv.driveable, lv.selectable, lv.pushable
     );
   });
 }

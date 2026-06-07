@@ -5,6 +5,8 @@ export interface VehicleFlags {
   driveable:  boolean;
   /** Whether this vehicle can be switched to. */
   selectable: boolean;
+  /** Whether this vehicle can be displaced by collisions. */
+  pushable: boolean;
 }
 
 export interface LevelVehicle extends VehicleFlags {
