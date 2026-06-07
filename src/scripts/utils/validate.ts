@@ -16,6 +16,7 @@ export function num(obj: Record<string, unknown>, key: string, ctx: string): num
   );
   return v;
 }
+
 export function optNum(obj: Record<string, unknown>, key: string, ctx: string): number | undefined {
   const v = obj[key];
   if (v === undefined) return undefined;

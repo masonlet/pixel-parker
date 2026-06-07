@@ -133,9 +133,9 @@ function resolveWalls(v: Vehicle, level: Level): number {
 }
 
 function resolvePair(a: Vehicle, b: Vehicle, mtv: MTV): number {
-  if (!a.moveable && !b.moveable) return 0;
+  if (!a.driveable && !b.driveable) return 0;
 
-   if (!b.moveable) {
+   if (!b.driveable) {
     a.body.position.x += mtv.axis.x * mtv.depth;
     a.body.position.y += mtv.axis.y * mtv.depth;
     const an = a.body.velocity.x * mtv.axis.x + a.body.velocity.y * mtv.axis.y;
@@ -149,7 +149,7 @@ function resolvePair(a: Vehicle, b: Vehicle, mtv: MTV): number {
     return 0;
   }
 
-  if (!a.moveable) {
+  if (!a.driveable) {
     b.body.position.x -= mtv.axis.x * mtv.depth;
     b.body.position.y -= mtv.axis.y * mtv.depth;
     const bn = b.body.velocity.x * mtv.axis.x + b.body.velocity.y * mtv.axis.y;

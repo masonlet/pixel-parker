@@ -7,9 +7,9 @@ export interface LevelVehicle {
   /** Flag to disable/enable this vehicles damage output. */
   damageable: boolean;
   /** Flag to disable/enable driving this vehicle. */
-  moveable:   boolean;
+  driveable:  boolean;
   /** Flag to disable/enable switching to this vehicle. */
-  controllable: boolean;
+  selectable: boolean;
 }
 
 export interface LevelCone {

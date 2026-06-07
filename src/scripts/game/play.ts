@@ -85,7 +85,7 @@ export function updatePlayState(p: PlayState, dt: number): PlayResult {
   if (wasPressed("Digit1")) return "won";
   if (wasPressed("Digit2")) {
     let next = (p.vehicleIndex + 1) % p.vehicles.length;
-    while (!p.vehicles[next]!.controllable && next !== p.vehicleIndex) next = (next + 1) % p.vehicles.length;
+    while (!p.vehicles[next]!.selectable && next !== p.vehicleIndex) next = (next + 1) % p.vehicles.length;
     p.vehicleIndex = next;
   }
   if (wasPressed("Digit3")) p.debugMode = !p.debugMode;
@@ -107,7 +107,7 @@ export function updatePlayState(p: PlayState, dt: number): PlayResult {
   if (isDown("KeyD")) steer += 1;
 
   for (const v of p.vehicles) {
-    if (!v.moveable) continue;
+    if (!v.driveable) continue;
     if (v === active) applyInput(v, throttle, steer);
     else applyInput(v, 0, 0);
     stepVehiclePhysics(v, dt);

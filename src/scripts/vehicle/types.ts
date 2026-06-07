@@ -64,7 +64,10 @@ export interface Vehicle {
   /** Sensors this vehicle is touching */
   overlappingSensors: Sensor[];
 
-  damageable:   boolean;
-  moveable:     boolean;
-  controllable: boolean;
+  /** Flag to disable/enable this vehicles damage output. */
+  damageable: boolean;
+  /** Flag to disable/enable driving this vehicle. */
+  driveable:  boolean;
+  /** Flag to disable/enable switching to this vehicle. */
+  selectable: boolean;
 }

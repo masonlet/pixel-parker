@@ -65,10 +65,10 @@ function parseVehicles(raw: unknown[], col: Collector): LevelVehicle[] {
     const x =    col.tryGet(() => num(v, "x", ctx));
     const y =    col.tryGet(() => num(v, "y", ctx));
     if (type === undefined || x === undefined || y === undefined) continue;
-    const damageable   = col.tryGet(() => optBool(v, "damageable",   ctx)) ?? true;
-    const moveable     = col.tryGet(() => optBool(v, "moveable",     ctx)) ?? true;
-    const controllable = col.tryGet(() => optBool(v, "controllable", ctx)) ?? true;
-    vehicles.push({ type, x: x * TILE_SIZE, y: y * TILE_SIZE, damageable, moveable, controllable });
+    const damageable = col.tryGet(() => optBool(v, "damageable",   ctx)) ?? true;
+    const driveable  = col.tryGet(() => optBool(v, "driveable",   ctx)) ?? true;
+    const selectable = col.tryGet(() => optBool(v, "selectable", ctx)) ?? true;
+    vehicles.push({ type, x: x * TILE_SIZE, y: y * TILE_SIZE, damageable, driveable, selectable });
   }
   return vehicles;
 }
