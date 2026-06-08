@@ -1,15 +1,20 @@
-export interface LevelVehicle {
+export interface VehicleFlags {
+  /** Whether this vehicle takes and deals collision damage. */
+  damageable: boolean;
+  /** Whether this vehicle responds to physics and input. */
+  driveable:  boolean;
+  /** Whether this vehicle can be switched to. */
+  selectable: boolean;
+  /** Whether this vehicle can be displaced by collisions. */
+  pushable: boolean;
+}
+
+export interface LevelVehicle extends VehicleFlags {
   type: string;
   /** Center x in world pixels. */
   x:    number;
   /** Center y in world pixels. */
   y:    number;
-  /** Flag to disable/enable this vehicles damage output. */
-  damageable: boolean;
-  /** Flag to disable/enable driving this vehicle. */
-  moveable:   boolean;
-  /** Flag to disable/enable switching to this vehicle. */
-  controllable: boolean;
 }
 
 export interface LevelCone {

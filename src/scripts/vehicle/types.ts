@@ -1,5 +1,5 @@
-import type { RectBody } from "starweb-physics/types.js";
-import type { Sensor   } from "../level/types.ts";
+import type { RectBody             } from "starweb-physics/types.js";
+import type { Sensor, VehicleFlags } from "../level/types.ts";
 
 export interface VehicleStats {
   /** Identifier for this vehicle type */
@@ -43,7 +43,7 @@ export interface VehicleType extends VehicleStats {
   bodySprite: HTMLImageElement;
 }
 
-export interface Vehicle {
+export interface Vehicle extends VehicleFlags {
   /** Vehicle config. */
   type: VehicleType;
   /** Vehicle body. */
@@ -63,8 +63,4 @@ export interface Vehicle {
 
   /** Sensors this vehicle is touching */
   overlappingSensors: Sensor[];
-
-  damageable:   boolean;
-  moveable:     boolean;
-  controllable: boolean;
 }

@@ -13,8 +13,9 @@ function createVehicle(
   y: number,
   colour: string,
   damageable: boolean,
-  moveable: boolean,
-  controllable: boolean
+  driveable:  boolean,
+  selectable: boolean,
+  pushable:   boolean
 ): Vehicle {
   return {
     type,
@@ -33,8 +34,9 @@ function createVehicle(
     tint: tintImage(type.bodySprite, colour),
     overlappingSensors: [],
     damageable,
-    moveable,
-    controllable
+    driveable,
+    selectable,
+    pushable
   };
 }
 
@@ -48,7 +50,7 @@ export function spawnVehicles(
     return createVehicle(
       type, lv.x, lv.y,
       type.colour ?? randomColour(),
-      lv.damageable, lv.moveable, lv.controllable
+      lv.damageable, lv.driveable, lv.selectable, lv.pushable
     );
   });
 }
