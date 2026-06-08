@@ -1,10 +1,10 @@
 import type { Audio } from "starweb-audio/audio.js";
 import type { Campaign, CampaignData, CampaignAudio, CampaignEntry } from "./types.ts";
+import { isObj, str, optStr, arr, makeCollector, type Collector    } from "../utils/validate.ts";
 import type { Level                             } from "../level/types.ts";
 import { loadLevel                              } from "../level/load.ts";
 import type { VehicleType                       } from "../vehicle/types.ts";
 import { loadVehicleType, parseVehicleStats     } from "../vehicle/load.ts";
-import { isObj, str, optStr, arr, makeCollector } from "../utils/validate.ts";
 
 const BASE_PATH = "../../assets/campaigns/";
 const campaignFiles = import.meta.glob("../../assets/campaigns/**/*.json", {
@@ -40,6 +40,75 @@ function parseCampaign(data: unknown): CampaignData {
   };
 }
 
+async function loadVehicleTypes(
+  entries: CampaignEntry<unknown>[],
+  basePath: string,
+  ctx: string,
+  col: Collector
+): Promise<Record<string, VehicleType>> {
+  const stats = entries
+    .map((entry, i) => col.tryGet(() => {
+      const data = resolveEntry(entry, basePath, `${ctx}: vehicleTypes[${i}]`);
+      return parseVehicleStats(data);
+    }))
+    .filter((s): s is NonNullable<typeof s> => s !== undefined);
+
+  const seen = new Set<string>();
+  for (const s of stats) {
+    if (seen.has(s.name)) col.errors.push(`${ctx}: duplicate vehicle name "${s.name}"`);
+    seen.add(s.name);
+  }
+
+  const arr = await Promise.all(stats.map(loadVehicleType));
+  const vehicleTypes: Record<string, VehicleType> = {};
+  for (const vt of arr) vehicleTypes[vt.name] = vt;
+  return vehicleTypes;
+}
+
+function loadLevels(
+  entries: CampaignEntry<unknown>[],
+  basePath: string,
+  ctx: string,
+  col: Collector
+): Level[] {
+  return entries
+    .map((entry, i) => col.tryGet(() => {
+      const data = resolveEntry(entry, basePath, `${ctx}: levels[${i}]`);
+      return loadLevel(data);
+    }))
+    .filter((l): l is NonNullable<typeof l> => l !== undefined);
+}
+
+function validateVehicleRefs(
+  levels: Level[],
+  vehicleTypes: Record<string, VehicleType>,
+  ctx: string,
+  col: Collector
+): void {
+  const validNames = new Set(Object.keys(vehicleTypes));
+  for (const [i, level] of levels.entries()) {
+    const lctx = `${ctx}: level ${i}${level.name ? ` ("${level.name}")` : ""}`;
+    for (const [vi, v] of level.vehicles.entries()) {
+      if (!validNames.has(v.type))
+        col.errors.push(`${lctx}: vehicle ${vi} type "${v.type}" not in roster`);
+    }
+    for (const [si, s] of level.sensors.entries()) {
+      if (s.vehicle !== undefined && !validNames.has(s.vehicle))
+        col.errors.push(`${lctx}: sensor ${si} vehicle "${s.vehicle}" not in roster`);
+    }
+  }
+}
+
+function parseCampaignAudio(data: unknown, ctx: string): CampaignAudio {
+  const audio: CampaignAudio = {};
+  if (!isObj(data)) return audio;
+  const button = optStr(data, "button", `${ctx}: audio`);
+  const win    = optStr(data, "win",    `${ctx}: audio`);
+  if (button) audio.button = button;
+  if (win)    audio.win    = win;
+  return audio;
+}
+
 export async function loadCampaign(folder: string, audio: Audio): Promise<Campaign> {
   const basePath = `${BASE_PATH}${folder}`;
   const campaignKey = `${basePath}/campaign.json`;
@@ -47,61 +116,14 @@ export async function loadCampaign(folder: string, audio: Audio): Promise<Campai
   if (raw === undefined) throw new Error(`Campaign "${folder}": campaign.json not found at ${campaignKey}`);
 
   const campaign = parseCampaign(raw);
-  const ctx = `Campaign "${campaign.name}"`;
-  const { errors, tryGet } = makeCollector();
+  const ctx      = `Campaign "${campaign.name}"`;
+  const col      = makeCollector();
+  const vehicleTypes  = await loadVehicleTypes(campaign.vehicleTypes, basePath, ctx, col);
+  const levels        = loadLevels(campaign.levels, basePath, ctx, col);
+  validateVehicleRefs(levels, vehicleTypes, ctx, col);
+  const campaignAudio = parseCampaignAudio(campaign.audio, ctx);
 
-  // Resolve and parse vehicle types
-  const stats = campaign.vehicleTypes
-    .map((entry, i) => tryGet(() => {
-      const data = resolveEntry(entry, basePath, `${ctx}: vehicleTypes[${i}]`);
-      return parseVehicleStats(data);
-    }))
-    .filter((s): s is NonNullable<typeof s> => s !== undefined);
-
-  // Check name uniqueness
-  const seen = new Set<string>();
-  for (const s of stats) {
-    if (seen.has(s.name)) errors.push(`${ctx}: duplicate vehicle name "${s.name}"`);
-    seen.add(s.name);
-  }
-
-  // Load sprites
-  const vehicleTypeArr = await Promise.all(stats.map(loadVehicleType));
-  const vehicleTypes: Record<string, VehicleType> = {};
-  for (const vt of vehicleTypeArr) vehicleTypes[vt.name] = vt;
-
-  // Resolve and parse levels
-  const levels: Level[] = campaign.levels
-    .map((entry, i) => tryGet(() => {
-      const data = resolveEntry(entry, basePath, `${ctx}: levels[${i}]`);
-      return loadLevel(data);
-    }))
-    .filter((l): l is NonNullable<typeof l> => l !== undefined);
-
-  // Cross-validate vehicle references
-  const validNames = new Set(Object.keys(vehicleTypes));
-  for (const [i, level] of levels.entries()) {
-    const lctx = `${ctx}: level ${i}${level.name ? ` ("${level.name}")` : ""}`;
-    for (const [vi, v] of level.vehicles.entries()) {
-      if (!validNames.has(v.type)) errors.push(`${lctx}: vehicle ${vi} type "${v.type}" not in roster`);
-    }
-    for (const [si, s] of level.sensors.entries()) {
-      if (s.vehicle !== undefined && !validNames.has(s.vehicle)) {
-        errors.push(`${lctx}: sensor ${si} vehicle "${s.vehicle}" not in roster`);
-      }
-    }
-  }
-
-  const campaignAudio: CampaignAudio = {};
-  if (isObj(campaign.audio)) {
-    const a = campaign.audio;
-    const button = optStr(a, "button", `${ctx}: audio`);
-    const win = optStr(a, "win", `${ctx}: audio`);
-    if (button) campaignAudio.button = button;
-    if (win)    campaignAudio.win = win;
-  }
-
-  if (errors.length) throw new Error(`${ctx} failed validation:\n  ${errors.join("\n  ")}`);
+  if (col.errors.length) throw new Error(`${ctx} failed validation:\n  ${col.errors.join("\n  ")}`);
 
   if (campaignAudio.button) await audio.registerSound("button", campaignAudio.button);
   if (campaignAudio.win)    await audio.registerSound("win", campaignAudio.win);
