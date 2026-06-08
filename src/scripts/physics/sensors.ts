@@ -2,16 +2,7 @@ import type { OBB, AABB     } from "starweb-physics/types.js";
 import { overlappingRegions } from "starweb-physics/overlap.js";
 import type { Sensor, Level } from "../level/types.ts";
 import type { Vehicle       } from "../vehicle/types.ts";
-
-export function vehicleObb(v: Vehicle): OBB {
-  return {
-    cx: v.body.position.x,
-    cy: v.body.position.y,
-    hw: v.body.w / 2,
-    hh: v.body.h / 2,
-    angle: v.body.angle,
-  };
-}
+import { vehicleObb         } from "../vehicle/physics.ts";
 
 export function sensorsOverlapping(v: Vehicle, level: Level): Sensor[] {
   const obb = vehicleObb(v);
