@@ -100,7 +100,7 @@ function allWallHits(v: Vehicle, level: Level): MTV[] {
   return hits;
 }
 
-function toObb(v: Vehicle): OBB {
+export function vehicleObb(v: Vehicle): OBB {
   return {
     cx: v.body.position.x,
     cy: v.body.position.y,
@@ -205,7 +205,7 @@ export function resolveVehiclePairs(vehicles: Vehicle[]): number {
       for (let j = i + 1; j < vehicles.length; j++) {
         const a = vehicles[i]!;
         const b = vehicles[j]!;
-        const mtv = obbVsObb(toObb(a), toObb(b));
+        const mtv = obbVsObb(vehicleObb(a), vehicleObb(b));
         if (!mtv) continue;
         anyHit = true;
         damage += resolvePair(vehicles[i]!, vehicles[j]!, mtv);

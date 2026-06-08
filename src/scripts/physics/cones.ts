@@ -1,9 +1,10 @@
-import type { CircleBody, AABB, OBB                  } from "starweb-physics/types.js";
+import type { CircleBody, AABB                       } from "starweb-physics/types.js";
 import { circleVsAabb, circleVsCircle, circleVsObb   } from "starweb-physics/collision.js";
+import { CONE_DAMAGE_SCALE, CONE_DAMAGE_THRESHOLD    } from "../game/constants.ts";
 import { TILE, TILE_SIZE, type Level, type LevelCone } from "../level/types.ts";
 import { getTile                                     } from "../level/query.ts";
 import type { Vehicle                                } from "../vehicle/types.ts";
-import { CONE_DAMAGE_SCALE, CONE_DAMAGE_THRESHOLD    } from "../game/constants.ts";
+import { vehicleObb                                  } from "../vehicle/physics.ts";
 
 export const CONE_RADIUS   = 8;    // px
 export const CONE_FRICTION = 120;  // px/s²
@@ -46,16 +47,6 @@ function resolveConeWalls(cone: CircleBody, level: Level): void {
   }
 }
 
-function vehicleToObb(v: Vehicle): OBB {
-  return {
-    cx:    v.body.position.x,
-    cy:    v.body.position.y,
-    hw:    v.body.w / 2,
-    hh:    v.body.h / 2,
-    angle: v.body.angle,
-  };
-}
-
 export function updateCones(
   cones:    CircleBody[],
   vehicles: Vehicle[],
@@ -79,7 +70,7 @@ export function updateCones(
 
   // Vehicle vs cone
   for (const v of vehicles) {
-    const obb = vehicleToObb(v);
+    const obb = vehicleObb(v);
     for (const cone of cones) {
       const mtv = circleVsObb(cone, obb);
       if (!mtv) continue;

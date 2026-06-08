@@ -1,11 +1,11 @@
-import type { OBB      } from "starweb-physics/types.js";
-import { obbVsAabb     } from "starweb-physics/collision.js";
-import { obbInsideAabb } from "starweb-physics/overlap.js";
-import { vehicleObb    } from "./sensors.ts";
-import type { Vehicle  } from "../vehicle/types.ts";
+import type { OBB                         } from "starweb-physics/types.js";
+import { obbVsAabb                        } from "starweb-physics/collision.js";
+import { obbInsideAabb                    } from "starweb-physics/overlap.js";
+import { isParkedIn, DEFAULT_PARK_PADDING } from "../game/win.ts";
 import { TILE, TILE_SIZE, type Level      } from "../level/types.ts";
 import { getTile                          } from "../level/query.ts";
-import { isParkedIn, DEFAULT_PARK_PADDING } from "../game/win.ts";
+import type { Vehicle                     } from "../vehicle/types.ts";
+import { vehicleObb                       } from "../vehicle/physics.ts";
 
 export function drawOBB(
   ctx: CanvasRenderingContext2D,
