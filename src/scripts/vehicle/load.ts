@@ -1,6 +1,6 @@
-import { loadImage } from "starweb-engine/assets.js";
+import { isObj, num, str, optStr, makeCollector } from "starweb-engine/validate.js";
+import { loadImage                              } from "starweb-engine/assets.js";
 import type { VehicleType, VehicleStats         } from "./types.ts";
-import { isObj, num, str, optStr, makeCollector } from "../utils/validate.ts";
 
 export function parseVehicleStats(data: unknown): VehicleStats {
   if (!isObj(data)) throw new Error("vehicle stats must be an object");
