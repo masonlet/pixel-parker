@@ -1,16 +1,16 @@
 import {
-  type Level, type LevelVehicle, type LevelCone,
-  type TileId, TILE, TILE_SIZE,
-  type SensorKind, type Sensor, SENSOR_KINDS
-} from "./types.ts";
-import {
   isObj,
   optBool,
   num, optNum,
   str, optStr,
   arr,
   makeCollector, type Collector
-} from "../utils/validate.ts";
+} from "starweb-engine/validate.js";
+import {
+  type Level, type LevelVehicle, type LevelCone,
+  type TileId, TILE, TILE_SIZE,
+  type SensorKind, type Sensor, SENSOR_KINDS
+} from "./types.ts";
 
 function isTileName(x: unknown): x is keyof typeof TILE {
   return typeof x === "string" && x in TILE;

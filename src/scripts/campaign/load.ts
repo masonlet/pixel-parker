@@ -1,10 +1,10 @@
-import type { Audio } from "starweb-audio/audio.js";
+import { isObj, str, optStr, arr, makeCollector, type Collector    } from "starweb-engine/validate.js";
+import type { Audio                                                } from "starweb-audio/audio.js";
 import type { Campaign, CampaignData, CampaignAudio, CampaignEntry } from "./types.ts";
-import { isObj, str, optStr, arr, makeCollector, type Collector    } from "../utils/validate.ts";
-import type { Level                             } from "../level/types.ts";
-import { loadLevel                              } from "../level/load.ts";
-import type { VehicleType                       } from "../vehicle/types.ts";
-import { loadVehicleType, parseVehicleStats     } from "../vehicle/load.ts";
+import type { Level                                                } from "../level/types.ts";
+import { loadLevel                                                 } from "../level/load.ts";
+import type { VehicleType                                          } from "../vehicle/types.ts";
+import { loadVehicleType, parseVehicleStats                        } from "../vehicle/load.ts";
 
 const BASE_PATH = "../../assets/campaigns/";
 const campaignFiles = import.meta.glob("../../assets/campaigns/**/*.json", {
