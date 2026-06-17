@@ -2,7 +2,7 @@
 
 A top-down vehicle parking puzzle game built with TypeScript, Vite, and a custom Web Engine.
 
-**Play it: [GitHub page](https://masonlet.github.io/pixel-parker/)**
+**Play it: [masonletoile.ca/pixel-parker](https://masonletoile.ca/pixel-parker/)**
 
 ## Tech Stack
 <p align="left">
@@ -11,7 +11,6 @@ A top-down vehicle parking puzzle game built with TypeScript, Vite, and a custom
   <img height="35" src="https://img.shields.io/badge/TypeScript-%23007ACC?logo=typescript&logoColor=white&style=for-the-badge"/>
   <img height="35" src="https://img.shields.io/badge/Node.js-%23339933?logo=node.js&logoColor=white&style=for-the-badge"/>
   <img height="35" src="https://img.shields.io/badge/Vite-%2300C0FF?logo=vite&logoColor=white&style=for-the-badge"/>
-  <img height="35" src="https://img.shields.io/badge/GitHub%20Pages-%23222222?logo=github&logoColor=white&style=for-the-badge"/>
 </p>
 
 ## Controls
