@@ -1,6 +1,6 @@
-import { isDown, wasPressed                   } from "starweb-engine/input/keyboard.js";
-import { createTweenManager                   } from "starweb-tween/manager.js";
-import type { TweenTarget                     } from "starweb-tween/types.js";
+import { isDown, wasPressed                   } from "@starweb-libs/engine/input/keyboard.js";
+import { createTweenManager                   } from "@starweb-libs/tween/manager.js";
+import type { TweenTarget                     } from "@starweb-libs/tween/types.js";
 import { MAX_HEALTH                           } from "./constants.ts";
 import type { PlayResult, PlayState           } from "./types.ts";
 import { checkLevelWon, isParkedIn            } from "./win.ts";

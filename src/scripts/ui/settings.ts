@@ -1,8 +1,8 @@
-import type { Audio                       } from "starweb-audio/audio.js";
-import type { Button, Slider, SliderState } from "starweb-ui/types.js";
-import { getLayout, drawTitle             } from "starweb-ui/layout.js";
-import { getButtonState, drawButton       } from "starweb-ui/button.js";
-import { updateSlider, drawSlider         } from "starweb-ui/slider.js";
+import type { Audio                       } from "@starweb-libs/audio/audio.js";
+import type { Button, Slider, SliderState } from "@starweb-libs/ui/types.js";
+import { getLayout, drawTitle             } from "@starweb-libs/ui/layout.js";
+import { getButtonState, drawButton       } from "@starweb-libs/ui/button.js";
+import { updateSlider, drawSlider         } from "@starweb-libs/ui/slider.js";
 import type { SettingsMenuState           } from "./types.ts";
 import { getPointer                       } from "./pointer.ts";
 import type { FrameState                  } from "../game/types.ts";

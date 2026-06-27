@@ -1,4 +1,4 @@
-import type { TweenTarget } from "starweb-tween/types.js";
+import type { TweenTarget } from "@starweb-libs/tween/types.js";
 import { type Level, type Sensor, TILE, TILE_SIZE } from "./types.ts";
 import type { Vehicle } from "../vehicle/types.ts";
 import { getTile      } from "./query.ts";

@@ -1,5 +1,5 @@
-import type { CircleBody, AABB                       } from "starweb-physics/types.js";
-import { circleVsAabb, circleVsCircle, circleVsObb   } from "starweb-physics/collision.js";
+import type { CircleBody, AABB                       } from "@starweb-libs/physics/types.js";
+import { circleVsAabb, circleVsCircle, circleVsObb   } from "@starweb-libs/physics/collision.js";
 import { CONE_DAMAGE_SCALE, CONE_DAMAGE_THRESHOLD    } from "../game/constants.ts";
 import { TILE, TILE_SIZE, type Level, type LevelCone } from "../level/types.ts";
 import { getTile                                     } from "../level/query.ts";

@@ -1,5 +1,5 @@
-import type { CircleBody                } from "starweb-physics/types.js";
-import type { TweenManager, TweenTarget } from "starweb-tween/types.js";
+import type { CircleBody                } from "@starweb-libs/physics/types.js";
+import type { TweenManager, TweenTarget } from "@starweb-libs/tween/types.js";
 import type { Level, Sensor             } from "../level/types.ts";
 import type { Vehicle, VehicleType      } from "../vehicle/types.ts";
 import type {

@@ -1,4 +1,4 @@
-import type { MenuLayout, ButtonEntry, SliderEntry } from "starweb-ui/types.js";
+import type { MenuLayout, ButtonEntry, SliderEntry } from "@starweb-libs/ui/types.js";
 
 export interface PauseMenuState extends MenuLayout {
   resume:  ButtonEntry;

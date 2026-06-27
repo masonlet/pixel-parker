@@ -1,6 +1,6 @@
-import type { Audio                       } from "starweb-audio/audio.js";
-import { getLayout, drawTitle             } from "starweb-ui/layout.js";
-import { getButtonState, drawButton       } from "starweb-ui/button.js";
+import type { Audio                       } from "@starweb-libs/audio/audio.js";
+import { getLayout, drawTitle             } from "@starweb-libs/ui/layout.js";
+import { getButtonState, drawButton       } from "@starweb-libs/ui/button.js";
 import type { PauseMenuState, PauseAction } from "./types.ts";
 import { getPointer                       } from "./pointer.ts";
 import type { FrameState, PlayState       } from "../game/types.ts";

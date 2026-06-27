@@ -1,5 +1,5 @@
-import type { AABB          } from "starweb-physics/types.js";
-import { overlappingRegions } from "starweb-physics/overlap.js";
+import type { AABB          } from "@starweb-libs/physics/types.js";
+import { overlappingRegions } from "@starweb-libs/physics/overlap.js";
 import type { Sensor, Level } from "../level/types.ts";
 import type { Vehicle       } from "../vehicle/types.ts";
 import { vehicleObb         } from "../vehicle/physics.ts";

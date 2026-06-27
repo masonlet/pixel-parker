@@ -1,6 +1,6 @@
-import type { OBB                         } from "starweb-physics/types.js";
-import { obbVsAabb                        } from "starweb-physics/collision.js";
-import { obbInsideAabb                    } from "starweb-physics/overlap.js";
+import type { OBB                         } from "@starweb-libs/physics/types.js";
+import { obbVsAabb                        } from "@starweb-libs/physics/collision.js";
+import { obbInsideAabb                    } from "@starweb-libs/physics/overlap.js";
 import { isParkedIn, DEFAULT_PARK_PADDING } from "../game/win.ts";
 import { TILE, TILE_SIZE, type Level      } from "../level/types.ts";
 import { getTile                          } from "../level/query.ts";
