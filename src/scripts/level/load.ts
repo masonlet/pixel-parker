@@ -5,7 +5,7 @@ import {
   str, optStr,
   arr,
   makeCollector, type Collector
-} from "starweb-engine/validate.js";
+} from "@starweb-libs/engine/validate.js";
 import {
   type Level, type LevelVehicle, type LevelCone,
   type TileId, TILE, TILE_SIZE,

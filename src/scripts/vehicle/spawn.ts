@@ -1,5 +1,5 @@
-import { tintImage                 } from "starweb-engine/assets.js";
-import { createBody                } from "starweb-physics/body.js";
+import { tintImage                 } from "@starweb-libs/engine/assets.js";
+import { createBody                } from "@starweb-libs/physics/body.js";
 import type { Vehicle, VehicleType } from "./types.ts";
 import type { Level                } from "../level/types.ts";
 

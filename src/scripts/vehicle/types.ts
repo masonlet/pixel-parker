@@ -1,4 +1,4 @@
-import type { RectBody             } from "starweb-physics/types.js";
+import type { RectBody             } from "@starweb-libs/physics/types.js";
 import type { Sensor, VehicleFlags } from "../level/types.ts";
 
 export interface VehicleStats {

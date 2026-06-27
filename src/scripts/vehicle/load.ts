@@ -1,5 +1,5 @@
-import { isObj, num, str, optStr, makeCollector } from "starweb-engine/validate.js";
-import { loadImage                              } from "starweb-engine/assets.js";
+import { isObj, num, str, optStr, makeCollector } from "@starweb-libs/engine/validate.js";
+import { loadImage                              } from "@starweb-libs/engine/assets.js";
 import type { VehicleType, VehicleStats         } from "./types.ts";
 
 export function parseVehicleStats(data: unknown): VehicleStats {
