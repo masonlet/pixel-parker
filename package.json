@@ -13,7 +13,7 @@
     "vite": "^8.0.10"
   },
   "dependencies": {
-    "@starweb-libs/engine": "^0.0.3",
+    "@starweb-libs/engine": "^0.0.6",
     "@starweb-libs/audio": "^0.0.3",
     "@starweb-libs/physics": "^0.0.2",
     "@starweb-libs/tween": "^0.0.2",
