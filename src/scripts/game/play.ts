@@ -1,6 +1,7 @@
 import { isDown, wasPressed                   } from "@starweb-libs/engine/input/keyboard.js";
 import { createTweenManager                   } from "@starweb-libs/tween/manager.js";
 import type { TweenTarget                     } from "@starweb-libs/tween/types.js";
+import { Audio                                } from "@starweb-libs/audio/audio.js";
 import { MAX_HEALTH                           } from "./constants.ts";
 import type { PlayResult, PlayState           } from "./types.ts";
 import { checkLevelWon, isParkedIn            } from "./win.ts";
@@ -43,13 +44,14 @@ function initSensorTweens(p: PlayState): void {
   }
 }
 
-export function createPlayState(campaign: Campaign): PlayState {
+export function createPlayState(campaign: Campaign, audio: Audio): PlayState {
   const level = campaign.levels[0];
   if (!level) throw new Error("createPlayState: Campaign has no levels");
 
   const tweenManager = createTweenManager();
   const sensorAlphas = new Map<Sensor, TweenTarget>();
   const state: PlayState = {
+    volState: { dragging: false, value: audio.volume },
     levels:       campaign.levels,
     levelIndex:   0,
     vehicleTypes: campaign.vehicleTypes,

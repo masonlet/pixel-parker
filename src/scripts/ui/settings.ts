@@ -1,16 +1,14 @@
-import type { Audio                       } from "@starweb-libs/audio/audio.js";
-import type { Button, Slider, SliderState } from "@starweb-libs/ui/types.js";
-import { getLayout, drawTitle             } from "@starweb-libs/ui/layout.js";
-import { getButtonState, drawButton       } from "@starweb-libs/ui/button.js";
-import { updateSlider, drawSlider         } from "@starweb-libs/ui/slider.js";
-import type { SettingsMenuState           } from "./types.ts";
-import { getPointer                       } from "./pointer.ts";
-import type { FrameState                  } from "../game/types.ts";
-import { transition                       } from "../game/transition.ts";
+import type { Audio                 } from "@starweb-libs/audio/audio.js";
+import type { Button, Slider        } from "@starweb-libs/ui/types.js";
+import { getLayout, drawTitle       } from "@starweb-libs/ui/layout.js";
+import { getButtonState, drawButton } from "@starweb-libs/ui/button.js";
+import { updateSlider, drawSlider   } from "@starweb-libs/ui/slider.js";
+import type { SettingsMenuState     } from "./types.ts";
+import { getPointer                 } from "./pointer.ts";
+import type { FrameState, PlayState } from "../game/types.ts";
+import { transition                 } from "../game/transition.ts";
 
-let volState: SliderState | null = null;
-
-export function handleSettingsFrame(w: number, h: number, audio: Audio): FrameState {
+export function handleSettingsFrame(w: number, h: number, playState: PlayState, audio: Audio): FrameState {
   const { scale, gap, cx, cy, btnW, btnH } = getLayout(w, h);
   const titleY = scale * 0.15;
 
@@ -21,13 +19,12 @@ export function handleSettingsFrame(w: number, h: number, audio: Audio): FrameSt
   const mute = { btn: muteBtn, state: getButtonState(muteBtn, getPointer()) };
   const back = { btn: backBtn, state: getButtonState(backBtn, getPointer()) };
 
-  if (!volState) volState = { dragging: false, value: audio.volume };
-  volState = updateSlider(volSlider, volState, getPointer());
+  playState.volState = updateSlider(volSlider, playState.volState, getPointer());
 
   if (mute.state.clicked) audio.setMuted(!audio.muted);
-  audio.setVolume(volState.value);
+  audio.setVolume(playState.volState.value);
 
-  const ui = { cx, scale, titleY, mute, back, vol: { slider: volSlider, state: volState }, muted: audio.muted };
+  const ui = { cx, scale, titleY, mute, back, vol: { slider: volSlider, state: playState.volState }, muted: audio.muted };
 
   if (ui.back.state.clicked) return transition({ game: "menu-title", ui: null }, audio);
   return { game: "menu-settings", ui };
