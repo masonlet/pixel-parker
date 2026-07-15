@@ -1,3 +1,4 @@
+import { transition                 } from "@starweb-libs/engine/transition.js";
 import type { Audio                 } from "@starweb-libs/audio/audio.js";
 import type { Button                } from "@starweb-libs/ui/types.js";
 import { getLayout, drawTitle       } from "@starweb-libs/ui/layout.js";
@@ -5,7 +6,6 @@ import { getButtonState, drawButton } from "@starweb-libs/ui/button.js";
 import type { TitleMenuState        } from "./types.ts";
 import { getPointer                 } from "./pointer.ts";
 import type { FrameState, PlayState } from "../game/types.ts";
-import { transition                 } from "../game/transition.ts";
 
 export function handleTitleFrame(w: number, h: number, playState: PlayState, audio: Audio): FrameState {
   const { scale, gap, cx, cy, btnW, btnH } = getLayout(w, h);
