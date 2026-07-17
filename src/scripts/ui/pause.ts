@@ -1,9 +1,9 @@
-import { transition                 } from "@starweb-libs/engine/transition.js";
 import type { Audio                 } from "@starweb-libs/audio/audio.js";
-import { getLayout, drawTitle             } from "@starweb-libs/ui/layout.js";
-import { getButtonState, drawButton       } from "@starweb-libs/ui/button.js";
+import { transition                 } from "@starweb-libs/engine/transition.js";
+import { getPointer                 } from "@starweb-libs/engine/input/pointer.js";
+import { getLayout, drawTitle       } from "@starweb-libs/ui/layout.js";
+import { getButtonState, drawButton } from "@starweb-libs/ui/button.js";
 import type { PauseMenuState, PauseAction } from "./types.ts";
-import { getPointer                       } from "./pointer.ts";
 import type { FrameState, PlayState       } from "../game/types.ts";
 import { resetPlayState                   } from "../game/play.ts";
 
