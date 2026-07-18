@@ -33,7 +33,7 @@ export function updateFrame(
 
   const { width: w, height: h } = size;
   switch (fs.game) {
-    case "menu-title":     return handleTitleFrame   (w, h, a, ps.levels.length, () => selectLevel(ps, 0));
+    case "menu-title":     return handleTitleFrame   (w, h, a, ps.levels.length);
     case "menu-levels":    return handleLevelFrame   (w, h, a, ps.levels, (i) => selectLevel(ps, i));
     case "menu-settings":  { const r = handleSettingsFrame(w, h, ps.volState, a); ps.volState = r.volState; return r.frame; }
     case "level-playing":  return handlePlayingFrame (fs, ps, a, dt);
