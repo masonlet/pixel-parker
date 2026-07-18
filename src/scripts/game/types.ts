@@ -1,8 +1,6 @@
 import type { CircleBody                } from "@starweb-libs/physics/types.js";
 import type { TweenManager, TweenTarget } from "@starweb-libs/tween/types.js";
 import type { SliderState               } from "@starweb-libs/ui/types.js";
-import type { Level, Sensor        } from "../level/types.ts";
-import type { Vehicle, VehicleType } from "../vehicle/types.ts";
 import type {
   TitleMenuState,
   SettingsMenuState,
@@ -10,7 +8,9 @@ import type {
   PauseMenuState,
   CompleteMenuState,
   FailedMenuState
-} from "../ui/types.ts";
+} from "@starweb-libs/menus/types.js";
+import type { Level, Sensor        } from "../level/types.ts";
+import type { Vehicle, VehicleType } from "../vehicle/types.ts";
 
 export interface PlayState {
   volState:         SliderState;

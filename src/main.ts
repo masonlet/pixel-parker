@@ -21,7 +21,7 @@ const playState = createPlayState(campaign, audio);
 let frame: FrameState = { game: "menu-title", ui: null };
 
 startLoop(
-  (dt) => { frame = updateFrame(size, frame, playState, audio, dt); },
-  (  ) => { renderFrame(ctx, size, playState, frame);               },
+  (dt) => { frame = updateFrame(frame, playState, audio, dt, size); },
+  (  ) => { renderFrame(ctx, playState, frame, size);               },
   { tickRate: "variable", maxDelta: 250, pauseOnHidden: true },
 );

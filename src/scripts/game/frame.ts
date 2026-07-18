@@ -1,72 +1,66 @@
-import { transition } from "@starweb-libs/menus/transition.js";
-import type { Audio } from "@starweb-libs/audio/audio.js";
-import { wasPressed } from "@starweb-libs/engine/input/keyboard.js";
-import type { PlayState, FrameState               } from "./types.ts";
-import { updatePlayState, renderPlayState         } from "./play.ts";
-import { handleTitleFrame,    renderTitleFrame    } from "../ui/title.ts";
-import { handleSettingsFrame, renderSettingsFrame } from "../ui/settings.ts";
-import { handleLevelFrame,    renderLevelFrame    } from "../ui/levels.ts";
-import { handlePauseFrame,    renderPauseFrame    } from "../ui/pause.ts";
-import { handleCompleteFrame, renderCompleteFrame } from "../ui/complete.ts";
-import { handleFailedFrame, renderFailedFrame     } from "../ui/failed.ts";
+import type { Audio                               } from "@starweb-libs/audio/audio.js";
+import { wasPressed                               } from "@starweb-libs/engine/input/keyboard.js";
+import { transition                               } from "@starweb-libs/menus/transition.js";
+import { handleTitleFrame,    renderTitleFrame    } from "@starweb-libs/menus/title.js";
+import { handleSettingsFrame, renderSettingsFrame } from "@starweb-libs/menus/settings.js";
+import { handleLevelFrame,    renderLevelFrame    } from "@starweb-libs/menus/levels.js";
+import { handlePauseFrame,    renderPauseFrame    } from "@starweb-libs/menus/pause.js";
+import { handleCompleteFrame, renderCompleteFrame } from "@starweb-libs/menus/complete.js";
+import { handleFailedFrame,   renderFailedFrame   } from "@starweb-libs/menus/failed.js";
+import type { PlayState, FrameState } from "./types.ts";
+import { updatePlayState, renderPlayState, selectLevel, resetPlayState } from "./play.ts";
 
-function handlePlayingFrame(
-  frame: FrameState,
-  playState: PlayState,
-  audio: Audio,
-  dt: number
-): FrameState {
-  const result = updatePlayState(playState, dt);
+function handlePlayingFrame(fs: FrameState, ps: PlayState, a: Audio, dt: number): FrameState {
+  const result = updatePlayState(ps, dt);
   if (result === "won") {
-    audio.playSound("win");
+    a.playSound("win");
     return { game: "level-complete", ui: null };
   }
   if (result === "failed") return { game: "level-failed", ui: null };
-  return frame;
+  return fs;
 }
 
 export function updateFrame(
+  fs: FrameState, ps: PlayState,
+  a: Audio,
+  dt: number,
   size: { width: number; height: number },
-  frame: FrameState,
-  playState: PlayState,
-  audio: Audio,
-  dt: number
 ): FrameState {
   if (wasPressed("Escape"))  {
-    if (frame.game === "level-playing") return transition({ game: "level-paused", ui: null  }, audio);
-    if (frame.game === "level-paused")  return transition({ game: "level-playing", ui: null }, audio);
+    if (fs.game === "level-playing") return transition({ game: "level-paused", ui: null  }, a);
+    if (fs.game === "level-paused")  return transition({ game: "level-playing", ui: null }, a);
   }
 
   const { width: w, height: h } = size;
-  switch (frame.game) {
-    case "menu-title":     return handleTitleFrame   (w, h, playState, audio);
-    case "menu-levels":    return handleLevelFrame   (w, h, playState, audio);
-    case "menu-settings":  return handleSettingsFrame(w, h, playState, audio);
-    case "level-paused":   return handlePauseFrame   (w, h, playState, audio);
-    case "level-complete": return handleCompleteFrame(w, h, playState, audio);
-    case "level-failed":   return handleFailedFrame  (w, h, playState, audio);
-    case "level-playing":  return handlePlayingFrame (frame, playState, audio, dt);
+  switch (fs.game) {
+    case "menu-title":     return handleTitleFrame   (w, h, a, ps.levels.length, () => selectLevel(ps, 0));
+    case "menu-levels":    return handleLevelFrame   (w, h, a, ps.levels, (i) => selectLevel(ps, i));
+    case "menu-settings":  { const r = handleSettingsFrame(w, h, ps.volState, a); ps.volState = r.volState; return r.frame; }
+    case "level-playing":  return handlePlayingFrame (fs, ps, a, dt);
+    case "level-paused":   return handlePauseFrame   (w, h, a, () => resetPlayState(ps));
+    case "level-complete": return handleCompleteFrame(w, h, a, ps.levelIndex, ps.levels.length, (i) => selectLevel(ps, i), () => resetPlayState(ps));
+    case "level-failed":   return handleFailedFrame  (w, h, a, () => resetPlayState(ps));
   }
 }
 
 export function renderFrame(
   ctx: CanvasRenderingContext2D,
+  ps: PlayState,
+  fs: FrameState,
   size: { width: number; height: number },
-  playState: PlayState,
-  frame: FrameState
 ): void {
   const { width: w, height: h } = size;
   ctx.fillStyle = "#000";
   ctx.fillRect(0, 0, w, h);
 
-  if (!frame.game.startsWith("menu-")) renderPlayState(ctx, playState, w, h);
+  if (!fs.game.startsWith("menu-")) renderPlayState(ctx, ps, w, h);
 
-  switch (frame.game) {
-    case "menu-title":     renderTitleFrame   (ctx, frame.ui);       break;
-    case "menu-settings":  renderSettingsFrame(ctx, frame.ui);       break;
-    case "menu-levels":    renderLevelFrame   (ctx, frame.ui);       break;
-    case "level-paused":   renderPauseFrame   (ctx, w, h, frame.ui); break;
-    case "level-complete": renderCompleteFrame(ctx, w, h, frame.ui); break;
-    case "level-failed":   renderFailedFrame  (ctx, w, h, frame.ui); break;
+  switch (fs.game) {
+    case "menu-title":     renderTitleFrame   (ctx, fs.ui, "Pixel Parker", 0.12); break;
+    case "menu-settings":  renderSettingsFrame(ctx, fs.ui);       break;
+    case "menu-levels":    renderLevelFrame   (ctx, fs.ui);       break;
+    case "level-paused":   renderPauseFrame   (ctx, fs.ui, w, h); break;
+    case "level-complete": renderCompleteFrame(ctx, fs.ui, w, h); break;
+    case "level-failed":   renderFailedFrame  (ctx, fs.ui, w, h); break;
   }
 }
