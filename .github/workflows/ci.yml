@@ -1,0 +1,11 @@
+name: CI
+
+on:
+  push:         
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    uses: starweb-libs/.github/.github/workflows/build.yml@v1.0.0
